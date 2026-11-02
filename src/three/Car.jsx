@@ -5,7 +5,8 @@ import * as THREE from 'three';
 import { T, clock, carState } from './timeline';
 import { drivePose } from './drive';
 
-const URL = `${import.meta.env.BASE_URL}models/car.glb`;
+// A host that can't serve .glb can point at the same file under another name (window.__CAR_URL).
+const URL = (typeof window !== 'undefined' && window.__CAR_URL) || `${import.meta.env.BASE_URL}models/car.glb`;
 
 export default function Car() {
   const { scene } = useGLTF(URL);
