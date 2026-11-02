@@ -18,4 +18,9 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // React Three Fiber mutates three.js objects inside useFrame by design (no React state in the frame loop).
+    files: ['src/three/**/*.{js,jsx}'],
+    rules: { 'react-hooks/immutability': 'off' },
+  },
 ])
