@@ -2,7 +2,8 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { T, clock, CAR_FINAL, carLocalToWorld, smooth, lerp } from './timeline';
+import { clock, lerp } from './timeline';
+import { driverRoot } from './driverPath';
 
 /*
   Sunny, as a stylised 3D figure. Built from primitives so it loads instantly.
@@ -215,38 +216,26 @@ function apply(J, P) {
   J.ankleR.rotation.x = P.ankleR;
 }
 
-// Lean spot: just in front of the bonnet's camera-side corner.
-const LEAN_AT = carLocalToWorld({ x: CAR_FINAL.x, z: CAR_FINAL.z, yaw: CAR_FINAL.yaw }, -0.5, 0, 2.6);
-const LEAN_YAW = CAR_FINAL.yaw - 0.18; // back to the bonnet
-const WALK_FROM = new THREE.Vector3(LEAN_AT.x + 4.6, 0, LEAN_AT.z + 0.7);
-const WALK_DIR = new THREE.Vector3().subVectors(LEAN_AT, WALK_FROM);
-const WALK_DIST = WALK_DIR.length();
-const WALK_YAW = Math.atan2(WALK_DIR.x, WALK_DIR.z);
 const STRIDE = 0.78;
+const root$ = { pos: new THREE.Vector3() };
 
-export default function Driver() {
+export default function StylisedDriver() {
   const { root, J } = useMemo(() => buildRig(), []);
   const ref = useRef();
 
   useFrame(() => {
     const t = clock.t;
     const g = ref.current;
-    const tw = t - T.walkStart;
-    if (tw < 0) {
+    const r = driverRoot(t, root$);
+    if (!r.visible) {
       g.visible = false;
       return;
     }
     g.visible = true;
-    const walkU = Math.min(1, tw / T.walkLen);
-    // constant pace, then braking over the last 20% of the walk
-    const du = walkU - 0.8;
-    const d = WALK_DIST * (walkU < 0.8 ? walkU / 0.9 : (0.8 + du - (du * du) / 0.4) / 0.9);
-    const dist = Math.min(WALK_DIST, d);
-    const phi = (dist / STRIDE) * Math.PI;
-    const turn = smooth(0, 1, (tw - T.walkLen) / T.turnLen);
-
-    g.position.copy(WALK_FROM).addScaledVector(WALK_DIR, dist / WALK_DIST);
-    g.rotation.y = lerp(WALK_YAW, LEAN_YAW, turn);
+    const phi = (r.dist / STRIDE) * Math.PI;
+    const turn = r.turn;
+    g.position.copy(r.pos);
+    g.rotation.y = r.yaw;
 
     const P = mix(walkPose(phi), LEAN, turn);
     if (turn >= 1) {

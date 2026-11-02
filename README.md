@@ -19,10 +19,25 @@ npm run dev
 | `src/three/timeline.js` | Every beat of the opening, in seconds |
 | `src/three/drive.js` | The drift line, slip angle and handbrake stop |
 | `src/three/Car.jsx` | Car model, paint, headlights, suspension settle |
-| `src/three/Driver.jsx` | Sunny as a 3D figure: look, outfit, walk cycle, lean pose |
+| `src/three/SunnyDriver.jsx` | Picks the realistic avatar if its files exist, else the stylised one |
+| `src/three/RealDriver.jsx` | Realistic avatar: loading, animation retargeting, the automatic bonnet lean |
+| `src/three/Driver.jsx` | Stylised fallback figure: look, outfit, walk cycle, lean pose |
+| `src/three/driverPath.js` | Where he walks from, where he leans, and when |
 | `src/three/DriftFx.jsx` | Tyre smoke and skid marks |
 | `src/three/Wordmark.jsx` | The 3D name behind the car |
 | `src/sections/` | Hero overlay, Pit Crew, Track, Garage, Finish |
+
+## Your realistic avatar (drop-in)
+
+The site uses a realistic rigged avatar of Sunny when these files exist, and the stylised figure otherwise:
+
+| File | What |
+|---|---|
+| `public/models/sunny.glb` | The avatar (any Mixamo-compatible humanoid rig, e.g. an Avaturn export) |
+| `public/models/anims/walk.fbx` (or `.glb`) | A walk animation. A Mixamo FBX downloaded "Without Skin" is fine |
+| `public/models/anims/lean.fbx` (or `.glb`) | Optional. Without it, the bonnet lean is posed automatically from the skeleton |
+
+Animations are retargeted onto the avatar in world space, so they don't need to come from the same rig. Test any files without copying them in: `?avatar=<url>&walk=<url>&lean=<url>`.
 
 ## Dev hooks
 

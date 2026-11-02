@@ -4,7 +4,7 @@ import { Environment, Lightformer, MeshReflectorMaterial } from '@react-three/dr
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import Car from './Car';
-import Driver from './Driver';
+import Driver from './SunnyDriver';
 import Wordmark from './Wordmark';
 import { TyreSmoke, SkidMarks } from './DriftFx';
 import { T, clock } from './timeline';
