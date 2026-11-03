@@ -1,0 +1,34 @@
+/* DRIFT design tokens (mirrors the DRIFT design system's tokens.json) */
+:root {
+  --asphalt-950: #07090d;
+  --asphalt-900: #0e1117;
+  --asphalt-800: #161b22;
+  --asphalt-700: #262b33;
+  --asphalt-500: #5a616d;
+  --chalk-100: #edeff2;
+  --chalk-400: #9aa1ac;
+  --drift-red: #e10600;
+  --signal-red: #ff3b30;
+  --on-red: #ffffff;
+  --livery-sky: #3fa9f5;
+  --livery-navy: #1c3f94;
+  --signal-amber: #ffb020;
+  --headlight: #dcebff;
+
+  --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-body: Manrope, "Segoe UI", system-ui, sans-serif;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-24: 96px;
+  --radius-0: 0px; --radius-sm: 2px; --radius-md: 6px; --radius-pill: 999px;
+
+  --glow-red: 0 0 32px rgba(225, 6, 0, 0.45);
+  --lift: 0 24px 48px rgba(0, 0, 0, 0.6);
+
+  --dur-fast: 160ms; --dur-ui: 280ms; --dur-reveal: 1800ms;
+  --ease-launch: cubic-bezier(0.55, 0, 0.9, 0.35);
+  --ease-brake: cubic-bezier(0.15, 0.7, 0.3, 1);
+  --ease-settle: cubic-bezier(0.3, 1.45, 0.55, 1);
+  --ease-travel: cubic-bezier(0.65, 0, 0.35, 1);
+}

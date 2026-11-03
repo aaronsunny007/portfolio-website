@@ -30,3 +30,5 @@ graphify-out/cost.json
 graphify-out/.graphify_python
 graphify-out/.graphify_root
 graphify-out/.graphify_transcripts.json
+# local-only test models (not for publishing)
+public/dev/
