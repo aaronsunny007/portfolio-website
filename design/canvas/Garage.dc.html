@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DRIFT · The Garage</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=JetBrains+Mono:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap">
+<style>
+body{margin:0;background:#07090d}
+a{color:#3fa9f5}a:hover{color:#edeff2}
+a:focus-visible,button:focus-visible{outline:2px solid #3fa9f5;outline-offset:3px}
+</style>
+</helmet>
+<section id="garage" style="width: 100%; box-sizing: border-box; background: #07090d; color: #edeff2; font-family: Manrope, 'Segoe UI', system-ui, sans-serif; padding: 96px 40px;">
+  <div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px;">
+
+    <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <p style="margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #ffb020;">S3 / The Garage</p>
+        <h2 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 72px; line-height: 0.9; text-transform: uppercase;">Six bays. Eighteen builds.</h2>
+      </div>
+      <div style="display: flex; gap: 32px; font-family: 'JetBrains Mono', ui-monospace, monospace;">
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 44px; line-height: 1; font-weight: 700; color: #ffb020;">06</span><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #9aa1ac;">PRO bays</span></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;"><span style="font-size: 44px; line-height: 1; font-weight: 700; color: #ffb020;">18</span><span style="font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #9aa1ac;">Repos</span></div>
+      </div>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 32px;">
+
+      <article style="background: #0e1117; border: 1px solid #262b33; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div aria-hidden="true" style="height: 3px; background: #ffb020; box-shadow: 0 0 24px rgba(255, 176, 32, 0.6);"></div>
+        <div style="position: relative; aspect-ratio: 16 / 10; background: #07090d;">
+          <svg role="img" aria-label="A gate with eight validation stages between agents and tools" viewBox="0 0 320 200" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+            <rect x="120" y="30" width="14" height="140" fill="#161b22" stroke="#5a616d"></rect>
+            <rect x="186" y="30" width="14" height="140" fill="#161b22" stroke="#5a616d"></rect>
+            <g fill="#ffb020"><rect x="138" y="40" width="44" height="4"></rect><rect x="138" y="56" width="44" height="4"></rect><rect x="138" y="72" width="44" height="4"></rect><rect x="138" y="88" width="44" height="4"></rect><rect x="138" y="104" width="44" height="4"></rect><rect x="138" y="120" width="44" height="4"></rect><rect x="138" y="136" width="44" height="4"></rect></g>
+            <rect x="138" y="152" width="44" height="4" fill="#e10600"></rect>
+            <path d="M20 70 L120 70 M20 100 L120 100 M20 130 L120 130" stroke="#3fa9f5" stroke-width="2"></path>
+            <path d="M200 100 L300 100" stroke="#edeff2" stroke-width="2"></path>
+            <path d="M200 70 L240 70 M200 130 L230 130" stroke="#e10600" stroke-width="2" stroke-dasharray="4 4"></path>
+          </svg>
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, #0e1117 100%);"></div>
+          <span style="position: absolute; top: 14px; left: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #ffb020;">BAY 01</span>
+        </div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+            <span style="padding: 4px 8px; border: 1px solid #ff3b30; color: #ff3b30;">PRO</span>
+            <span style="color: #9aa1ac;">AI security</span>
+          </div>
+          <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase;">Warden</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 26px; color: #9aa1ac;">A security gateway between AI agents and MCP tool servers. It tracks taint and only enforces a new defence after an 8-stage validation gate.</p>
+          <div style="margin-top: auto; display: flex; gap: 20px; padding-top: 8px; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <a href="#warden" style="color: #edeff2; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Spec sheet →</a>
+            <a href="https://github.com/aaronsunny007/Warden" style="color: #3fa9f5; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Repo ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article style="background: #161b22; border: 1px solid #5a616d; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 48px rgba(220, 235, 255, 0.12); transform: translateY(-6px);">
+        <div aria-hidden="true" style="height: 3px; background: #ffb020; box-shadow: 0 0 24px rgba(255, 176, 32, 0.6);"></div>
+        <div style="position: relative; aspect-ratio: 16 / 10; background: #07090d;">
+          <svg role="img" aria-label="A rising accuracy curve ending at 85.5 percent" viewBox="0 0 320 200" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+            <path d="M20 170 L300 170 M20 30 L20 170" stroke="#262b33" stroke-width="1.5"></path>
+            <path d="M20 160 C 80 150, 110 110, 150 90 S 230 52, 300 46" fill="none" stroke="#ffb020" stroke-width="3"></path>
+            <circle cx="300" cy="46" r="6" fill="#e10600"></circle>
+            <path d="M300 46 L300 170" stroke="#e10600" stroke-dasharray="3 4"></path>
+            <text x="40" y="70" font-family="'Big Shoulders Display', Impact, sans-serif" font-weight="900" font-size="56" fill="#edeff2">85.5%</text>
+          </svg>
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, #161b22 100%);"></div>
+          <span style="position: absolute; top: 14px; left: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #ffb020;">BAY 02 · HOVER</span>
+        </div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+            <span style="padding: 4px 8px; border: 1px solid #ff3b30; color: #ff3b30;">PRO</span>
+            <span style="color: #9aa1ac;">LLM / RAG</span>
+            <span style="margin-left: auto; font-size: 14px; letter-spacing: 0.02em; font-weight: 500; color: #ffb020;">85.5% · 207 Q</span>
+          </div>
+          <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase;">Ledger</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 26px; color: #9aa1ac;">Cited answers from company annual reports. A calculator recomputes every number. 85.5% on 207 scored test questions.</p>
+          <div style="margin-top: auto; display: flex; gap: 20px; padding-top: 8px; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <a href="#ledger" style="color: #edeff2; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Spec sheet →</a>
+            <a href="https://github.com/aaronsunny007/ledger" style="color: #3fa9f5; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Repo ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article style="background: #0e1117; border: 1px solid #262b33; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div aria-hidden="true" style="height: 3px; background: #ffb020; box-shadow: 0 0 24px rgba(255, 176, 32, 0.6);"></div>
+        <div style="position: relative; aspect-ratio: 16 / 10; background: #07090d;">
+          <svg role="img" aria-label="Paired bars: reliability scores barely change when the source is wrong" viewBox="0 0 320 200" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+            <path d="M20 170 L300 170" stroke="#262b33" stroke-width="1.5"></path>
+            <g><rect x="40" y="60" width="22" height="110" fill="#5a616d"></rect><rect x="66" y="64" width="22" height="106" fill="#e10600"></rect></g>
+            <g><rect x="110" y="50" width="22" height="120" fill="#5a616d"></rect><rect x="136" y="56" width="22" height="114" fill="#e10600"></rect></g>
+            <g><rect x="180" y="72" width="22" height="98" fill="#5a616d"></rect><rect x="206" y="74" width="22" height="96" fill="#e10600"></rect></g>
+            <g><rect x="250" y="58" width="22" height="112" fill="#5a616d"></rect><rect x="276" y="96" width="22" height="74" fill="#e10600"></rect></g>
+            <text x="40" y="36" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" fill="#9aa1ac" letter-spacing="1.5">CLEAN vs CORRUPTED</text>
+          </svg>
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, #0e1117 100%);"></div>
+          <span style="position: absolute; top: 14px; left: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #ffb020;">BAY 03</span>
+        </div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+            <span style="padding: 4px 8px; border: 1px solid #ff3b30; color: #ff3b30;">PRO</span>
+            <span style="color: #9aa1ac;">LLM evaluation</span>
+          </div>
+          <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase;">Financial-NRF</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 26px; color: #9aa1ac;">Do LLM reliability scores notice when the source document is wrong? Two finance datasets, four open models: mostly no.</p>
+          <div style="margin-top: auto; display: flex; gap: 20px; padding-top: 8px; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <a href="#financial-nrf" style="color: #edeff2; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Spec sheet →</a>
+            <a href="https://github.com/aaronsunny007/Financial-NRF" style="color: #3fa9f5; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Repo ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article style="background: #0e1117; border: 1px solid #262b33; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div aria-hidden="true" style="height: 3px; background: #ffb020; box-shadow: 0 0 24px rgba(255, 176, 32, 0.6);"></div>
+        <div style="position: relative; aspect-ratio: 16 / 10; background: #07090d;">
+          <svg role="img" aria-label="A shield inside radar rings, blocking incoming attack lines" viewBox="0 0 320 200" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+            <circle cx="160" cy="100" r="80" fill="none" stroke="#161b22" stroke-width="1.5"></circle>
+            <circle cx="160" cy="100" r="56" fill="none" stroke="#262b33" stroke-width="1.5"></circle>
+            <path d="M160 52 L196 66 L196 102 Q196 132 160 150 Q124 132 124 102 L124 66 Z" fill="#0e1117" stroke="#ffb020" stroke-width="2.5"></path>
+            <path d="M144 100 L156 112 L178 88" fill="none" stroke="#edeff2" stroke-width="3"></path>
+            <path d="M10 40 L104 78 M10 160 L106 124 M310 30 L222 74" stroke="#e10600" stroke-width="2" stroke-dasharray="5 4"></path>
+            <path d="M104 78 L114 82 M106 124 L116 120 M222 74 L214 78" stroke="#e10600" stroke-width="4"></path>
+          </svg>
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, #0e1117 100%);"></div>
+          <span style="position: absolute; top: 14px; left: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #ffb020;">BAY 04</span>
+        </div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+            <span style="padding: 4px 8px; border: 1px solid #ff3b30; color: #ff3b30;">PRO</span>
+            <span style="color: #9aa1ac;">AI security</span>
+          </div>
+          <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase;">AEGIS</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 26px; color: #9aa1ac;">Autonomous web-app defence: spots an attack campaign, writes a blocking rule, proves it won’t break real traffic, deploys it live.</p>
+          <div style="margin-top: auto; display: flex; gap: 20px; padding-top: 8px; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <a href="#aegis" style="color: #edeff2; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Spec sheet →</a>
+            <a href="https://github.com/aaronsunny007/AI-CySec-defence-system" style="color: #3fa9f5; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Repo ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article style="background: #0e1117; border: 1px solid #262b33; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div aria-hidden="true" style="height: 3px; background: #ffb020; box-shadow: 0 0 24px rgba(255, 176, 32, 0.6);"></div>
+        <div style="position: relative; aspect-ratio: 16 / 10; background: #07090d;">
+          <svg role="img" aria-label="A grid of attack cases, a few marked red as breaches" viewBox="0 0 320 200" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+            <g fill="#161b22" stroke="#262b33">
+              <rect x="40" y="30" width="34" height="30"></rect><rect x="82" y="30" width="34" height="30"></rect><rect x="124" y="30" width="34" height="30"></rect><rect x="166" y="30" width="34" height="30"></rect><rect x="208" y="30" width="34" height="30"></rect><rect x="250" y="30" width="34" height="30"></rect>
+              <rect x="40" y="68" width="34" height="30"></rect><rect x="82" y="68" width="34" height="30"></rect><rect x="166" y="68" width="34" height="30"></rect><rect x="208" y="68" width="34" height="30"></rect><rect x="250" y="68" width="34" height="30"></rect>
+              <rect x="40" y="106" width="34" height="30"></rect><rect x="82" y="106" width="34" height="30"></rect><rect x="124" y="106" width="34" height="30"></rect><rect x="166" y="106" width="34" height="30"></rect><rect x="250" y="106" width="34" height="30"></rect>
+              <rect x="82" y="144" width="34" height="30"></rect><rect x="124" y="144" width="34" height="30"></rect><rect x="166" y="144" width="34" height="30"></rect><rect x="208" y="144" width="34" height="30"></rect><rect x="250" y="144" width="34" height="30"></rect>
+            </g>
+            <rect x="124" y="68" width="34" height="30" fill="#e10600"></rect>
+            <rect x="208" y="106" width="34" height="30" fill="#e10600"></rect>
+            <rect x="40" y="144" width="34" height="30" fill="#e10600"></rect>
+            <rect x="40" y="30" width="34" height="30" fill="none" stroke="#ffb020" stroke-width="2"></rect>
+          </svg>
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, #0e1117 100%);"></div>
+          <span style="position: absolute; top: 14px; left: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #ffb020;">BAY 05</span>
+        </div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+            <span style="padding: 4px 8px; border: 1px solid #ff3b30; color: #ff3b30;">PRO</span>
+            <span style="color: #9aa1ac;">AI security</span>
+          </div>
+          <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase;">Red Team</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 26px; color: #9aa1ac;">Red-team an LLM app with versioned attacks and a validated AI judge, compare defences statistically, gate releases in CI.</p>
+          <div style="margin-top: auto; display: flex; gap: 20px; padding-top: 8px; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <a href="#llm-eval-redteam" style="color: #edeff2; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Spec sheet →</a>
+            <a href="https://github.com/aaronsunny007/llm-eval-redteam" style="color: #3fa9f5; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Repo ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article style="background: #0e1117; border: 1px solid #262b33; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+        <div aria-hidden="true" style="height: 3px; background: #ffb020; box-shadow: 0 0 24px rgba(255, 176, 32, 0.6);"></div>
+        <div style="position: relative; aspect-ratio: 16 / 10; background: #07090d;">
+          <svg role="img" aria-label="Transit lines with a live pulse every five minutes" viewBox="0 0 320 200" style="position: absolute; inset: 0; width: 100%; height: 100%;">
+            <path d="M20 60 L300 60" stroke="#3fa9f5" stroke-width="3"></path>
+            <path d="M20 100 L300 100" stroke="#5a616d" stroke-width="3"></path>
+            <path d="M20 140 L300 140" stroke="#ffb020" stroke-width="3"></path>
+            <g fill="#07090d" stroke="#edeff2" stroke-width="2"><circle cx="70" cy="60" r="5"></circle><circle cx="150" cy="60" r="5"></circle><circle cx="230" cy="60" r="5"></circle><circle cx="110" cy="100" r="5"></circle><circle cx="200" cy="100" r="5"></circle><circle cx="60" cy="140" r="5"></circle><circle cx="170" cy="140" r="5"></circle><circle cx="270" cy="140" r="5"></circle></g>
+            <path d="M20 180 L120 180 L132 160 L144 196 L156 168 L168 180 L300 180" fill="none" stroke="#e10600" stroke-width="2.5"></path>
+          </svg>
+          <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, rgba(7, 9, 13, 0) 0%, #0e1117 100%);"></div>
+          <span style="position: absolute; top: 14px; left: 14px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: #ffb020;">BAY 06</span>
+        </div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+            <span style="padding: 4px 8px; border: 1px solid #ff3b30; color: #ff3b30;">PRO</span>
+            <span style="color: #9aa1ac;">Data engineering</span>
+            <span style="margin-left: auto; font-size: 14px; letter-spacing: 0.02em; font-weight: 500; color: #ffb020;">every 5 min</span>
+          </div>
+          <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 800; font-size: 40px; line-height: 1; text-transform: uppercase;">PulseCity</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 26px; color: #9aa1ac;">A transport reliability lakehouse on Azure Databricks. Polls every Tube, DLR and Overground line every 5 minutes.</p>
+          <div style="margin-top: auto; display: flex; gap: 20px; padding-top: 8px; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            <a href="#pulsecity" style="color: #edeff2; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Spec sheet →</a>
+            <a href="https://github.com/aaronsunny007/pulsegrid-belfast-smart-city-intelligence" style="color: #3fa9f5; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center;">Repo ↗</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 20px; padding-top: 24px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+        <h3 style="margin: 0; font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif; font-weight: 700; font-size: 26px; line-height: 1.1; text-transform: uppercase;">Full garage</h3>
+        <div role="group" aria-label="Filter by class" style="display: flex; flex-wrap: wrap; gap: 8px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;">
+          <button type="button" aria-pressed="true" style="min-height: 44px; padding: 0 14px; background: #edeff2; color: #07090d; border: 1px solid #edeff2; font: inherit; letter-spacing: inherit; cursor: pointer;">All · 18</button>
+          <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 14px; background: transparent; color: #ff3b30; border: 1px solid #5a616d; font: inherit; letter-spacing: inherit; cursor: pointer;">PRO · 6</button>
+          <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 14px; background: transparent; color: #edeff2; border: 1px solid #5a616d; font: inherit; letter-spacing: inherit; cursor: pointer;">Competition · 5</button>
+          <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 14px; background: transparent; color: #3fa9f5; border: 1px solid #5a616d; font: inherit; letter-spacing: inherit; cursor: pointer;">Sport · 5</button>
+          <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 14px; background: transparent; color: #9aa1ac; border: 1px solid #5a616d; font: inherit; letter-spacing: inherit; cursor: pointer;">Street · 2</button>
+        </div>
+      </div>
+      <div style="overflow-x: auto; border: 1px solid #262b33; border-radius: 6px;">
+        <ul style="margin: 0; padding: 0; list-style: none; min-width: 760px;">
+          <li aria-hidden="true" style="display: grid; grid-template-columns: 56px 150px minmax(0, 1.2fr) 180px minmax(0, 2fr) 80px; gap: 16px; padding: 12px 20px; background: #161b22; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #9aa1ac;">
+            <span>No.</span><span>Class</span><span>Build</span><span>Area</span><span>What it does</span><span style="text-align: right;">Repo</span>
+          </li>
+          <sc-for list="{{projects}}" as="p" hint-placeholder-count="18">
+            <li style="display: grid; grid-template-columns: 56px 150px minmax(0, 1.2fr) 180px minmax(0, 2fr) 80px; gap: 16px; align-items: center; padding: 14px 20px; border-top: 1px solid #262b33;">
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; color: #ffb020;">{{p.no}}</span>
+              <span style="justify-self: start; display: flex; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: 0.14em;">
+                <sc-if value="{{p.isPro}}" hint-placeholder-val="{{ true }}"><span style="padding: 4px 8px; color: #ff3b30; border: 1px solid #ff3b30;">PRO</span></sc-if>
+                <sc-if value="{{p.isComp}}" hint-placeholder-val="{{ false }}"><span style="padding: 4px 8px; color: #edeff2; background: #1c3f94; border: 1px solid #1c3f94;">COMPETITION</span></sc-if>
+                <sc-if value="{{p.isSport}}" hint-placeholder-val="{{ false }}"><span style="padding: 4px 8px; color: #3fa9f5; border: 1px solid #3fa9f5;">SPORT</span></sc-if>
+                <sc-if value="{{p.isStreet}}" hint-placeholder-val="{{ false }}"><span style="padding: 4px 8px; color: #9aa1ac; border: 1px solid #5a616d;">STREET</span></sc-if>
+              </span>
+              <span style="font-size: 15px; font-weight: 700; color: #edeff2;">{{p.title}}</span>
+              <span style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: #9aa1ac;">{{p.area}}</span>
+              <span style="font-size: 14px; line-height: 21px; color: #9aa1ac;">{{p.pitch}}</span>
+              <a href="{{p.repo}}" aria-label="{{p.title}} on GitHub" style="justify-self: end; min-height: 44px; display: inline-flex; align-items: center; font-weight: 800; font-size: 13px; letter-spacing: 0.1em; text-decoration: none; color: #3fa9f5;">↗</a>
+            </li>
+          </sc-for>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1760}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const gh = (r) => 'https://github.com/aaronsunny007/' + r;
+    const rows = [
+      ['PRO', 'Warden', 'AI Security', 'Security gateway between AI agents and MCP tool servers.', 'Warden'],
+      ['PRO', 'Ledger', 'LLM / RAG', 'Cited answers from annual reports. 85.5% on 207 questions.', 'ledger'],
+      ['PRO', 'Financial-NRF', 'LLM evaluation', 'Do reliability scores notice a wrong source? Mostly no.', 'Financial-NRF'],
+      ['PRO', 'AEGIS', 'AI Security', 'Spots an attack, writes a rule, proves it, deploys it.', 'AI-CySec-defence-system'],
+      ['PRO', 'Red Team', 'AI Security', 'Versioned attacks, a validated judge, release gates in CI.', 'llm-eval-redteam'],
+      ['PRO', 'PulseCity', 'Data engineering', 'Transport reliability lakehouse on Azure Databricks.', 'pulsegrid-belfast-smart-city-intelligence'],
+      ['COMPETITION', 'Tom & Ollie', 'Web · Client', 'Storefront relaunch with chilled-aware checkout.', 'tom.n.ollie'],
+      ['COMPETITION', 'Fair Federated Learning', 'ML · Healthcare', 'Federated learning with fairness constraints.', 'fair-federated-learning-healthcare-ai'],
+      ['COMPETITION', 'CI/CD MLOps Pipeline', 'MLOps', 'Predicts CI/CD stage failures; train-evaluate-deploy.', 'cicd-mlops-pipeline'],
+      ['COMPETITION', 'GitHub AI Agent', 'LLM agents', 'Reads real issues and suggests likely fixes.', 'github-ai-agent'],
+      ['COMPETITION', 'Warehouse Patrol Robot', 'Robotics · Group', 'Gazebo patrol robot with Bug2 or Q-learning.', 'autonomous-warehouse-surveillance-robot'],
+      ['SPORT', 'ROS Formation Control', 'Robotics', 'Multi-agent formation control in ROS.', 'ros-formation-control'],
+      ['SPORT', 'Smart AI Agent', 'LLM / RAG', 'RAG, memory, web search and local LLM support.', 'smart-ai-agent'],
+      ['SPORT', 'Loan Default Prediction', 'ML', 'Lending Club default risk, three models compared.', 'loan-default-prediction'],
+      ['SPORT', 'Web Security Scanner', 'Security', 'Nmap on approved targets, dorks, subdomains.', 'web-security-scanner'],
+      ['SPORT', 'DSM Compliance Ontology', 'Knowledge graphs', 'OWL ontology for deep-sea mining compliance.', 'dsm-regulatory-compliance-ontology'],
+      ['STREET', 'Secure Password Manager', 'Security', 'Flask password manager with encryption and 2FA.', 'secure-password-manager'],
+      ['STREET', 'RL GridWorld', 'Reinforcement learning', 'RL agents learning a GridWorld.', 'rl-gridworld']
+    ];
+    return {
+      projects: rows.map((r, i) => ({
+        no: String(i + 1).padStart(2, '0'),
+        cls: r[0], isPro: r[0] === 'PRO', isComp: r[0] === 'COMPETITION', isSport: r[0] === 'SPORT', isStreet: r[0] === 'STREET', title: r[1], area: r[2], pitch: r[3], repo: gh(r[4])
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
