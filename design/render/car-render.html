@@ -1,0 +1,58 @@
+<!doctype html><html><body style="margin:0;background:transparent">
+<canvas id="c"></canvas>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const q = new URLSearchParams(location.search);
+const W = +q.get('w')||1600, H = +q.get('h')||700;
+const az = (+q.get('az')||0) * Math.PI/180;   // camera azimuth around the car
+const el = (+q.get('el')||6) * Math.PI/180;
+const fov = +q.get('fov')||18;
+const canvas = document.getElementById('c');
+const r = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, preserveDrawingBuffer:true});
+r.setSize(W,H,false); r.setPixelRatio(1);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = +q.get('exp')||1.0;
+r.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const pm = new THREE.PMREMGenerator(r);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = +q.get('env')||0.55;
+// palette lights: cool headlight side (+x), red taillight side (-x), top key
+const key = new THREE.DirectionalLight(0xdcebff, 2.2); key.position.set(6,8,5); scene.add(key);
+const red = new THREE.DirectionalLight(0xff2a1a, 1.1); red.position.set(-8,2,-3); scene.add(red);
+const rim = new THREE.DirectionalLight(0xdcebff, 1.6); rim.position.set(6,3,-6); scene.add(rim);
+const loader = new GLTFLoader(); const gltf = await loader.loadAsync('./MDL14063_reversed.glb');
+let plateFound = [];
+try {
+  const assoc = gltf.parser.associations, J = gltf.parser.json;
+  gltf.scene.traverse(o=>{ if(o.isMesh){ const ms=Array.isArray(o.material)?o.material:[o.material]; ms.forEach(m=>{ ['map','emissiveMap'].forEach(k=>{ const t=m[k]; if(!t) return; const a=assoc.get(t); if(a && a.textures!==undefined){ const img=J.images[J.textures[a.textures].source]; if(img && /nomer/i.test(img.name||img.uri||'')) plateFound.push([o.name,k]); } }); }); } });
+} catch(e){ plateFound.push('err '+e.message); }
+window.__plate = plateFound;
+const car = gltf.scene; scene.add(car);
+if (q.get('plate')!=='0') {
+  const cv=document.createElement('canvas'); cv.width=1024; cv.height=256; const g=cv.getContext('2d');
+  g.fillStyle='#0b0d12'; g.fillRect(0,0,1024,256);
+  g.strokeStyle='#e10600'; g.lineWidth=8; g.strokeRect(10,10,1004,236);
+  g.fillStyle='#edeff2'; g.font='900 128px Impact, "Arial Narrow", sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('SUNNY 07',512,132);
+  const flip = q.get('flip')==='1';
+  const out=document.createElement('canvas'); out.width=1024; out.height=256; const o2=out.getContext('2d');
+  if(flip){ o2.translate(0,256); o2.scale(1,-1); } o2.drawImage(cv,0,0);
+  const tex=new THREE.CanvasTexture(out); tex.colorSpace=THREE.SRGBColorSpace; tex.flipY=false; tex.anisotropy=8;
+  car.traverse(o=>{ if(o.isMesh){ const ms=Array.isArray(o.material)?o.material:[o.material]; ms.forEach(m=>{ const t=m.map; if(!t) return; const a=gltf.parser.associations.get(t); if(a&&a.textures!==undefined){ const img=gltf.parser.json.images[gltf.parser.json.textures[a.textures].source]; if(img && /nomer/i.test(img.name||img.uri||'')){ m.map=tex; m.needsUpdate=true; window.__swapped=(window.__swapped||0)+1; } } }); } });
+}
+car.traverse(o=>{ if(o.isMesh && o.material && o.material.name==='Paint_Color'){
+  o.material = new THREE.MeshPhysicalMaterial({ color: new THREE.Color(q.get('paint')||'#0a0c10'), metalness: +q.get('pm')||0.7, roughness: +q.get('pr')||0.16, clearcoat:1, clearcoatRoughness:0.04, envMapIntensity: 1.6 });
+}});
+const box = new THREE.Box3().setFromObject(car); const size = box.getSize(new THREE.Vector3()); const ctr = box.getCenter(new THREE.Vector3());
+car.position.sub(ctr); car.position.y += size.y/2 * 0; 
+const mats=[]; car.traverse(o=>{ if(o.isMesh){ const m=o.material; mats.push({mesh:o.name, mat:m.name, col:m.color?m.color.getHexString():null, met:m.metalness, rough:m.roughness, map:!!m.map, tris:o.geometry.index?o.geometry.index.count/3:0}); } });
+window.__info = {size:[size.x,size.y,size.z], mats};
+const cam = new THREE.PerspectiveCamera(fov, W/H, 0.1, 500);
+const L = Math.max(size.x,size.z), dist = (L*0.53)/(Math.tan(THREE.MathUtils.degToRad(fov/2))*(W/H));
+cam.position.set(Math.sin(az)*Math.cos(el)*dist, Math.sin(el)*dist, Math.cos(az)*Math.cos(el)*dist);
+cam.lookAt(0,-size.y*0.02,0);
+r.render(scene, cam);
+window.__done = true;
+</script></body></html>

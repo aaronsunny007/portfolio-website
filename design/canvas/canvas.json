@@ -1,0 +1,23 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-11-02T12:00:00Z"},
+  "title": "DRIFT Portfolio",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1440, "h": 900, "title": "S0 Ignition · settled hero", "expand": "fill"},
+    "Mobile.dc.html": {"x": 1520, "y": 0, "w": 390, "h": 844, "title": "S0 Ignition · phone"},
+    "Intro.dc.html": {"x": 0, "y": 1020, "w": 1440, "h": 720, "title": "Opening sequence · 9.6 s storyboard", "expand": "fill"},
+    "PitCrew.dc.html": {"x": 0, "y": 1860, "w": 1440, "h": 1080, "title": "S1 Pit Crew · about", "expand": "fill"},
+    "Track.dc.html": {"x": 1520, "y": 1860, "w": 1440, "h": 960, "title": "S2 The Track · timeline", "expand": "fill"},
+    "Garage.dc.html": {"x": 0, "y": 3060, "w": 1440, "h": 1760, "title": "S3 The Garage · projects", "expand": "fill"},
+    "Finish.dc.html": {"x": 1520, "y": 3060, "w": 1440, "h": 760, "title": "S4 Finish Line · contact", "expand": "fill"}
+  },
+  "order": ["Main.dc.html", "Mobile.dc.html", "Intro.dc.html", "PitCrew.dc.html", "Track.dc.html", "Garage.dc.html", "Finish.dc.html"],
+  "notes": {
+    "drifttitle": {"x": 0, "y": -300, "text": "DRIFT · Sunny Aaron portfolio", "kind": "title1", "maxW": 2960}
+  },
+  "designSystems": [
+    {"title": "DRIFT", "namespace": "drift", "artifact": "https://claude.ai/artifact/CxCS2jgZ1FKQ8EzFNQzXZP", "version": "1793592966-b533", "copiedAt": "2026-11-02T12:00:00Z"}
+  ]
+}
