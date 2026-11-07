@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { clock, carState, carLocalToWorld } from './timeline';
+import { T, clock, carState, carLocalToWorld, smooth } from './timeline';
 
+// rear tyre contact patches in car space (read off the model: track 0.805, rear axle z = -1.34)
 const REAR = [
-  [-0.82, 0.2, -1.48],
-  [0.82, 0.2, -1.48],
+  [-0.805, 0.12, -1.34],
+  [0.805, 0.12, -1.34],
 ];
+const SMOKE_RATE = 55; // particles per second per rear tyre at full slide
 const SLIP_MIN = 0.25;
 
 /* ---------------- Tyre smoke: one Points draw call, CPU-updated pool ---------------- */
@@ -28,7 +30,7 @@ const smokeFrag = /* glsl */ `
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.0, d);
     a *= a * vAlpha;
-    vec3 grey = vec3(0.72, 0.75, 0.8);
+    vec3 grey = vec3(0.56, 0.62, 0.7); // cool, as if lit by the street
     vec3 red = vec3(1.0, 0.16, 0.08);
     gl_FragColor = vec4(mix(grey, red, vRed), a);
   }`;
@@ -63,6 +65,7 @@ export function TyreSmoke() {
   );
   const cursor = useRef(0);
   const seen = useRef(clock.resetId);
+  const owed = useRef(0); // fractional particles carried between frames
   const w = useMemo(() => new THREE.Vector3(), []);
 
   function spawn(x, y, z, big) {
@@ -75,10 +78,10 @@ export function TyreSmoke() {
     p.vy = 0.25 + Math.random() * 0.45;
     p.vz = (Math.random() - 0.5) * 0.8;
     p.life = 0;
-    p.max = big ? 1.8 + Math.random() * 1.4 : 3.5;
-    p.s0 = big ? 0.5 : 0.8;
-    p.red = Math.random() < 0.18 ? 1 : 0;
-    p.a = big ? 0.32 : 0.06;
+    p.max = big ? 1.4 + Math.random() * 1.2 : 3.2;
+    p.s0 = big ? 0.4 : 0.8;
+    p.red = Math.random() < 0.08 ? 1 : 0;
+    p.a = big ? 0.1 : 0.04;
   }
 
   useFrame((_, dt) => {
@@ -90,12 +93,16 @@ export function TyreSmoke() {
     mat.uniforms.uScale.value = size.height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
     const slipping = Math.abs(carState.slip) > SLIP_MIN && carState.speed > 1.5;
     if (slipping) {
-      for (const [lx, ly, lz] of REAR) {
-        carLocalToWorld(carState, lx, ly, lz, w);
-        for (let k = 0; k < 3; k++) spawn(w.x, w.y, w.z, true);
+      // restrained: a steady plume that thickens with slide angle, emitted by time rather than by frame
+      owed.current += dt * SMOKE_RATE * smooth(SLIP_MIN, 0.85, Math.abs(carState.slip));
+      for (; owed.current >= 1; owed.current -= 1) {
+        for (const [lx, ly, lz] of REAR) {
+          carLocalToWorld(carState, lx, ly, lz, w);
+          spawn(w.x, w.y, w.z, true);
+        }
       }
-    } else if (clock.t > 2 && Math.random() < 0.35) {
-      spawn(carState.x + (Math.random() - 0.5) * 7, 0.1, carState.z + (Math.random() - 0.5) * 4, false); // lingering haze
+    } else if (clock.t > T.driftStart + 1.4 && Math.random() < 0.3) {
+      spawn((Math.random() - 0.5) * 8, 0.1, (Math.random() - 0.5) * 3, false); // the haze the car leaves hanging over its line
     }
     const pos = geo.attributes.position.array;
     const sz = geo.attributes.aSize.array;
@@ -113,7 +120,7 @@ export function TyreSmoke() {
       pos[i * 3] = p.x;
       pos[i * 3 + 1] = p.y;
       pos[i * 3 + 2] = p.z;
-      sz[i] = p.s0 + 3.2 * Math.sqrt(k);
+      sz[i] = p.s0 + 2.1 * Math.sqrt(k);
       al[i] = k >= 1 ? 0 : p.a * (1 - k) * Math.min(1, p.life * 6);
       rd[i] = p.red;
     }

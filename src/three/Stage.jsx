@@ -4,12 +4,10 @@ import { Environment, Lightformer, MeshReflectorMaterial } from '@react-three/dr
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import Car from './Car';
-import Driver from './SunnyDriver';
-import Wordmark from './Wordmark';
 import { TyreSmoke, SkidMarks } from './DriftFx';
-import { T, clock } from './timeline';
+import { T, clock, carState } from './timeline';
 
-const BEATS = ['flare', 'driftStart', 'name', 'walkStart', 'ui', 'end'];
+const BEATS = ['driftStart', 'reveal', 'ui', 'end'];
 
 function quality() {
   const forced = new URLSearchParams(window.location.search).get('tier');
@@ -24,7 +22,7 @@ function ClockDriver({ onBeat }) {
   const last = useRef(-1);
   useFrame((_, dt) => {
     clock.running = true;
-    clock.t += FIXED ? 1 / 30 : Math.min(dt, 1 / 20);
+    if (!clock.hold) clock.t += FIXED ? 1 / 30 : Math.min(dt, 1 / 20);
     let idx = -1;
     BEATS.forEach((b, i) => {
       if (clock.t >= T[b]) idx = i;
@@ -38,31 +36,26 @@ function ClockDriver({ onBeat }) {
 }
 
 const QS = new URLSearchParams(window.location.search);
-const DEV_CAM = QS.get('cam');
 const FIXED = QS.has('fixed'); // dev: advance exactly 1/30 s per frame for frame-accurate captures
 
 function CameraRig() {
   const { camera, size, pointer } = useThree();
   const look = useMemo(() => new THREE.Vector3(), []);
   const par = useRef({ x: 0, y: 0 });
+  const follow = useRef(0);
   useFrame((_, dt) => {
-    if (DEV_CAM === 'driver') {
-      camera.fov = 30;
-      camera.updateProjectionMatrix();
-      camera.position.set(2.6, 1.35, 5.8);
-      camera.lookAt(1.5, 1.0, 2.0);
-      return;
-    }
     const portrait = size.width / size.height < 1;
-    const base = portrait ? [0.5, 2.6, 13.5] : [0.3, 1.5, 8.9];
-    const target = portrait ? [0.3, 1.9, 0] : [0.15, 0.95, 0];
+    const base = portrait ? [0.5, 2.2, 12.5] : [0.3, 1.5, 8.9];
+    const target = portrait ? [0.3, 1.25, 0] : [0.15, 0.95, 0];
     camera.fov = portrait ? 44 : 31;
     camera.updateProjectionMatrix();
     // ±1.5° of pointer parallax, damped
     par.current.x = THREE.MathUtils.damp(par.current.x, pointer.x, 3, dt);
     par.current.y = THREE.MathUtils.damp(par.current.y, pointer.y, 3, dt);
     camera.position.set(base[0] + par.current.x * 0.35, base[1] + par.current.y * 0.15, base[2]);
-    look.set(...target);
+    // pan a little with the car, like an operator tracking it across the frame
+    follow.current = THREE.MathUtils.damp(follow.current, THREE.MathUtils.clamp(carState.x, -8, 8) * (portrait ? 0.07 : 0.14), 4, dt);
+    look.set(target[0] + follow.current, target[1], target[2]);
     camera.lookAt(look);
   });
   return null;
@@ -149,8 +142,6 @@ export default function Stage({ active, onBeat }) {
       <Suspense fallback={null}>
         <ClockDriver onBeat={onBeat} />
         <Car />
-        <Driver />
-        <Wordmark />
         <SkidMarks />
         <TyreSmoke />
       </Suspense>

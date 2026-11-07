@@ -3,6 +3,7 @@ import Lenis from 'lenis';
 import Nav from './components/Nav';
 import Loader from './components/Loader';
 import HeroOverlay from './sections/HeroOverlay';
+import Portrait from './sections/Portrait';
 import PitCrew from './sections/PitCrew';
 import Track from './sections/Track';
 import Garage from './sections/Garage';
@@ -10,12 +11,15 @@ import Finish from './sections/Finish';
 import { clock, T } from './three/timeline';
 
 const Stage = lazy(() => import('./three/Stage'));
-const ORDER = ['flare', 'driftStart', 'name', 'walkStart', 'ui', 'end'];
+const ORDER = ['driftStart', 'reveal', 'ui', 'end'];
 
 export default function App({ reduceMotion }) {
   const [beat, setBeat] = useState(clock.t >= T.end ? 'end' : null);
   const [heroActive, setHeroActive] = useState(true);
+  const [skipped, setSkipped] = useState(false); // a skipped opening uncovers the portrait quickly
+  const [covered, setCovered] = useState(clock.t >= T.end); // the portrait fully hides the 3D stage, so stop rendering it
   const hero = useRef();
+  const timers = useRef([]);
   const reached = (b) => beat && ORDER.indexOf(beat) >= ORDER.indexOf(b);
 
   // Smooth scroll (off for reduced motion)
@@ -32,11 +36,28 @@ export default function App({ reduceMotion }) {
     return () => io.disconnect();
   }, []);
 
-  const onBeat = useCallback((b) => setBeat(b), []);
+  const onBeat = useCallback((b) => {
+    setBeat(b);
+    if (b === null) {
+      timers.current.forEach(clearTimeout);
+      timers.current = [];
+      setCovered(false);
+    } else if (b === 'reveal') {
+      timers.current.push(setTimeout(() => setCovered(true), T.revealLen * 1000 + 250));
+    } else if (b === 'end') {
+      timers.current.push(setTimeout(() => setCovered(true), 700)); // a skip lands here directly
+    }
+  }, []);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
   const skip = () => {
+    setSkipped(true);
     clock.t = T.end;
   };
   const replay = () => {
+    setSkipped(false);
+    setBeat(null);
+    setCovered(false);
     clock.t = 0;
     clock.resetId++;
   };
@@ -47,11 +68,15 @@ export default function App({ reduceMotion }) {
       <Nav visible={reached('ui')} />
       <main id="main">
         <section className="hero" id="ignition" ref={hero} aria-labelledby="hero-title">
-          <Suspense fallback={null}>
-            <Stage active={heroActive} onBeat={onBeat} />
-          </Suspense>
-          <Loader />
-          <HeroOverlay showUi={reached('ui')} ended={reached('end')} onSkip={skip} onReplay={replay} />
+          {/* Reduced motion: no drift, no dial, no 3D. The settled hero is on screen immediately. */}
+          {!reduceMotion && (
+            <Suspense fallback={null}>
+              <Stage active={heroActive && !covered} onBeat={onBeat} />
+            </Suspense>
+          )}
+          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} />
+          {!reduceMotion && <Loader />}
+          <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion} onSkip={skip} onReplay={replay} />
         </section>
         <PitCrew />
         <Track />

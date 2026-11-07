@@ -77,19 +77,65 @@ a { color: inherit; }
 /* ---------- hero ---------- */
 .hero { position: relative; height: 100svh; min-height: 560px; overflow: hidden; background: var(--asphalt-950); }
 .hero .stage { position: absolute !important; inset: 0; }
-.hero::after { /* film grain */
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: overlay;
+.hero::after { /* film grain, over the portrait too, so the photo and the render share one texture */
+  content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0.35; mix-blend-mode: overlay;
   background-image: repeating-radial-gradient(circle at 17% 32%, rgba(255,255,255,.04) 0 1px, transparent 1px 3px);
 }
+
+/* the settled hero: the portrait, uncovered left to right once the car has left the frame */
+.hero-portrait {
+  --wipe: 1.6s;
+  --asphalt: 7, 9, 13; /* var(--asphalt-950) as rgb, for the fades */
+  position: absolute; z-index: 2; right: 0; bottom: 0; height: 100%; aspect-ratio: 385 / 221; pointer-events: none; opacity: 0;
+  -webkit-mask-image: linear-gradient(100deg, #000 0 36%, transparent 66%); mask-image: linear-gradient(100deg, #000 0 36%, transparent 66%);
+  -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+  -webkit-mask-position: 100% 0; mask-position: 100% 0; /* fully covered; the transition slides the soft edge across */
+}
+.hero-portrait.is-revealed {
+  opacity: 1; -webkit-mask-position: 0 0; mask-position: 0 0;
+  transition: -webkit-mask-position var(--wipe) cubic-bezier(0.45, 0.05, 0.25, 1), mask-position var(--wipe) cubic-bezier(0.45, 0.05, 0.25, 1), opacity 200ms linear;
+}
+.hero-portrait.is-fast { --wipe: 0.45s; }
+.portrait-move { position: absolute; inset: 0; transform-origin: 70% 40%; transform: translate3d(calc(var(--px, 0) * -12px), calc(var(--py, 0) * -7px), 0) scale(1.03); transition: transform 900ms var(--ease-brake); }
+.hero-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 70% 30%; opacity: 0; filter: saturate(0.94) contrast(1.05) brightness(0.97); }
+.hero-portrait.is-loaded img { opacity: 1; transition: opacity 500ms linear; }
+.hero-portrait.is-revealed img { animation: portrait-settle 2.6s var(--ease-brake) both; } /* a slow push-in that comes to rest */
+@keyframes portrait-settle { from { transform: scale(1.06); } to { transform: scale(1); } }
+/* the page's own red rim light, kissing the lower left, so the photo's neon and the DRIFT palette meet */
+.portrait-light { position: absolute; inset: 0; background: radial-gradient(48% 60% at 6% 100%, rgba(225, 6, 0, 0.2), transparent 70%); mix-blend-mode: screen; }
+/* dissolve into the asphalt on every side; the left side is also a scrim for the copy */
+.portrait-fade {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0) 24%),
+    linear-gradient(to top, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0) 26%),
+    linear-gradient(to right, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0.82) 6%, rgba(var(--asphalt), 0.5) 30%, rgba(var(--asphalt), 0) 52%),
+    linear-gradient(to left, rgba(var(--asphalt), 0.7) 0, rgba(var(--asphalt), 0) 12%),
+    radial-gradient(120% 95% at 70% 38%, transparent 55%, rgba(var(--asphalt), 0.55) 100%);
+}
+/* a band of smoke rides the soft edge of the reveal */
+.hero-mist {
+  --wipe: 1.6s;
+  position: absolute; z-index: 3; left: -30%; top: 28%; width: 60%; height: 62%; pointer-events: none; opacity: 0; mix-blend-mode: screen; filter: blur(26px);
+  background: radial-gradient(closest-side, rgba(176, 196, 210, 0.34), rgba(176, 196, 210, 0.12) 55%, transparent);
+}
+.hero-mist.is-fast { --wipe: 0.45s; }
+.hero-mist.is-revealed { animation: mist var(--wipe) cubic-bezier(0.45, 0.05, 0.25, 1) both; }
+@keyframes mist { 0% { transform: translateX(0); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateX(210%); opacity: 0; } }
+
 .hero-ui { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
 .hero-ui a, .hero-ui button { pointer-events: auto; }
-.hero-copy { position: absolute; left: clamp(16px, 5vw, 64px); bottom: clamp(56px, 9vh, 88px); display: grid; gap: var(--space-4); max-width: 520px; }
+.hero-copy { position: absolute; left: clamp(16px, 5vw, 64px); bottom: clamp(56px, 9vh, 88px); display: grid; justify-items: start; gap: var(--space-4); max-width: 520px; }
+.hero-name { margin: 0; font: 900 clamp(56px, 8.4vw, 148px)/0.86 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; text-shadow: 0 8px 44px rgba(0, 0, 0, 0.7); white-space: nowrap; }
+.hero-name-last { color: var(--drift-red); }
 .hero-tagline { margin: 0; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.5; color: var(--chalk-100); text-shadow: 0 2px 18px rgba(0,0,0,.9); }
 .hero-copy > * { opacity: 0; transform: translateY(14px); }
 .hero-ui.is-on .hero-copy > * { opacity: 1; transform: none; transition: transform 600ms var(--ease-brake), opacity 400ms linear; }
-.hero-ui.is-on .hero-copy > :nth-child(2) { transition-delay: 80ms; }
-.hero-ui.is-on .hero-copy > :nth-child(3) { transition-delay: 160ms; }
-.hero-chips { position: absolute; right: clamp(16px, 5vw, 64px); bottom: clamp(96px, 14vh, 140px); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); max-width: 420px; margin: 0; padding: 0; list-style: none; }
+.hero-ui.is-on .hero-copy > :nth-child(2) { transition-delay: 60ms; }
+.hero-ui.is-on .hero-copy > :nth-child(3) { transition-delay: 120ms; }
+.hero-ui.is-on .hero-copy > :nth-child(4) { transition-delay: 180ms; }
+.hero-ui.is-on .hero-copy > :nth-child(5) { transition-delay: 240ms; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
 .hero-chips .chip { opacity: 0; transform: translateY(18px) rotate(var(--r)); }
 .hero-ui.is-on .hero-chips .chip { opacity: 1; transform: none; transition: transform 700ms var(--ease-settle) var(--d), opacity 200ms linear var(--d); }
 .hero-skip { position: absolute; right: clamp(8px, 4vw, 52px); bottom: 20px; }
@@ -101,10 +147,25 @@ a { color: inherit; }
 .hero-ui.is-on .scroll-cue { opacity: 1; }
 .scroll-cue span { display: inline-block; animation: cue 1.6s var(--ease-travel) infinite; }
 @keyframes cue { 50% { transform: translateY(4px); } }
-@media (max-width: 720px) {
-  .hero-chips { left: 16px; right: 16px; top: 72px; bottom: auto; justify-content: flex-start; }
+
+/* phones, narrow windows and portrait tablets: the portrait becomes a deliberate crop (the person and the nose of the car), all the copy sits below his face */
+@media (max-width: 720px), (max-aspect-ratio: 1/1) {
+  .hero-portrait { top: 44px; bottom: auto; right: 0; left: 0; width: 100%; height: 62svh; min-height: 340px; aspect-ratio: auto; }
+  .hero-portrait img { object-position: 71% 30%; }
+  .portrait-move { transform-origin: 71% 30%; }
+  .portrait-fade {
+    background:
+      linear-gradient(to bottom, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0) 14%),
+      linear-gradient(to top, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0.85) 14%, rgba(var(--asphalt), 0) 52%),
+      radial-gradient(120% 90% at 68% 40%, transparent 55%, rgba(var(--asphalt), 0.5) 100%);
+  }
+  .hero-mist { top: 14%; height: 50%; }
+  .hero-copy { right: 16px; bottom: 64px; max-width: none; gap: var(--space-3); }
+  .hero-name { font-size: clamp(52px, 17vw, 84px); }
+  .hero-tagline { font-size: 16px; }
   .scroll-cue { display: none; }
 }
+@media (max-width: 720px) and (max-height: 700px) { .hero-chips { display: none; } }
 
 .loader {
   position: absolute; inset: 0; z-index: 8; display: grid; place-content: center; justify-items: center; gap: var(--space-2);

@@ -2,23 +2,25 @@ import * as THREE from 'three';
 
 // Every beat of the opening, in seconds from the moment the 3D scene is ready.
 export const T = {
-  flare: 0.3, // headlight flare off the left edge
-  driftStart: 0.5, // car enters from outside the left edge
-  driftLen: 3.2, // ...sideways across the frame, to a stop in the middle
-  name: 2.5, // 2 s into the drift, the name is dragged in
-  walkStart: 4.0, // driver walks in from the right
+  driftStart: 0.5, // the car enters from beyond the left edge
+  driftLen: 2.8, // ...one sideways pass across the frame, and out through the right
+  reveal: 2.5, // the portrait is uncovered behind the car's tail, left to right
+  revealLen: 1.5,
+  ui: 4.0, // nav, copy, chips, CTAs
+  end: 4.8,
+  // Legacy: only read by the unused avatar / wordmark modules (Driver, RealDriver, driverPath, Wordmark).
+  name: 2.5,
+  walkStart: 4.0,
   walkLen: 3.4,
-  turnLen: 1.0, // turns to camera and leans back on the bonnet
-  ui: 8.0, // nav, chips, CTAs
-  end: 9.6,
+  turnLen: 1.0,
 };
 
 // Shared mutable state read inside useFrame (never React state in the frame loop).
-export const clock = { t: 0, running: false, resetId: 0 };
+export const clock = { t: 0, running: false, resetId: 0, hold: false }; // hold: dev hook, freezes the opening (window.__clock.hold = true)
 if (typeof window !== 'undefined') window.__clock = clock; // dev hook for screenshots
-export const carState = { x: -20, z: 0, yaw: Math.PI / 2, slip: 0, speed: 0 };
+export const carState = { x: -30, z: 0, yaw: Math.PI / 2, slip: 0, speed: 0 };
 
-// Where the car comes to rest.
+// Legacy: where the old opening parked the car (read by driverPath / Driver).
 export const CAR_FINAL = { x: 0.1, z: -0.3, yaw: 0.72 };
 
 export const clamp01 = (v) => Math.min(1, Math.max(0, v));
