@@ -10,7 +10,7 @@ export default function Track() {
       <ol className="track">
         {milestones.map((m, i) => (
           <li key={m.title} className="milestone" style={{ '--i': i }}>
-            <div className="milestone-year">{m.year ?? '—'}</div>
+            <div className={`milestone-year ${m.year ? '' : 'is-tag'}`}>{m.year ?? m.tag}</div>
             <div className="milestone-corner">CORNER {String(i + 1).padStart(2, '0')}</div>
             <h3>{m.title}</h3>
             <p>{m.text}</p>

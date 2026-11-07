@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { profile } from '../content/profile';
 
-// The settled hero. public/images/portrait.webp is the photo only (no border, no screenshot bars).
-// To use a higher-resolution original, overwrite that file; keep the same framing (about 16:9, person right of centre).
+// The settled hero. public/images/portrait.webp is the full-resolution photo (1362×762, no border, no screenshot bars).
+// To swap in a different one, overwrite that file; keep about 16:9 framing with the person right of centre.
 const SRC = `${import.meta.env.BASE_URL}images/portrait.webp`;
 
 /**
@@ -33,9 +33,9 @@ export default function Portrait({ revealed, fast, parallax }) {
         <div className="portrait-move" ref={move}>
           <img
             src={SRC}
-            alt={`${profile.first} ${profile.last} in sunglasses and a leather jacket, leaning on a black BMW coupe on a wet, neon-lit street at night, tyre smoke drifting behind`}
-            width="1540"
-            height="884"
+            alt={`${profile.legal.given} ${profile.legal.family} (${profile.first} ${profile.last}) in sunglasses and a leather jacket, leaning on a black BMW coupe on a wet, neon-lit street at night, tyre smoke drifting behind`}
+            width="1362"
+            height="762"
             decoding="async"
             fetchPriority="high"
             onLoad={() => setLoaded(true)}

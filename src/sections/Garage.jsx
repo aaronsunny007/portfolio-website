@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { projects } from '../content/projects';
 import SectionHeader from '../components/SectionHeader';
 import useReveal from '../components/useReveal';
+import Arrow from '../components/Arrow';
 
 const BADGE = { PRO: 'badge-pro', COMPETITION: 'badge-competition', SPORT: 'badge-sport', STREET: 'badge-street' };
 
@@ -39,29 +40,36 @@ export default function Garage() {
               <span className={`badge ${BADGE[p.cls]} bay-badge`}>{p.cls}</span>
               <span className="bay-num">BAY {String(i + 1).padStart(2, '0')}</span>
               <Art kind={p.art} stat={p.stat} />
+              <span className="bay-note">Schematic, not a screenshot</span>
             </div>
             <div className="bay-body">
+              <span className="bay-area">{p.area}</span>
               <h3 className="bay-title">{p.title}</h3>
               <p className="bay-pitch">{p.pitch}</p>
               <div className="bay-foot">
-                <span>{p.area}</span>
-                <b>Open the code →</b>
+                <span className="bay-repo">GitHub · {p.repo.split('/').pop()}</span>
+                <span className="bay-action">
+                  Open the code
+                  <Arrow />
+                </span>
               </div>
             </div>
           </a>
         ))}
       </div>
       <div className="fleet">
-        <button className="btn btn-secondary" type="button" aria-expanded={all} onClick={() => setAll((v) => !v)}>
-          {all ? 'Hide the full garage' : `Full garage (${rest.length} more)`}
+        <button className={`garage-toggle ${all ? 'is-open' : ''}`} type="button" aria-expanded={all} onClick={() => setAll((v) => !v)}>
+          <span className="garage-toggle-label">{all ? 'Hide the full garage' : `Full garage (${rest.length} more)`}</span>
+          <Arrow kind="down" />
         </button>
         {all && (
           <ul className="fleet-list">
             {rest.map((p) => (
               <li key={p.slug}>
                 <span className={`badge ${BADGE[p.cls]}`}>{p.cls}</span>
-                <a href={p.repo} target="_blank" rel="noreferrer">
+                <a className="fleet-link" href={p.repo} target="_blank" rel="noreferrer">
                   {p.title}
+                  <Arrow />
                 </a>
                 <span className="fleet-area">{p.area}</span>
                 <p>{p.pitch}</p>

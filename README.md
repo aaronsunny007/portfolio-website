@@ -29,7 +29,7 @@ npm run dev
 
 ## The portrait
 
-`public/images/portrait.webp` is cut from a screenshot (the photo itself is only about 385×221 px), so it is soft when shown full-bleed. **Replace it with the original photo** for a sharp hero: keep roughly the same framing (about 16:9, the person right of centre). If the new framing differs, adjust `object-position` on `.hero-portrait img` in `src/index.css` (one value for desktop, one in the `max-width: 720px` block for phones).
+`public/images/portrait.webp` is the full-resolution photo (1362×762) shown as shot: no blur filter and no dimming, only a long eased scrim on the left so the copy stays readable and there is no seam between text and picture. To swap it, keep roughly the same framing (about 16:9, the person right of centre) and update the `aspect-ratio` on `.hero-portrait` and the `width`/`height` in `Portrait.jsx`. If the framing differs, adjust `object-position` on `.hero-portrait img` in `src/index.css` (one value for desktop, one in the `max-width: 720px` block for phones).
 
 ## Dev hooks
 

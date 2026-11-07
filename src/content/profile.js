@@ -3,7 +3,7 @@ export const profile = {
   first: 'Sunny',
   last: 'Aaron',
   // Legal name, shown only as the home-page headline. Everywhere else the site says Sunny / Sunny Aaron.
-  legal: { given: 'Aaron Prakash', family: 'Gandhi' },
+  legal: { given: 'Aaron Prakash', family: 'Gandi' },
   role: 'AI Engineer',
   tagline: 'Controlled chaos. AI systems that stay in line when things go sideways.',
   chips: ['AI Engineer', 'AI Security', 'MLOps'],
@@ -18,11 +18,11 @@ export const profile = {
     ['Class', 'AI Engineer · AI Security · MLOps'],
     ['Base', 'Belfast, NI'],
     ['Training', 'MSc Artificial Intelligence, Ulster University'],
-    ['Background', 'Computer Science and Cybersecurity'],
+    ['Background', 'BTech, Computer Science and Cybersecurity'],
     ['Fuel', 'Football and biriyani'],
   ],
   bio: [
-    "I'm an AI postgraduate at Ulster University with a foundation in Computer Science and Cybersecurity. I build real-world things with machine learning, data and modern software.",
+    "I'm an AI postgraduate at Ulster University with a BTech foundation in Computer Science and Cybersecurity. I build real-world things with machine learning, data and modern software.",
     'My work spans intelligent agents, ML systems, AI infrastructure and security. I like combining LLMs, retrieval, tools and proper engineering pipelines into AI products that people can actually use.',
     "Outside of tech you'll probably find me watching football or hunting down the best biriyani in town.",
   ],
@@ -35,13 +35,14 @@ export const toolkit = [
   { group: 'Telemetry', tools: [['MLflow', 'CI/CD MLOps'], ['Unity Catalog', 'PulseCity'], ['ROS / Gazebo', 'Warehouse robot'], ['Evaluation', 'Ledger, NRF']] },
 ];
 
-// TODO(Sunny): fill in the years marked null.
+// TODO(Sunny): the two entries with year: null have no confirmed dates anywhere in the project, so they show a status tag instead.
+// Add the real years (and whether the MSc is complete) when you have them; do not guess.
 export const milestones = [
-  { year: null, title: 'BSc Computer Science + Cybersecurity', text: 'The foundation: software, networks and security.' },
+  { year: null, tag: 'Foundation', title: 'BTech Computer Science + Cybersecurity', text: 'The foundation: software, networks and security.' },
   { year: 2024, title: 'Security internship', text: 'Recon and scanning work, later rebuilt as web-security-scanner.' },
-  { year: null, title: 'MSc Artificial Intelligence, Ulster', text: 'Robotics, ML and AI ethics coursework, plus the warehouse robot group project.' },
+  { year: null, tag: 'Postgraduate', title: 'MSc Artificial Intelligence, Ulster', text: 'Robotics, ML and AI ethics coursework, plus the warehouse robot group project.' },
   { year: 2026, title: 'Financial-NRF', text: "Dissertation and paper draft: do LLM reliability scores notice when the source is wrong? Mostly no." },
   { year: 2026, title: 'Tom & Ollie relaunch', text: 'First real client: a storefront for a Belfast cheesemonger.' },
   { year: 2026, title: 'Warden and AEGIS', text: 'AI security agents that only ship a defence after it passes validation.' },
-  { year: 'Next', title: 'The next corner', text: 'AI engineering, AI security or MLOps. Let’s talk.' },
+  { year: null, tag: 'Next', title: 'The next corner', text: 'AI engineering, AI security or MLOps. Let’s talk.' },
 ];

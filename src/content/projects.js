@@ -23,3 +23,11 @@ export const projects = [
   { slug: 'password-manager', title: 'Secure Password Manager', cls: 'STREET', area: 'Security', pitch: 'Flask password manager with encryption and 2FA.', repo: gh('secure-password-manager') },
   { slug: 'rl-gridworld', title: 'RL GridWorld', cls: 'STREET', area: 'Reinforcement learning', pitch: 'RL agents learning a GridWorld.', repo: gh('rl-gridworld') },
 ];
+
+// Short names used in the toolkit's "Used in" lines -> project slug, so each skill points at real code.
+const EVIDENCE = {
+  Warden: 'warden', Ledger: 'ledger', NRF: 'financial-nrf', AEGIS: 'aegis', 'llm-eval-redteam': 'llm-eval-redteam', PulseCity: 'pulsecity',
+  'Tom & Ollie': 'tom-and-ollie', 'Fair-FL': 'fair-fl', 'CI/CD MLOps': 'cicd-mlops', 'GitHub agent': 'github-ai-agent', 'Warehouse robot': 'warehouse-robot',
+  'Loan default': 'loan-default', scanner: 'web-security-scanner',
+};
+export const evidenceRepo = (alias) => projects.find((p) => p.slug === EVIDENCE[alias])?.repo;

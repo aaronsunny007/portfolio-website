@@ -1,4 +1,6 @@
 import { profile, toolkit } from '../content/profile';
+import { evidenceRepo } from '../content/projects';
+import Arrow from '../components/Arrow';
 import SectionHeader from '../components/SectionHeader';
 import useReveal from '../components/useReveal';
 
@@ -38,12 +40,28 @@ export default function PitCrew() {
       <div className="toolkit">
         {toolkit.map((g, gi) => (
           <div key={g.group} className="toolgroup">
-            <div className="toolgroup-label">{g.group}</div>
+            <div className="toolgroup-label">
+              <span>{g.group}</span>
+              <span className="toolgroup-count">{String(g.tools.length).padStart(2, '0')}</span>
+            </div>
             <ul>
               {g.tools.map(([name, used], i) => (
-                <li key={name} className="tool" tabIndex={0} style={{ '--r': `${((gi * 4 + i) % 5) - 2}deg` }}>
+                <li key={name} className="tool" style={{ '--r': `${((gi * 4 + i) % 5) - 2}deg` }}>
                   {name}
-                  <small>Used in: {used}</small>
+                  <small className="tool-used">
+                    <span>Used in:</span>
+                    {used.split(', ').map((alias) => {
+                      const repo = evidenceRepo(alias);
+                      return repo ? (
+                        <a key={alias} className="evidence" href={repo} target="_blank" rel="noreferrer">
+                          {alias}
+                          <Arrow />
+                        </a>
+                      ) : (
+                        <span key={alias}>{alias}</span>
+                      );
+                    })}
+                  </small>
                 </li>
               ))}
             </ul>
