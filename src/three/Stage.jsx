@@ -5,7 +5,7 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import Car from './Car';
 import { TyreSmoke, SkidMarks } from './DriftFx';
-import { T, clock, carState } from './timeline';
+import { FIXED, T, clock, carState } from './timeline';
 
 const BEATS = ['driftStart', 'reveal', 'ui', 'end'];
 
@@ -22,7 +22,10 @@ function ClockDriver({ onBeat }) {
   const last = useRef(-1);
   useFrame((_, dt) => {
     clock.running = true;
-    if (!clock.hold) clock.t += FIXED ? 1 / 30 : Math.min(dt, 1 / 20);
+    if (!clock.hold || clock.step > 0) {
+      clock.step = Math.max(0, clock.step - 1);
+      clock.t += FIXED ? 1 / 30 : Math.min(dt, 1 / 20);
+    }
     let idx = -1;
     BEATS.forEach((b, i) => {
       if (clock.t >= T[b]) idx = i;
@@ -35,8 +38,6 @@ function ClockDriver({ onBeat }) {
   return null;
 }
 
-const QS = new URLSearchParams(window.location.search);
-const FIXED = QS.has('fixed'); // dev: advance exactly 1/30 s per frame for frame-accurate captures
 
 function CameraRig() {
   const { camera, size, pointer } = useThree();

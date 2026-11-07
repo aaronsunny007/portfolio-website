@@ -16,8 +16,9 @@ export const T = {
 };
 
 // Shared mutable state read inside useFrame (never React state in the frame loop).
-export const clock = { t: 0, running: false, resetId: 0, hold: false }; // hold: dev hook, freezes the opening (window.__clock.hold = true)
+export const clock = { t: 0, running: false, resetId: 0, hold: false, step: 0 }; // dev hooks: hold freezes the opening (window.__clock.hold = true); step = n then advances n frames while held
 if (typeof window !== 'undefined') window.__clock = clock; // dev hook for screenshots
+export const FIXED = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('fixed'); // dev: advance exactly 1/30 s per frame for frame-accurate captures
 export const carState = { x: -30, z: 0, yaw: Math.PI / 2, slip: 0, speed: 0 };
 
 // Legacy: where the old opening parked the car (read by driverPath / Driver).

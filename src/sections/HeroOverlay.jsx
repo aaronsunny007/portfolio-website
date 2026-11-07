@@ -6,9 +6,12 @@ export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay
       <div className="hero-copy">
         <span className="eyebrow">S0 / Ignition</span>
         <h1 id="hero-title" className="hero-name">
-          <span>{profile.first}</span> <span className="hero-name-last">{profile.last}</span>
+          <span>{profile.legal.given}</span> <span className="hero-name-last">{profile.legal.family}</span>
           <span className="sr-only">: {profile.role}</span>
         </h1>
+        <p className="hero-alias">
+          Known as <b>{profile.first} {profile.last}</b>
+        </p>
         <p className="hero-tagline">{profile.tagline}</p>
         <div className="row">
           <a className="btn btn-primary" href="#garage">Enter the Garage</a>

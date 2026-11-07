@@ -2,6 +2,8 @@
 export const profile = {
   first: 'Sunny',
   last: 'Aaron',
+  // Legal name, shown only as the home-page headline. Everywhere else the site says Sunny / Sunny Aaron.
+  legal: { given: 'Aaron Prakash', family: 'Gandhi' },
   role: 'AI Engineer',
   tagline: 'Controlled chaos. AI systems that stay in line when things go sideways.',
   chips: ['AI Engineer', 'AI Security', 'MLOps'],

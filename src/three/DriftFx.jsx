@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { T, clock, carState, carLocalToWorld, smooth } from './timeline';
+import { FIXED, T, clock, carState, carLocalToWorld, smooth } from './timeline';
 
 // rear tyre contact patches in car space (read off the model: track 0.805, rear axle z = -1.34)
 const REAR = [
@@ -65,6 +65,7 @@ export function TyreSmoke() {
   );
   const cursor = useRef(0);
   const seen = useRef(clock.resetId);
+  const lastT = useRef(clock.t);
   const owed = useRef(0); // fractional particles carried between frames
   const w = useMemo(() => new THREE.Vector3(), []);
 
@@ -85,7 +86,11 @@ export function TyreSmoke() {
   }
 
   useFrame((_, dt) => {
-    dt = Math.min(dt, 0.05);
+    // dev capture mode: smoke only moves on frames where the opening clock moved
+    if (FIXED) {
+      dt = clock.t !== lastT.current ? 1 / 30 : 0;
+      lastT.current = clock.t;
+    } else dt = Math.min(dt, 0.05);
     if (seen.current !== clock.resetId) {
       seen.current = clock.resetId;
       pool.forEach((p) => (p.life = p.max = 1));
