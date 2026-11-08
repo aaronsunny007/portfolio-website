@@ -74,7 +74,7 @@ export default function App({ reduceMotion }) {
               <Stage active={heroActive && !covered} onBeat={onBeat} />
             </Suspense>
           )}
-          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} />
+          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} settled={reached('end') && !reduceMotion} paused={!heroActive} />
           {!reduceMotion && <Loader />}
           <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion} onSkip={skip} onReplay={replay} />
         </section>

@@ -9,7 +9,7 @@ const SRC = `${import.meta.env.BASE_URL}images/portrait.webp`;
   Sits above the 3D stage and is uncovered left to right once the car has left the frame.
   The picture dissolves into the page's asphalt on every side so it reads as the scene the car just drove out of, not a card.
 */
-export default function Portrait({ revealed, fast, parallax }) {
+export default function Portrait({ revealed, fast, parallax, settled, paused }) {
   const [loaded, setLoaded] = useState(false);
   const move = useRef();
 
@@ -41,6 +41,13 @@ export default function Portrait({ revealed, fast, parallax }) {
             onLoad={() => setLoaded(true)}
             ref={(img) => img?.complete && img.naturalWidth && setLoaded(true)}
           />
+          {/* Ambient loop: soft-masked copies of this same photo drift over its own smoke and wet road. Starts once the opening has settled; none of it exists in reduced motion. */}
+          <div className={`portrait-ambient ${settled ? 'is-on' : ''} ${paused ? 'is-paused' : ''}`} style={{ '--src': `url(${SRC})` }} aria-hidden="true">
+            <i className="amb amb-smoke-l"><b /></i>
+            <i className="amb amb-smoke-r"><b /></i>
+            <i className="amb amb-wet"><b /></i>
+            <i className="amb-glow" />
+          </div>
         </div>
         <i className="portrait-light" aria-hidden="true" />
         <i className="portrait-fade" aria-hidden="true" />

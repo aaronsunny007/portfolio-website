@@ -12,7 +12,9 @@ opening-sequence storyboard, Pit Crew, Track, Garage, Finish).
   `public/models/MDL14063_reversed.glb` to the car stills embedded in the boards
   (black paint, number plate texture swapped to "SUNNY 07").
 
-Not included: personal photos and the photo cut-out versions of the scenes.
+The Main, Mobile and Intro boards were rebuilt on 2026-11-08 from the live site: the photo hero
+(`public/images/portrait.webp`, embedded in those three files), the legal-name headline, one drift
+pass and the 4.8 s opening. The last card of Intro marks the zones the ambient background loop moves.
 
 Licence note: the car model carries real BMW badges and came with a third-party plate
 ("ItsDiyor"). Check its licence before publishing the site.

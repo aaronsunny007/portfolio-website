@@ -84,16 +84,16 @@ a { color: inherit; }
 
 /* the settled hero: the portrait, uncovered left to right once the car has left the frame */
 .hero-portrait {
-  --wipe: 1.6s;
+  --wipe: 2.45s;
   --asphalt: 7, 9, 13; /* var(--asphalt-950) as rgb, for the fades */
   position: absolute; z-index: 2; right: 0; bottom: 0; height: 100%; aspect-ratio: 1362 / 762; pointer-events: none; opacity: 0;
-  -webkit-mask-image: linear-gradient(100deg, #000 0 36%, transparent 66%); mask-image: linear-gradient(100deg, #000 0 36%, transparent 66%);
+  -webkit-mask-image: linear-gradient(100deg, #000 0 40%, transparent 52%); mask-image: linear-gradient(100deg, #000 0 40%, transparent 52%);
   -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
   -webkit-mask-position: 100% 0; mask-position: 100% 0; /* fully covered; the transition slides the soft edge across */
 }
 .hero-portrait.is-revealed {
   opacity: 1; -webkit-mask-position: 0 0; mask-position: 0 0;
-  transition: -webkit-mask-position var(--wipe) cubic-bezier(0.45, 0.05, 0.25, 1), mask-position var(--wipe) cubic-bezier(0.45, 0.05, 0.25, 1), opacity 200ms linear;
+  transition: -webkit-mask-position var(--wipe) linear, mask-position var(--wipe) linear, opacity 200ms linear;
 }
 .hero-portrait.is-fast { --wipe: 0.45s; }
 .portrait-move { position: absolute; inset: 0; transform-origin: 70% 40%; transform: translate3d(calc(var(--px, 0) * -12px), calc(var(--py, 0) * -7px), 0) scale(1.03); transition: transform 900ms var(--ease-brake); }
@@ -113,15 +113,37 @@ a { color: inherit; }
     linear-gradient(to right, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0.9) 8%, rgba(var(--asphalt), 0.72) 18%, rgba(var(--asphalt), 0.46) 30%, rgba(var(--asphalt), 0.22) 42%, rgba(var(--asphalt), 0.07) 52%, rgba(var(--asphalt), 0) 60%),
     linear-gradient(to left, rgba(var(--asphalt), 0.5) 0, rgba(var(--asphalt), 0) 8%);
 }
-/* a band of smoke rides the soft edge of the reveal */
+/* ambient loop on the settled hero: masked copies of the photo itself (its own smoke, its own wet road), moved with transforms and opacity only */
+.portrait-ambient { position: absolute; inset: 0; opacity: 0; transition: opacity 2.4s ease 0.6s; }
+.portrait-ambient.is-on { opacity: 1; }
+.portrait-ambient.is-paused * { animation-play-state: paused !important; }
+.amb { position: absolute; inset: 0; filter: contrast(1.03); }
+.amb b { position: absolute; inset: 0; background: var(--src) 70% 30% / cover no-repeat; will-change: transform, opacity; opacity: 0; }
+.amb-smoke-l { -webkit-mask-image: radial-gradient(ellipse 12% 14% at 7% 38%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 12% 14% at 7% 38%, #000 30%, transparent 100%); }
+.amb-smoke-r { -webkit-mask-image: radial-gradient(ellipse 17% 15% at 91% 38%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 17% 15% at 91% 38%, #000 30%, transparent 100%); }
+.amb-wet {
+  -webkit-mask-image: radial-gradient(ellipse 16% 16% at 8% 87%, #000 30%, transparent 100%), radial-gradient(ellipse 13% 12% at 91% 58%, #000 30%, transparent 100%), radial-gradient(ellipse 30% 8% at 50% 95%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 16% 16% at 8% 87%, #000 30%, transparent 100%), radial-gradient(ellipse 13% 12% at 91% 58%, #000 30%, transparent 100%), radial-gradient(ellipse 30% 8% at 50% 95%, #000 30%, transparent 100%);
+}
+.amb-smoke-l b { transform-origin: 7% 38%; animation: amb-drift-l 18s linear infinite; }
+.amb-smoke-r b { transform-origin: 90% 38%; animation: amb-drift-r 20s linear -7s infinite; }
+.amb-wet b { animation: amb-shimmer 9s ease-in-out infinite; }
+@keyframes amb-drift-l { 0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0; } 18% { opacity: 0.8; } 100% { transform: translate3d(calc(var(--k, 1) * -8%), calc(var(--k, 1) * -2%), 0) scale(1.12); opacity: 0; } }
+@keyframes amb-drift-r { 0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0; } 18% { opacity: 0.8; } 100% { transform: translate3d(calc(var(--k, 1) * 8%), calc(var(--k, 1) * -2%), 0) scale(1.12); opacity: 0; } }
+@keyframes amb-shimmer { 0%, 100% { transform: translate3d(calc(var(--k, 1) * -2.4%), 0, 0); opacity: 0.3; } 50% { transform: translate3d(calc(var(--k, 1) * 2.4%), 0, 0); opacity: 0.75; } }
+/* a faint pulse on the left tail-light, where the photo already glows pink */
+.amb-glow { position: absolute; left: 17%; top: 45.3%; width: 11%; height: 9%; transform: translate(-50%, -50%); mix-blend-mode: screen; opacity: 0; background: radial-gradient(closest-side, rgba(225, 6, 0, 0.5), transparent); animation: amb-glow 5s ease-in-out infinite; }
+@keyframes amb-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+/* a band of smoke rides the soft edge of the reveal; it travels the same -0.62W..1.38W as the mask edge, linear, so it stays glued to the wipe */
 .hero-mist {
-  --wipe: 1.6s;
-  position: absolute; z-index: 3; left: -30%; top: 28%; width: 60%; height: 62%; pointer-events: none; opacity: 0; mix-blend-mode: screen; filter: blur(26px);
+  --wipe: 2.45s;
+  position: absolute; z-index: 3; left: -92%; top: 28%; width: 60%; height: 62%; pointer-events: none; opacity: 0; mix-blend-mode: screen; filter: blur(26px);
   background: radial-gradient(closest-side, rgba(176, 196, 210, 0.34), rgba(176, 196, 210, 0.12) 55%, transparent);
 }
 .hero-mist.is-fast { --wipe: 0.45s; }
-.hero-mist.is-revealed { animation: mist var(--wipe) cubic-bezier(0.45, 0.05, 0.25, 1) both; }
-@keyframes mist { 0% { transform: translateX(0); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateX(210%); opacity: 0; } }
+.hero-mist.is-revealed { animation: mist var(--wipe) linear both; }
+@keyframes mist { 0% { transform: translateX(0); opacity: 0; } 30% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(333%); opacity: 0; } }
 
 .hero-ui { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
 .hero-ui a, .hero-ui button { pointer-events: auto; }
@@ -163,6 +185,11 @@ a { color: inherit; }
       linear-gradient(to top, rgb(var(--asphalt)) 0, rgba(var(--asphalt), 0.8) 12%, rgba(var(--asphalt), 0) 40%);
   }
   .hero-mist { top: 14%; height: 50%; }
+  /* the crop shows only the middle of the photo: keep just the right-hand smoke and the road shimmer, gentler, remapped to the crop */
+  .portrait-ambient { --k: 0.6; }
+  .amb-smoke-l, .amb-glow { display: none; }
+  .amb-smoke-r { -webkit-mask-image: radial-gradient(ellipse 16% 12% at 92% 36%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 16% 12% at 92% 36%, #000 30%, transparent 100%); }
+  .amb-wet { -webkit-mask-image: radial-gradient(ellipse 45% 10% at 50% 95%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 45% 10% at 50% 95%, #000 30%, transparent 100%); }
   .hero-copy { right: 16px; bottom: 64px; max-width: none; gap: var(--space-3); }
   .hero-name { font-size: clamp(40px, 12.5vw, 76px); }
   .hero-tagline { font-size: 16px; }

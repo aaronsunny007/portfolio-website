@@ -4,10 +4,10 @@ import * as THREE from 'three';
 export const T = {
   driftStart: 0.5, // the car enters from beyond the left edge
   driftLen: 2.8, // ...one sideways pass across the frame, and out through the right
-  reveal: 2.5, // the portrait is uncovered behind the car's tail, left to right
-  revealLen: 1.5,
-  ui: 4.0, // nav, copy, chips, CTAs
-  end: 4.8,
+  reveal: 1.0, // the zip starts as the car enters: the wipe edge trails the car's tail across the frame (car centre ~0.8 screen-widths/s)
+  revealLen: 2.45, // keep in step with --wipe in index.css
+  ui: 3.4, // nav, copy, chips, CTAs
+  end: 4.2,
   // Legacy: only read by the unused avatar / wordmark modules (Driver, RealDriver, driverPath, Wordmark).
   name: 2.5,
   walkStart: 4.0,
