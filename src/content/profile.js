@@ -6,7 +6,6 @@ export const profile = {
   legal: { given: 'Aaron Prakash', family: 'Gandi' },
   role: 'AI Engineer',
   tagline: 'Controlled chaos. AI systems that stay in line when things go sideways.',
-  chips: ['AI Engineer', 'AI Security', 'MLOps'],
   location: 'Belfast, NI',
   status: 'Open to roles',
   github: 'https://github.com/aaronsunny007',
@@ -27,6 +26,22 @@ export const profile = {
     "Outside of tech you'll probably find me watching football or hunting down the best biriyani in town.",
   ],
 };
+
+// The roles behind the hero's "Open to roles" control. Titles only, exactly as supplied.
+export const roles = [
+  {
+    group: 'AI AND MACHINE LEARNING',
+    titles: ['Graduate AI Engineer', 'Junior AI Engineer', 'Junior Applied AI Engineer', 'LLM Evaluation Engineer', 'AI Quality Engineer', 'Junior Machine Learning Engineer', 'AI Trainer', 'AI Content Reviewer'],
+  },
+  {
+    group: 'DATA',
+    titles: ['Graduate Data Analyst', 'Junior Data Scientist', 'Quality Data Analyst', 'Operations Data Analyst'],
+  },
+  {
+    group: 'SOFTWARE AND TECHNOLOGY',
+    titles: ['Graduate Software Engineer, Python', 'Junior Python Developer', 'Technology Graduate Programme, FDM', 'Technology Graduate Programme, American Express', 'KTP Associate, Artificial Intelligence Projects', 'KTP Associate, Data Projects'],
+  },
+];
 
 export const toolkit = [
   { group: 'Engine', tools: [['Python', 'Warden, Ledger, NRF'], ['PyTorch', 'Fair-FL'], ['scikit-learn', 'Loan default'], ['LLM APIs', 'Ledger, GitHub agent']] },

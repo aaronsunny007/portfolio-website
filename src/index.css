@@ -29,14 +29,6 @@ a { color: inherit; }
 .btn-ghost { background: transparent; color: var(--chalk-400); padding-inline: var(--space-2); }
 .btn-ghost:hover { color: var(--chalk-100); }
 
-.chip {
-  display: inline-flex; align-items: center; gap: var(--space-2); padding: 6px var(--space-3);
-  border: 1px solid var(--asphalt-500); background: rgba(14, 17, 23, 0.72);
-  font: 600 11px/16px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase;
-}
-.chip-dot { width: 7px; height: 7px; border-radius: var(--radius-pill); background: var(--chalk-400); }
-.chip-live .chip-dot { background: var(--signal-amber); box-shadow: 0 0 10px var(--signal-amber); }
-
 .badge { display: inline-block; padding: 3px var(--space-2); font: 700 11px/16px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; }
 .badge-pro { background: var(--drift-red); color: var(--on-red); }
 .badge-competition { background: var(--livery-navy); color: var(--chalk-100); }
@@ -86,7 +78,7 @@ a { color: inherit; }
 .hero-portrait {
   --wipe: 2.45s;
   --asphalt: 7, 9, 13; /* var(--asphalt-950) as rgb, for the fades */
-  position: absolute; z-index: 2; right: 0; bottom: 0; height: 100%; aspect-ratio: 1362 / 762; pointer-events: none; opacity: 0;
+  position: absolute; z-index: 2; right: -4%; bottom: 0; height: 100%; aspect-ratio: 1362 / 762; pointer-events: none; opacity: 0;
   -webkit-mask-image: linear-gradient(100deg, #000 0 40%, transparent 52%); mask-image: linear-gradient(100deg, #000 0 40%, transparent 52%);
   -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
   -webkit-mask-position: 100% 0; mask-position: 100% 0; /* fully covered; the transition slides the soft edge across */
@@ -147,8 +139,16 @@ a { color: inherit; }
 
 .hero-ui { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
 .hero-ui a, .hero-ui button { pointer-events: auto; }
-.hero-copy { position: absolute; left: clamp(16px, 5vw, 64px); bottom: clamp(56px, 9vh, 88px); display: grid; justify-items: start; gap: var(--space-4); max-width: 520px; }
-.hero-name { margin: 0; font: 900 clamp(48px, 6.4vw, 116px)/0.88 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; text-shadow: 0 8px 44px rgba(0, 0, 0, 0.7); }
+/* the driver identity plate: one solid graphite surface that stands apart from the street scene */
+.hero-plate {
+  position: absolute; left: clamp(16px, 5vw, 64px); bottom: clamp(56px, 9vh, 88px); width: min(500px, calc(100vw - 32px));
+  background: var(--asphalt-800); border: 1px solid var(--asphalt-700); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--lift);
+  opacity: 0; transform: translateY(14px);
+}
+.hero-plate::before { content: ""; position: absolute; top: -1px; left: 28px; width: 56px; height: 2px; background: var(--drift-red); } /* the one red edge detail */
+.hero-ui.is-on .hero-plate { opacity: 1; transform: none; transition: transform 600ms var(--ease-brake), opacity 400ms linear; }
+.hero-copy { --px: 28px; display: grid; justify-items: start; gap: var(--space-4); padding: var(--space-6) var(--px) 0; }
+.hero-name { margin: 0; font: 900 clamp(44px, 4.8vw, 70px)/0.88 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; text-shadow: 0 8px 44px rgba(0, 0, 0, 0.7); }
 .hero-name > span:first-child { display: block; }
 .hero-alias { margin: calc(var(--space-2) * -1) 0 0; font: 600 12px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-400); text-shadow: 0 2px 14px rgba(0,0,0,.9); }
 .hero-alias b { font-weight: 600; color: var(--chalk-100); }
@@ -161,9 +161,36 @@ a { color: inherit; }
 .hero-ui.is-on .hero-copy > :nth-child(4) { transition-delay: 180ms; }
 .hero-ui.is-on .hero-copy > :nth-child(5) { transition-delay: 240ms; }
 .hero-ui.is-on .hero-copy > :nth-child(6) { transition-delay: 300ms; }
-.hero-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
-.hero-chips .chip { opacity: 0; transform: translateY(18px) rotate(var(--r)); }
-.hero-ui.is-on .hero-chips .chip { opacity: 1; transform: none; transition: transform 700ms var(--ease-settle) var(--d), opacity 200ms linear var(--d); }
+/* Open to roles: the plate's footer bar, and the panel it opens */
+.roles-trigger {
+  justify-self: stretch; margin-inline: calc(var(--px) * -1); margin-top: var(--space-2); padding: 14px var(--px);
+  display: flex; align-items: center; gap: 10px; border: 0; border-top: 1px solid var(--asphalt-700); background: transparent; color: var(--chalk-100);
+  font: 600 11px/16px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; text-align: left; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-brake);
+}
+.roles-trigger:hover { background: rgba(255, 255, 255, 0.03); }
+.roles-trigger:focus-visible { outline-offset: -3px; }
+.roles-dot { width: 7px; height: 7px; border-radius: var(--radius-pill); background: var(--signal-amber); box-shadow: 0 0 10px var(--signal-amber); }
+.roles-caret { margin-left: auto; width: 7px; height: 7px; border: solid var(--chalk-400); border-width: 0 1.5px 1.5px 0; transform: translateY(-2px) rotate(-45deg); transition: transform 320ms var(--ease-brake); }
+.hero-plate.is-open .roles-caret { transform: translateY(1px) rotate(45deg); }
+
+/* desktop: the panel is bolted to the plate's right edge and unrolls out of it */
+.hero-roles {
+  --roles-h: min(560px, calc(100svh - clamp(56px, 9vh, 88px) - 76px)); /* never taller than the space between the nav and the plate's base */
+  position: absolute; left: 100%; bottom: -1px; width: 300px; margin-left: -1px; max-height: var(--roles-h);
+  background: var(--asphalt-800); border: 1px solid var(--asphalt-700); box-shadow: var(--lift); pointer-events: auto;
+  visibility: hidden; opacity: 0; clip-path: inset(0 100% 0 0); transform: translateX(-14px);
+  transition: clip-path 340ms var(--ease-brake), transform 340ms var(--ease-brake), opacity 200ms linear, visibility 0s linear 340ms;
+}
+.hero-plate.is-open .hero-roles { visibility: visible; opacity: 1; clip-path: inset(0); transform: none; transition-delay: 0s; }
+.hero-roles-scroll { min-height: 0; max-height: var(--roles-h); overflow-y: auto; overscroll-behavior: contain; padding-inline: 24px; scrollbar-width: thin; scrollbar-color: var(--asphalt-500) transparent; }
+.hero-roles-scroll > :first-child { margin-top: 20px; }
+.hero-roles-scroll > :last-child { margin-bottom: 20px; }
+.hero-roles-scroll > section + section { margin-top: 22px; }
+.hero-roles-scroll:focus-visible { outline-offset: -3px; }
+.roles-head { margin: 0 0 6px; font: 600 11px/16px var(--font-mono); letter-spacing: 0.14em; color: var(--chalk-400); }
+.roles-list { margin: 0; padding: 0; list-style: none; }
+.roles-list li { padding: 7px 0; border-top: 1px solid var(--asphalt-700); font: 600 14px/1.35 var(--font-body); color: var(--chalk-100); }
 .hero-skip { position: absolute; right: clamp(8px, 4vw, 52px); bottom: 20px; }
 .scroll-cue {
   position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
@@ -190,12 +217,23 @@ a { color: inherit; }
   .amb-smoke-l, .amb-glow { display: none; }
   .amb-smoke-r { -webkit-mask-image: radial-gradient(ellipse 16% 12% at 92% 36%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 16% 12% at 92% 36%, #000 30%, transparent 100%); }
   .amb-wet { -webkit-mask-image: radial-gradient(ellipse 45% 10% at 50% 95%, #000 30%, transparent 100%); mask-image: radial-gradient(ellipse 45% 10% at 50% 95%, #000 30%, transparent 100%); }
-  .hero-copy { right: 16px; bottom: 64px; max-width: none; gap: var(--space-3); }
-  .hero-name { font-size: clamp(40px, 12.5vw, 76px); }
+  .hero-plate { right: 16px; bottom: 64px; width: auto; }
+  .hero-copy { --px: 20px; gap: var(--space-3); padding-top: 20px; }
+  .hero-name { font-size: clamp(34px, 11vw, 70px); }
+  .hero-copy .btn { padding-inline: var(--space-4); }
   .hero-tagline { font-size: 16px; }
   .scroll-cue { display: none; }
 }
-@media (max-width: 720px) and (max-height: 700px) { .hero-chips { display: none; } }
+/* narrow screens and portrait: the panel opens inside the plate instead of beside it */
+@media (max-width: 1100px), (max-aspect-ratio: 1/1) {
+  .hero-roles {
+    position: static; width: auto; margin: 0; max-height: none; border: 0; box-shadow: none; background: transparent;
+    display: grid; grid-template-rows: 0fr; clip-path: none; transform: none; opacity: 1;
+    transition: grid-template-rows 340ms var(--ease-brake), visibility 0s linear 340ms;
+  }
+  .hero-plate.is-open .hero-roles { grid-template-rows: 1fr; }
+  .hero-roles-scroll { max-height: min(28svh, 240px); }
+}
 
 .loader {
   position: absolute; inset: 0; z-index: 8; display: grid; place-content: center; justify-items: center; gap: var(--space-2);
