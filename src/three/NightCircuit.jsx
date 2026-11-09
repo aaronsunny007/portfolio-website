@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { quality } from './webgl';
-import { radialTexture, streakTexture, roadTexture } from './textures';
+import { radialTexture, streakTexture, roadTexture, finishTexture } from './textures';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -37,7 +37,8 @@ function Scene({ still, low }) {
   const road = useMemo(() => roadTexture(low), [low]);
   const glow = useMemo(() => radialTexture(), []);
   const streak = useMemo(() => streakTexture(), []);
-  useEffect(() => () => [road, glow, streak].forEach((t) => t.dispose()), [road, glow, streak]); // textures are ours; R3F does not free them
+  const finish = useMemo(() => finishTexture(), []);
+  useEffect(() => () => [road, glow, streak, finish].forEach((t) => t.dispose()), [road, glow, streak, finish]); // textures are ours; R3F does not free them
 
   const lampPts = useMemo(() => {
     const side = (s) => new Float32Array(LAMP_Z.flatMap((z) => [s * 4.6, 6.2, z]));
@@ -136,6 +137,12 @@ function Scene({ still, low }) {
         <planeGeometry args={[0.16, 3]} />
         <meshBasicMaterial color="#edeff2" transparent opacity={0.28} />
       </instancedMesh>
+
+      {/* the finish line, painted across the road just past where the camera stops. It comes up out of the fog as the last section arrives. */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.012, -TRAVEL - 20]}>
+        <planeGeometry args={[HALF * 2 - 1, 6]} />
+        <meshBasicMaterial map={finish} transparent opacity={0.55} depthWrite={false} />
+      </mesh>
 
       {/* barriers */}
       {[-1, 1].map((s) => (

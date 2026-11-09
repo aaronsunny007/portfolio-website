@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { milestones } from '../content/profile';
+import { milestones, ahead } from '../content/profile';
 import { checkpointT, pointAt, journey } from '../three/circuit';
 import { hasWebGL } from '../three/webgl';
 import Circuit2D from './Circuit2D';
@@ -83,23 +83,30 @@ export default function CircuitMap({ reduceMotion }) {
       <article className="circuit-card" aria-live={touched ? 'polite' : 'off'}>
         <div className="circuit-card-meta">
           <span>CORNER {String(sel + 1).padStart(2, '0')} / {String(N).padStart(2, '0')}</span>
-          <span className="circuit-card-when">{m.year ?? m.tag}</span>
+          <span className="circuit-card-when">{m.kind} · {m.year ?? m.tag}</span>
         </div>
         <h3>{m.title}</h3>
         <p>{m.text}</p>
       </article>
 
-      <ol className="circuit-steps" aria-label="Career corners, in order">
-        {milestones.map((s, i) => (
-          <li key={s.title}>
-            <button type="button" className={`step ${i <= sel ? 'is-reached' : ''}`} aria-current={i === sel ? 'step' : undefined} onClick={() => select(i)}>
-              <span className="step-n">{String(i + 1).padStart(2, '0')}</span>
-              <span className="step-t">{s.title}</span>
-              <span className="step-y">{s.year ?? s.tag}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
+      <div className="circuit-side">
+        <ol className="circuit-steps" aria-label="Career corners, in order">
+          {milestones.map((s, i) => (
+            <li key={s.title}>
+              <button type="button" className={`step ${i <= sel ? 'is-reached' : ''}`} aria-current={i === sel ? 'step' : undefined} onClick={() => select(i)}>
+                <span className="step-n">{String(i + 1).padStart(2, '0')}</span>
+                <span className="step-t">{s.title}</span>
+                <span className="step-y">{s.year ?? s.tag}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+        <aside className="circuit-ahead" aria-label="Ahead, a plan and not a milestone">
+          <span className="circuit-ahead-k">Ahead · a plan, not a milestone</span>
+          <strong>{ahead.title}</strong>
+          <p>{ahead.text}</p>
+        </aside>
+      </div>
     </div>
   );
 }

@@ -52,12 +52,15 @@ export const toolkit = [
 
 // TODO(Sunny): the two entries with year: null have no confirmed dates anywhere in the project, so they show a status tag instead.
 // Add the real years (and whether the MSc is complete) when you have them; do not guess.
+// `kind` says what a corner is: Education, Internship or Project. Projects are never presented as jobs or degrees.
 export const milestones = [
-  { year: null, tag: 'Foundation', title: 'BTech Computer Science + Cybersecurity', text: 'The foundation: software, networks and security.' },
-  { year: 2024, title: 'Security internship', text: 'Recon and scanning work, later rebuilt as web-security-scanner.' },
-  { year: null, tag: 'Postgraduate', title: 'MSc Artificial Intelligence, Ulster', text: 'Robotics, ML and AI ethics coursework, plus the warehouse robot group project.' },
-  { year: 2026, title: 'Financial-NRF', text: "Dissertation and paper draft: do LLM reliability scores notice when the source is wrong? Mostly no." },
-  { year: 2026, title: 'Tom & Ollie relaunch', text: 'First real client: a storefront for a Belfast cheesemonger.' },
-  { year: 2026, title: 'Warden and AEGIS', text: 'AI security agents that only ship a defence after it passes validation.' },
-  { year: null, tag: 'Next', title: 'The next corner', text: 'AI engineering, AI security or MLOps. Let’s talk.' },
+  { year: null, tag: 'Foundation', kind: 'Education', title: 'BTech Computer Science + Cybersecurity', text: 'The foundation: software, networks and security.' },
+  { year: 2024, kind: 'Internship', title: 'Security internship', text: 'Recon and scanning work, later rebuilt as web-security-scanner.' },
+  { year: null, tag: 'Postgraduate', kind: 'Education', title: 'MSc Artificial Intelligence, Ulster', text: 'Robotics, ML and AI ethics coursework, plus the warehouse robot group project.' },
+  { year: 2026, kind: 'Project', title: 'Financial-NRF', text: "Dissertation and paper draft: do LLM reliability scores notice when the source is wrong? Mostly no." },
+  { year: 2026, kind: 'Project', title: 'Tom & Ollie relaunch', text: 'First real client: a storefront for a Belfast cheesemonger.' },
+  { year: 2026, kind: 'Project', title: 'Warden and AEGIS', text: 'AI security agents that only ship a defence after it passes validation.' },
 ];
+
+// Not a milestone: where the route is heading. Shown apart from the corners, never lit on the map.
+export const ahead = { title: 'The next corner', text: 'AI engineering, AI security or MLOps. Let’s talk.' };

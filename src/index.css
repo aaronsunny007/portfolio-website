@@ -321,7 +321,12 @@ a { color: inherit; }
 .circuit-card-when { color: var(--chalk-400); text-transform: uppercase; }
 .circuit-card h3 { margin: 8px 0 0; font: 800 28px/1.1 var(--font-display); text-transform: uppercase; }
 .circuit-card p { margin: 8px 0 0; font-size: 15px; line-height: 23px; color: var(--chalk-400); max-width: 60ch; }
-.circuit-steps { grid-area: steps; list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.circuit-side { grid-area: steps; display: grid; gap: var(--space-4); }
+.circuit-ahead { padding: var(--space-4) var(--space-4); display: grid; gap: 4px; border: 1px dashed var(--asphalt-500); border-radius: var(--radius-md); }
+.circuit-ahead-k { font: 600 11px var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk-400); }
+.circuit-ahead strong { font: 800 16px/1.25 var(--font-body); color: var(--chalk-100); }
+.circuit-ahead p { margin: 0; font-size: 14px; line-height: 21px; color: var(--chalk-400); }
+.circuit-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .step {
   width: 100%; min-height: 48px; display: grid; grid-template-columns: 30px 1fr auto; gap: var(--space-3); align-items: center; padding: 8px 14px; text-align: left; cursor: pointer;
   font: 700 14px/1.25 var(--font-body); color: var(--chalk-400); background: var(--asphalt-900); border: 1px solid var(--asphalt-700);
@@ -430,7 +435,8 @@ a { color: inherit; }
 
 /* finish */
 .finish { padding-bottom: var(--space-8); }
-.flag { height: 48px; margin-bottom: var(--space-12); background: repeating-conic-gradient(var(--chalk-100) 0 25%, var(--asphalt-950) 0 50%) 0 0 / 24px 24px; opacity: 0.9; mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); }
+/* a painted stop line with its wet reflection: the road's own full stop, in place of the old chequered strip */
+.stopline { height: 40px; margin-bottom: var(--space-12); background: linear-gradient(var(--chalk-100), var(--chalk-100)) no-repeat 0 0 / 100% 3px, linear-gradient(rgba(26, 167, 173, 0.28), transparent) no-repeat 0 3px / 100% 100%; opacity: 0.55; mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); }
 .finish-row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
 .copy { position: relative; display: inline-flex; border: 1px solid var(--asphalt-500); background: var(--asphalt-900); }
 .copy a { padding: var(--space-3) var(--space-4); font: 500 15px var(--font-mono); text-decoration: none; }

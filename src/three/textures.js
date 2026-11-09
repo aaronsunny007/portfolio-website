@@ -35,6 +35,23 @@ export function radialTexture(size = 128) {
   return toTexture(c);
 }
 
+/** A painted chequered finish line, worn: 16 x 3 squares, hard edges, grain over the top. */
+export function finishTexture() {
+  const [c, g] = canvas(256, 48);
+  for (let y = 0; y < 3; y++) for (let x = 0; x < 16; x++) {
+    g.fillStyle = (x + y) % 2 ? 'rgba(235,238,242,0.9)' : 'rgba(235,238,242,0.12)';
+    g.fillRect(x * 16, y * 16, 16, 16);
+  }
+  const rand = rng(21);
+  for (let i = 0; i < 500; i++) {
+    g.fillStyle = 'rgba(18,22,28,0.5)';
+    g.fillRect(rand() * 256, rand() * 48, 2, 2);
+  }
+  const t = toTexture(c);
+  t.magFilter = THREE.NearestFilter;
+  return t;
+}
+
 /** Bright at the top, fading down: a lamp's reflection on wet tarmac. */
 export function streakTexture() {
   const [c, g] = canvas(32, 256);

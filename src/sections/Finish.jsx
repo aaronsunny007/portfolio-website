@@ -17,7 +17,7 @@ export default function Finish() {
   };
   return (
     <section className="section finish" id="finish" aria-labelledby="finish-title" ref={ref}>
-      <div className="flag" aria-hidden="true" />
+      <div className="stopline" aria-hidden="true" />
       <SectionHeader id="finish-title" sector="S4 / Finish Line" title="Let’s build something that" accent="holds the line." />
       <div className="finish-row reveal">
         {profile.email && (
