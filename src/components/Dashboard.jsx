@@ -100,7 +100,7 @@ export default function Dashboard() {
     const el = root.current;
     const g = cv.current.getContext('2d');
     g.setTransform(SCALE, 0, 0, SCALE, 0, 0); // not scale(): the effect can run twice
-    const st = { key: '', rpm: 0.16, gear: 0 };
+    const st = { key: '', rpm: 0.16, gear: 0, sp: 0 };
     // the cards stop above it: tell the scene how much of the screen it takes
     const size = () => (view.dashH = el.offsetHeight);
     size();
@@ -109,7 +109,9 @@ export default function Dashboard() {
 
     const draw = (dtRaw = 0) => {
       const dt = Math.min(dtRaw, 0.05);
-      const sp = view.speed;
+      // the readout eases toward the scene's speed, so the number, the gear and the needle move together and never flicker
+      st.sp += (view.speed - st.sp) * (dt ? Math.min(1, dt * 8) : 1);
+      const sp = st.sp;
       // pick the gear with a little hysteresis, so it does not chatter at a boundary
       let gear = st.gear;
       if (sp < 0.012) gear = 0;
@@ -161,7 +163,9 @@ export default function Dashboard() {
         <path d="M0,78 C200,70 330,66 392,46 C412,40 440,34 480,34 L520,34 C560,34 588,40 608,46 C670,66 800,70 1000,78 L1000,160 L0,160 Z" fill="#05070a" />
         <path d="M0,78 C200,70 330,66 392,46 C412,40 440,34 480,34 L520,34 C560,34 588,40 608,46 C670,66 800,70 1000,78" fill="none" stroke="rgba(150, 165, 180, 0.3)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
-      <canvas className="dash-cluster" ref={cv} width={W * SCALE} height={H * SCALE} />
+      <div className="dash-cluster">
+        <canvas ref={cv} width={W * SCALE} height={H * SCALE} />
+      </div>
     </div>
   );
 }

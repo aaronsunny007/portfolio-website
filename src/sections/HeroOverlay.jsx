@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { profile, roles } from '../content/profile';
+import Arrow from '../components/Arrow';
 
 export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay }) {
   const [open, setOpen] = useState(false);
@@ -35,11 +36,13 @@ export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay
             <a className="btn btn-primary" href="#garage">Enter the Garage</a>
             <a className="btn btn-secondary" href={profile.github} target="_blank" rel="noreferrer">
               GitHub
+              <Arrow />
             </a>
           </div>
           <button ref={trigger} className="roles-trigger" type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
             <i className="roles-dot" aria-hidden="true" />
             {profile.status}
+            <span className="roles-count">{roles.reduce((n, g) => n + g.titles.length, 0)} roles</span>
             <i className="roles-caret" aria-hidden="true" />
           </button>
         </div>
@@ -60,11 +63,19 @@ export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay
       </div>
       {(!ended || canReplay) && (
         <button className="btn btn-ghost hero-skip" type="button" onClick={ended ? onReplay : onSkip}>
-          {ended ? 'Replay ↺' : 'Skip intro →'}
+          {ended ? (
+            'Replay intro'
+          ) : (
+            <>
+              Skip intro
+              <Arrow kind="right" />
+            </>
+          )}
         </button>
       )}
       <a className="scroll-cue" href="#pit-crew">
-        Scroll to drive <span aria-hidden="true">↓</span>
+        Scroll to drive
+        <Arrow kind="down" />
       </a>
     </div>
   );

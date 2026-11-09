@@ -8,6 +8,8 @@
   --chalk-100: #edeff2;
   --chalk-400: #9aa1ac;
   --drift-red: #e10600;
+  --drift-red-hover: #c20500;
+  --drift-red-press: #a30400;
   --signal-red: #ff3b30;
   --on-red: #ffffff;
   --livery-sky: #3fa9f5;
@@ -19,16 +21,36 @@
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
   --font-body: Manrope, "Segoe UI", system-ui, sans-serif;
 
-  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-  --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-24: 96px;
-  --radius-0: 0px; --radius-sm: 2px; --radius-md: 6px; --radius-pill: 999px;
+  /* surfaces: content plates that sit between the moving road and the cockpit */
+  --surface: rgba(14, 17, 23, 0.9);        /* a plate over the scene */
+  --surface-raised: var(--asphalt-800);    /* a row or control on a plate */
+  --line: var(--asphalt-700);              /* quiet edge */
+  --line-strong: var(--asphalt-500);       /* control edge */
 
-  --glow-red: 0 0 32px rgba(225, 6, 0, 0.45);
-  --lift: 0 24px 48px rgba(0, 0, 0, 0.6);
+  /* type: mono is for short metadata and instruments only, never below 12px */
+  --text-meta: 12px;
+  --text-sm: 14px;
+  --text-body: 16px;
+  --text-lead: 18px;
+  --track-meta: 0.08em;
 
-  --dur-fast: 160ms; --dur-ui: 280ms; --dur-reveal: 1800ms;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
+  --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-16: 64px; --space-24: 96px;
+  --radius-0: 0px; --radius-sm: 2px; --radius-md: 4px; --radius-pill: 999px;
+
+  /* controls */
+  --ctl-h: 44px;
+  --ctl-h-sm: 40px;
+  --nav-h: 64px;
+  /* the one cut-corner proportion, 45 degrees, for plates and panels */
+  --cut: 16px;
+
+  --lift: 0 16px 32px rgba(0, 0, 0, 0.5);
+
+  /* motion: controlled acceleration and deceleration, no overshoot */
+  --dur-fast: 160ms; --dur-ui: 240ms; --dur-reveal: 1800ms;
   --ease-launch: cubic-bezier(0.55, 0, 0.9, 0.35);
   --ease-brake: cubic-bezier(0.15, 0.7, 0.3, 1);
-  --ease-settle: cubic-bezier(0.3, 1.45, 0.55, 1);
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-travel: cubic-bezier(0.65, 0, 0.35, 1);
 }

@@ -30,26 +30,26 @@ export default function PitCrew() {
             </dl>
           </div>
         </article>
-        <div className="bio reveal">
+        <div className="bio surface reveal">
           {profile.bio.map((p) => (
             <p key={p}>{p}</p>
           ))}
         </div>
       </div>
       <h3 className="sub reveal">Toolkit</h3>
-      <div className="toolkit">
-        {toolkit.map((g, gi) => (
+      <div className="toolkit surface reveal">
+        {toolkit.map((g) => (
           <div key={g.group} className="toolgroup">
             <div className="toolgroup-label">
               <span>{g.group}</span>
               <span className="toolgroup-count">{String(g.tools.length).padStart(2, '0')}</span>
             </div>
             <ul>
-              {g.tools.map(([name, used], i) => (
-                <li key={name} className="tool" style={{ '--r': `${((gi * 4 + i) % 5) - 2}deg` }}>
-                  {name}
-                  <small className="tool-used">
-                    <span>Used in:</span>
+              {g.tools.map(([name, used]) => (
+                <li key={name} className="tool">
+                  <span className="tool-name">{name}</span>
+                  <span className="tool-used">
+                    <span>Used in</span>
                     {used.split(', ').map((alias) => {
                       const repo = evidenceRepo(alias);
                       return repo ? (
@@ -61,7 +61,7 @@ export default function PitCrew() {
                         <span key={alias}>{alias}</span>
                       );
                     })}
-                  </small>
+                  </span>
                 </li>
               ))}
             </ul>

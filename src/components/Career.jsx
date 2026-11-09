@@ -27,6 +27,7 @@ export default function Career({ reduceMotion, flat }) {
   const link = useRef();
   const st = useRef(null);
   const [sel, setSel] = useState(0);
+  const Head = flat ? 'div' : 'button';
 
   useEffect(() => {
     view.layer = layer.current;
@@ -95,13 +96,17 @@ export default function Career({ reduceMotion, flat }) {
             <li key={m.title} data-panel className={`panel ${i === sel ? 'is-active' : ''} ${i <= sel ? 'is-reached' : ''}`} data-kind={m.kind.toLowerCase()} style={{ '--p': (i + 1) / N }}>
               <div className="panel-shell" aria-hidden="true" />
               <div className="panel-face">
-                <button type="button" className="panel-head" tabIndex={-1} aria-current={i === sel ? 'step' : undefined} onClick={() => select(i)}>
+                {/* The title is the card's own control: it takes focus only while its plate is on screen (the one in focus and the two waiting behind it). The numbered row below reaches every milestone. */}
+                <Head
+                  className="panel-head"
+                  {...(flat ? {} : { type: 'button', tabIndex: i >= sel && i <= sel + 2 ? 0 : -1, 'aria-current': i === sel ? 'step' : undefined, onClick: () => select(i) })}
+                >
                   <span className="panel-n">{pad(i)}</span>
                   <span className="panel-meta">
                     {m.kind} · {m.year ?? m.tag}
                   </span>
                   <span className="panel-title">{m.title}</span>
-                </button>
+                </Head>
                 <p className="panel-text">{m.text}</p>
                 {m.point && <p className="panel-point">{m.point}</p>}
               </div>
