@@ -367,7 +367,7 @@ export default function NightCircuit({ still, show }) {
       // Where the route floats: ahead of the road at the point the career section reaches, and where the page's travel resumes after it.
       let careerST;
       const place = () => {
-        if (!careerST && !still) return; // onRefresh also fires inside create(), before careerST exists
+        if (!careerST) return; // onRefresh also fires inside create(), before careerST exists
         const span = runST ? runST.end - runST.start : 1;
         const at = (y) => (still || !runST ? STILL_P : THREE.MathUtils.clamp((y - runST.start) / span, 0, 1));
         view.zr = -TRAVEL * at(careerST.start + innerHeight * 0.5) - 44;
