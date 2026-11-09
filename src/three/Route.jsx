@@ -193,7 +193,6 @@ export default function Route({ low, still }) {
     project(v.x, v.y, v.z, S.PC);
     const slotX = tall || phone ? size.width / 2 : clamp(S.PC.x, 0, size.width);
     const dashH = view.dashH;
-    const slotY = tall || phone ? size.height - dashH - 12 - ch / 2 : size.height / 2 - dashH * 0.25;
 
     for (let i = 0; i <= N; i++) {
       const el = view.panels[i];
@@ -205,6 +204,8 @@ export default function Route({ low, still }) {
       el.style.pointerEvents = !ahead && op > 0.3 ? 'auto' : 'none';
       if (op < 0.004) continue;
       const side = spots[i].side;
+      const chi = view.heights[i] || ch; // each card is as tall as its own content
+      const slotY = tall || phone ? size.height - dashH - 12 - chi / 2 : size.height / 2 - dashH * 0.25;
 
       // its place beside the road at its own checkpoint, seen from here
       const sp = spots[i];
@@ -220,7 +221,7 @@ export default function Route({ low, still }) {
       let fx = S.P0.x + side * (half + gap + (cw * fs) / 2);
       let fy = S.P1.y;
       fx = clamp(fx, (cw * fs) / 2 + 6, size.width - (cw * fs) / 2 - 6);
-      fy = clamp(fy, (ch * fs) / 2 + (tall ? 124 : 64), size.height - dashH - (ch * fs) / 2 - (tall ? ch + 24 : 24));
+      fy = clamp(fy, (chi * fs) / 2 + (tall ? 124 : 64), size.height - dashH - (chi * fs) / 2 - (tall ? chi + 24 : 24));
 
       // the focus slot: beside the car on a wide screen, docked at the bottom on a tall one
       let sx = tall || phone ? slotX : slotX + side * ((HW * fpx) / S.PC.d + 76 + cw / 2);
@@ -235,7 +236,7 @@ export default function Route({ low, still }) {
         cx = sx + (fx - sx) * k;
         cy = slotY + (fy - slotY) * k;
         s = 1 + (fs - 1) * k;
-        ry = -side * (6 + 9 * k);
+        ry = -side * 9 * k;
         if (ahead) {
           cx = fx;
           cy = fy;
@@ -247,15 +248,15 @@ export default function Route({ low, still }) {
         cx = sx + (tall || phone ? 0 : side * k * 170);
         cy = slotY - k * (tall || phone ? 120 : 70);
         s = 1 - 0.1 * k;
-        ry = -side * (6 + 14 * k);
+        ry = -side * 14 * k;
       }
       // a slow float of its own: waiting cards drift a little, the one in focus barely moves
       const away = Math.min(1, Math.abs(d)) * (still ? 0 : 1);
-      cx += Math.sin(t * 0.37 + i * 1.3) * (1.2 + 3.5 * away);
-      cy += Math.sin(t * 0.55 + i * 1.9) * (1.2 + 3 * away);
+      cx += Math.sin(t * 0.37 + i * 1.3) * 3.5 * away;
+      cy += Math.sin(t * 0.55 + i * 1.9) * 3 * away;
       ry += Math.sin(t * 0.3 + i) * 0.8 * away;
 
-      el.style.transform = `translate3d(${(cx - cw / 2).toFixed(1)}px,${(cy - ch / 2).toFixed(1)}px,0) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`;
+      el.style.transform = `translate3d(${(cx - cw / 2).toFixed(1)}px,${(cy - chi / 2).toFixed(1)}px,0) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`;
       el.style.zIndex = String(d >= 0 ? 30 - Math.round(d * 4) : 20 + Math.round(d * 4));
       // a card's text shows only when it is in focus. The plan ahead is read when the route gets there.
       el.style.setProperty('--body', (ahead ? ease(clamp(1.6 - d, 0, 1)) : clamp(1 - Math.abs(d) * 1.7, 0, 1)).toFixed(3));
@@ -269,7 +270,7 @@ export default function Route({ low, still }) {
       const i = clamp(Math.round(f), 0, N - 1);
       const side = spots[i].side;
       const ax = S.xs[i] - side * (cw * S.ss[i]) * 0.5;
-      const ay = S.ys[i] - ch * S.ss[i] * 0.16;
+      const ay = S.ys[i] - (view.heights[i] || ch) * S.ss[i] * 0.16;
       const len = Math.hypot(S.PC.x - ax, S.PC.y - ay);
       const fade = 1 - clamp(Math.abs(i - f) * 2, 0, 1);
       view.link.style.opacity = tall || phone || len < 24 || !view.panels[i] ? '0' : fade.toFixed(3);

@@ -46,6 +46,9 @@
   --cut: 16px;
 
   --lift: 0 16px 32px rgba(0, 0, 0, 0.5);
+  /* material vocabulary: a lit top edge on raised faces, a shallow shadow inside recessed housings */
+  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --recess: inset 0 2px 6px rgba(0, 0, 0, 0.45);
 
   /* motion: controlled acceleration and deceleration, no overshoot */
   --dur-fast: 160ms; --dur-ui: 240ms; --dur-reveal: 1800ms;

@@ -1,28 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
-import { profile } from '../content/profile';
+import { useCallback, useId, useRef, useState } from 'react';
+import { profile, roleCount } from '../content/profile';
+import { view } from '../three/journey';
+import { scroller } from '../scroller';
 import SectionHeader from '../components/SectionHeader';
-import Arrow from '../components/Arrow';
+import ContactActions from '../components/ContactActions';
+import RoleList from '../components/RoleList';
+import useEscape from '../components/useEscape';
 import useReveal from '../components/useReveal';
 
 export default function Finish() {
   const ref = useReveal();
-  const [copy, setCopy] = useState(null); // null | 'ok' | 'fail'
-  const timer = useRef();
-  useEffect(() => () => clearTimeout(timer.current), []);
-  const onCopy = async () => {
-    let result = 'ok';
-    try {
-      await navigator.clipboard.writeText(profile.email);
-    } catch {
-      result = 'fail'; // clipboard blocked or unavailable: the address above is still a link and can be selected
-    }
-    setCopy(result);
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setCopy(null), 3000);
+  const [open, setOpen] = useState(false);
+  const trigger = useRef();
+  const panel = useRef();
+  const panelId = useId();
+  const close = useCallback(() => {
+    setOpen(false);
+    trigger.current?.focus();
+  }, []);
+  useEscape(open, close);
+
+  // The panel opens here, not up in the hero. Once it has finished unrolling, bring it into the clear space between the nav and the cockpit.
+  const reveal = (e) => {
+    if (!open || e.target !== e.currentTarget) return;
+    const r = panel.current.getBoundingClientRect();
+    const clear = window.innerHeight - (view.dashH || 0) - 24;
+    const dy = Math.min(r.bottom - clear, r.top - 88); // its top must also stay below the nav
+    if (dy > 1) scroller.to(window.scrollY + dy, window.matchMedia('(prefers-reduced-motion: reduce)').matches, 0.8);
   };
-  // the next step: email when there is an address, otherwise the code on GitHub
+
   const hasEmail = Boolean(profile.email);
-  const githubClass = hasEmail ? 'btn btn-secondary' : 'btn btn-primary';
   return (
     <section className="section finish" id="finish" aria-labelledby="finish-title" ref={ref}>
       <div className="stopline" aria-hidden="true" />
@@ -33,45 +40,35 @@ export default function Finish() {
         accent="holds the line."
         intro={`${profile.status} for AI engineering, AI security and MLOps. ${hasEmail ? 'Email is the quickest way in.' : 'The code is on GitHub.'}`}
       />
-      <div className="finish-row reveal">
-        {hasEmail && (
-          <>
-            <a className="btn btn-primary" href={`mailto:${profile.email}`}>
-              Email me
-            </a>
-            <div className="copy">
-              <a href={`mailto:${profile.email}`}>{profile.email}</a>
-              <button className="btn btn-secondary" type="button" onClick={onCopy}>
-                Copy
+      <div className="reveal">
+        <ContactActions />
+        <div className="finish-roles-bar">
+          <button ref={trigger} className="btn btn-secondary roles-btn" type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
+            <i className="roles-dot" aria-hidden="true" />
+            {profile.status}
+            <span className="roles-count">{roleCount} roles</span>
+            <i className={`roles-caret ${open ? 'is-open' : ''}`} aria-hidden="true" />
+          </button>
+          <span className="finish-meta">{profile.location}</span>
+        </div>
+        <div id={panelId} className={`finish-roles ${open ? 'is-open' : ''}`} inert={!open} ref={panel} onTransitionEnd={reveal}>
+          <div className="finish-roles-inner surface">
+            <header className="finish-roles-head">
+              <div>
+                <h3>Roles I am open to</h3>
+                <p>{profile.location} · {profile.status}</p>
+              </div>
+              <button className="btn btn-ghost" type="button" onClick={close}>
+                Close
               </button>
+            </header>
+            <div className="finish-roles-list" data-lenis-prevent tabIndex={0} role="region" aria-label="Roles I am open to">
+              <RoleList />
             </div>
-          </>
-        )}
-        <a className={githubClass} href={profile.github} target="_blank" rel="noreferrer">
-          GitHub
-          <Arrow />
-        </a>
-        {profile.linkedin && (
-          <a className="btn btn-secondary" href={profile.linkedin} target="_blank" rel="noreferrer">
-            LinkedIn
-            <Arrow />
-          </a>
-        )}
-        {profile.cv && (
-          <a className="btn btn-secondary" href={profile.cv}>
-            Download CV
-          </a>
-        )}
-        {hasEmail && (
-          <p className={`copy-status ${copy === 'fail' ? 'is-fail' : ''}`} role="status">
-            {copy === 'ok' && 'Copied to clipboard.'}
-            {copy === 'fail' && 'Could not copy. Select the address above instead.'}
-          </p>
-        )}
+            <ContactActions />
+          </div>
+        </div>
       </div>
-      <p className="finish-meta reveal">
-        {profile.status} · {profile.location}
-      </p>
       <footer className="footer">
         <span>
           © 2026 {profile.first} {profile.last}

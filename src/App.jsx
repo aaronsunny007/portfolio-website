@@ -12,6 +12,7 @@ import Shutters from './components/Shutters';
 import { clock, T } from './three/timeline';
 import { hasWebGL } from './three/webgl';
 import { scroller } from './scroller';
+import { MAX_WAIT_MS } from './components/ignition';
 
 // If the night scene cannot start (no context, or its code fails to load) the career falls back to a plain list.
 class SceneGuard extends Component {
@@ -38,6 +39,7 @@ export default function App({ reduceMotion }) {
   const [skipped, setSkipped] = useState(false); // a skipped opening uncovers the portrait quickly
   const [covered, setCovered] = useState(clock.t >= T.end); // the portrait fully hides the 3D stage, so stop rendering it
   const [sceneFailed, setSceneFailed] = useState(false);
+  const [run, setRun] = useState(0); // a replay mounts a fresh ignition gauge
   const hero = useRef();
   const timers = useRef([]);
   const reached = (b) => beat && ORDER.indexOf(beat) >= ORDER.indexOf(b);
@@ -80,16 +82,27 @@ export default function App({ reduceMotion }) {
   }, []);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
-  const skip = () => {
+  // Skip lands on the settled page straight away. It does not wait for the stage's clock, which has not started if the car is still
+  // downloading (or never will, if it fails): the beat is announced from here as well.
+  const skip = useCallback(() => {
     skippedRef.current = true;
     setSkipped(true);
     clock.t = T.end;
-  };
+    onBeat('end');
+  }, [onBeat]);
+  // A stage that fails to load, or a download that stalls, must never leave the visitor behind the opening.
+  const [stageFailed, setStageFailed] = useState(false);
+  useEffect(() => {
+    if (reduceMotion || beat) return;
+    const id = setTimeout(skip, MAX_WAIT_MS);
+    return () => clearTimeout(id);
+  }, [beat, reduceMotion, skip]);
   const replay = () => {
     skippedRef.current = false;
     setSkipped(false);
     setBeat(null);
     setCovered(false);
+    setRun((n) => n + 1);
     clock.t = 0;
     clock.resetId++;
   };
@@ -111,13 +124,20 @@ export default function App({ reduceMotion }) {
         <section className={`hero ${covered && nightLive && webgl ? 'is-open' : ''}`} id="ignition" ref={hero} aria-labelledby="hero-title">
           {/* Reduced motion: no drift, no dial, no 3D. The settled hero is on screen immediately. */}
           {!reduceMotion && (
-            <Suspense fallback={null}>
-              <Stage active={heroActive && !covered} onBeat={onBeat} />
-            </Suspense>
+            <SceneGuard
+              onFail={() => {
+                setStageFailed(true);
+                skip();
+              }}
+            >
+              <Suspense fallback={null}>
+                <Stage active={heroActive && !covered} onBeat={onBeat} />
+              </Suspense>
+            </SceneGuard>
           )}
           <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} settled={reached('end') && !reduceMotion} paused={!heroActive} />
-          {!reduceMotion && <Loader />}
-          <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion} onSkip={skip} onReplay={replay} />
+          {!reduceMotion && <Loader key={run} release={skipped} />}
+          <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion && !stageFailed} onSkip={skip} onReplay={replay} />
         </section>
         <PitCrew />
         <Track reduceMotion={reduceMotion} flat={!webgl} />

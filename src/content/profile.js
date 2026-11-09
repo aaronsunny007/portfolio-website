@@ -43,6 +43,8 @@ export const roles = [
   },
 ];
 
+export const roleCount = roles.reduce((n, g) => n + g.titles.length, 0);
+
 export const toolkit = [
   { group: 'Engine', tools: [['Python', 'Warden, Ledger, NRF'], ['PyTorch', 'Fair-FL'], ['scikit-learn', 'Loan default'], ['LLM APIs', 'Ledger, GitHub agent']] },
   { group: 'Chassis', tools: [['FastAPI', 'Tom & Ollie, CI/CD MLOps'], ['Docker', 'CI/CD MLOps'], ['GitHub Actions', 'llm-eval-redteam'], ['Azure Databricks', 'PulseCity']] },
@@ -53,15 +55,16 @@ export const toolkit = [
 // TODO(Sunny): the two entries with year: null have no confirmed dates anywhere in the project, so they show a status tag instead.
 // Add the real years (and whether the MSc is complete) when you have them; do not guess.
 // `kind` says what a corner is: Education, Internship or Project. Projects are never presented as jobs or degrees.
+// `evidence` lists the projects (slugs in projects.js) that are the real material behind a card.
 // `point` is the one extra detail on a card. Each is taken from this site's own project descriptions (src/content/projects.js).
 // TODO(Sunny): the BTech card has no `point`: nothing in the project says what you did or learned there beyond the degree title.
 export const milestones = [
   { year: null, tag: 'Foundation', kind: 'Education', title: 'BTech Computer Science + Cybersecurity', text: 'The foundation: software, networks and security.' },
-  { year: 2024, kind: 'Internship', title: 'Security internship', text: 'Recon and scanning work, later rebuilt as web-security-scanner.', point: 'Web Security Scanner runs Nmap scans on approved targets, with dork generation and subdomain enumeration, in Flask.' },
-  { year: null, tag: 'Postgraduate', kind: 'Education', title: 'MSc Artificial Intelligence, Ulster', text: 'Robotics, ML and AI ethics coursework, plus the warehouse robot group project.', point: 'In the group project, a Gazebo patrol robot navigates with Bug2 or Q-learning and detects fire and intruders.' },
-  { year: 2026, kind: 'Project', title: 'Financial-NRF', text: 'Dissertation and paper draft: do LLM reliability scores notice when the source is wrong? Mostly no.', point: 'Tested on two finance datasets and four open models.' },
-  { year: 2026, kind: 'Project', title: 'Tom & Ollie relaunch', text: 'First real client: a storefront for a Belfast cheesemonger.', point: 'FastAPI backend with chilled-aware checkout and an order admin.' },
-  { year: 2026, kind: 'Project', title: 'Warden and AEGIS', text: 'AI security agents that only ship a defence after it passes validation.', point: 'Warden enforces a new defence only after an 8-stage validation gate. AEGIS proves a blocking rule will not break real traffic before it deploys it.' },
+  { year: 2024, kind: 'Internship', title: 'Security internship', text: 'Recon and scanning work, later rebuilt as web-security-scanner.', point: 'Web Security Scanner runs Nmap scans on approved targets, with dork generation and subdomain enumeration, in Flask.', evidence: ['web-security-scanner'] },
+  { year: null, tag: 'Postgraduate', kind: 'Education', title: 'MSc Artificial Intelligence, Ulster', text: 'Robotics, ML and AI ethics coursework, plus the warehouse robot group project.', point: 'In the group project, a Gazebo patrol robot navigates with Bug2 or Q-learning and detects fire and intruders.', evidence: ['warehouse-robot'] },
+  { year: 2026, kind: 'Project', title: 'Financial-NRF', text: 'Dissertation and paper draft: do LLM reliability scores notice when the source is wrong? Mostly no.', point: 'Tested on two finance datasets and four open models.', evidence: ['financial-nrf'] },
+  { year: 2026, kind: 'Project', title: 'Tom & Ollie relaunch', text: 'First real client: a storefront for a Belfast cheesemonger.', point: 'FastAPI backend with chilled-aware checkout and an order admin.', evidence: ['tom-and-ollie'] },
+  { year: 2026, kind: 'Project', title: 'Warden and AEGIS', text: 'AI security agents that only ship a defence after it passes validation.', point: 'Warden enforces a new defence only after an 8-stage validation gate. AEGIS proves a blocking rule will not break real traffic before it deploys it.', evidence: ['warden', 'aegis'] },
 ];
 
 // Not a milestone: where the route is heading. Shown apart from the corners, never lit on the map.

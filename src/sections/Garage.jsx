@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import useMedia from '../components/useMedia';
 import { projects } from '../content/projects';
 import SectionHeader from '../components/SectionHeader';
 import useReveal from '../components/useReveal';
@@ -99,19 +100,55 @@ function Art({ kind }) {
     ),
   };
   return (
-    <svg className="art" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <svg className="art" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <path className="g" d="M0 50H320M0 100H320M0 150H320M80 0V200M160 0V200M240 0V200" />
       {shapes[kind]}
     </svg>
   );
 }
 
+function Inspection({ p, id }) {
+  return (
+    <article id={id} className="inspect" aria-label={`${p.title}, selected build`}>
+      <div className="inspect-media">
+        <span className={`badge ${BADGE[p.cls] ?? ''} bay-badge`}>{p.cls}</span>
+        <Art kind={p.art} />
+      </div>
+      <p className="bay-cap">
+        {p.flow}
+        <small>Conceptual diagram, not a screenshot.</small>
+      </p>
+      <div className="inspect-body">
+        <span className="bay-area">{p.area}</span>
+        <h3 className="bay-title">{p.title}</h3>
+        <p className="bay-pitch">{p.pitch}</p>
+        <ul className="inspect-facts" aria-label="Evidence from the project description">
+          {p.facts.map((f) => (
+            <li key={f}>{f}</li>
+          ))}
+        </ul>
+        <div className="inspect-foot">
+          <span className="bay-repo">{p.repo.split('/').pop()}</span>
+          <a className="btn btn-primary" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
+            Open the code
+            <Arrow />
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function Garage() {
   const ref = useReveal();
   const listId = useId();
+  const bayId = useId();
   const [all, setAll] = useState(false);
   const featured = projects.filter((p) => p.cls === 'PRO');
   const rest = projects.filter((p) => p.cls !== 'PRO');
+  const [sel, setSel] = useState(featured[0].slug);
+  const inline = useMedia('(max-width: 900px)'); // narrow: the detail opens directly under the build that was picked
+  const active = featured.find((p) => p.slug === sel);
 
   return (
     <section className="section" id="garage" aria-labelledby="garage-title" ref={ref}>
@@ -120,33 +157,26 @@ export default function Garage() {
         sector="S3 / The Garage"
         title="Every build"
         accent="in the bay."
-        intro={`${featured.length} flagship builds up front, the other ${rest.length} in the full garage. Each one opens its code on GitHub.`}
+        intro={`${featured.length} flagship builds to inspect, the other ${rest.length} in the full garage. Each one opens its code on GitHub.`}
       />
-      <div className="bays">
-        {featured.map((p, i) => (
-          <a key={p.slug} className="bay" href={p.repo} target="_blank" rel="noreferrer">
-            <div className="bay-media">
-              <span className={`badge ${BADGE[p.cls] ?? ''} bay-badge`}>{p.cls}</span>
-              <span className="bay-num">BAY {String(i + 1).padStart(2, '0')}</span>
-              <Art kind={p.art} />
-            </div>
-            <p className="bay-cap">{p.flow}</p>
-            <div className="bay-body">
-              <span className="bay-area">{p.area}</span>
-              <h3 className="bay-title">{p.title}</h3>
-              <p className="bay-pitch">{p.pitch}</p>
-              <div className="bay-foot">
-                <span className="bay-repo">{p.repo.split('/').pop()}</span>
-                <span className="bay-action">
-                  Open the code
-                  <Arrow />
-                </span>
-              </div>
-            </div>
-          </a>
-        ))}
+      <div className="bay-layout reveal">
+        <ul className="bay-index" aria-label="Flagship builds">
+          {featured.map((p, i) => {
+            const on = p.slug === sel;
+            return (
+              <li key={p.slug} className={on ? 'is-on' : ''}>
+                <button className="bay-pick" type="button" aria-pressed={on} aria-controls={bayId} onClick={() => setSel(p.slug)}>
+                  <span className="bay-pick-n">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="bay-pick-name">{p.title}</span>
+                  <span className="bay-pick-line">{p.purpose}</span>
+                </button>
+                {inline && on && <Inspection key={p.slug} p={p} id={bayId} />}
+              </li>
+            );
+          })}
+        </ul>
+        {!inline && <Inspection key={active.slug} p={active} id={bayId} />}
       </div>
-      <p className="bays-note">Diagrams are conceptual sketches of how each build works, not screenshots.</p>
       <div className="fleet">
         <button className={`garage-toggle ${all ? 'is-open' : ''}`} type="button" aria-expanded={all} aria-controls={listId} onClick={() => setAll((v) => !v)}>
           <span>{all ? `Hide the full garage (${rest.length})` : `Full garage (${rest.length} more)`}</span>

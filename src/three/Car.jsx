@@ -44,7 +44,9 @@ export default function Car() {
     const p = drivePose(clock.t);
     const yaw = p.yaw;
     const roll = -p.slip * 0.05 * Math.min(1, p.speed / 6); // weight transfers onto the outside tyres
-    const pitch = p.u > 0.8 ? 0.008 : -0.012 * Math.min(1, p.speed / 8); // nose lifts on power, drops as it straightens and lifts off
+    // nose lifts on power, drops as it straightens and lifts off; then the suspension settles with one small, quickly damped rebound
+    const k = Math.max(0, p.u - 0.78) / 0.22;
+    const pitch = (p.u > 0.8 ? 0.008 : -0.012 * Math.min(1, p.speed / 8)) + Math.sin(k * Math.PI * 3) * Math.exp(-3.2 * k) * 0.014;
     outer.current.position.set(p.x, 0, p.z);
     outer.current.rotation.y = yaw;
     inner.current.rotation.set(pitch, 0, roll);

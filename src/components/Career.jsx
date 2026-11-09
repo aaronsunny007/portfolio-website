@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { milestones, ahead } from '../content/profile';
+import { projects } from '../content/projects';
+import Arrow from './Arrow';
 import { N, EXIT, legAt, exitAt, view } from '../three/journey';
 import { scroller } from '../scroller';
 
@@ -27,16 +29,22 @@ export default function Career({ reduceMotion, flat }) {
   const link = useRef();
   const st = useRef(null);
   const [sel, setSel] = useState(0);
+  const [more, setMore] = useState(-1); // the card whose detail is open; moving to another milestone closes it
   const Head = flat ? 'div' : 'button';
 
   useEffect(() => {
     view.layer = layer.current;
     view.link = link.current;
     view.panels = [...layer.current.querySelectorAll('[data-panel]')];
+    // each card is as tall as its content, and grows when its detail opens: the route places it from its own measured height
+    const ro = new ResizeObserver(() => view.panels.forEach((el, i) => (view.heights[i] = el.offsetHeight)));
+    view.panels.forEach((el) => ro.observe(el));
     return () => {
+      ro.disconnect();
       view.layer = null;
       view.link = null;
       view.panels = [];
+      view.heights = [];
     };
   }, []);
 
@@ -64,6 +72,7 @@ export default function Career({ reduceMotion, flat }) {
         cur = s;
         view.sel = s;
         setSel(s);
+        setMore(-1);
       }
       view.invalidate?.();
     };
@@ -108,7 +117,30 @@ export default function Career({ reduceMotion, flat }) {
                   <span className="panel-title">{m.title}</span>
                 </Head>
                 <p className="panel-text">{m.text}</p>
-                {m.point && <p className="panel-point">{m.point}</p>}
+                {(m.evidence || m.point) && (
+                  <div className="panel-foot">
+                    {m.evidence?.map((slug) => {
+                      const p = projects.find((x) => x.slug === slug);
+                      return (
+                        <a key={slug} className="evidence" href={p.repo} target="_blank" rel="noreferrer" tabIndex={flat || i === sel ? 0 : -1}>
+                          {p.title}
+                          <Arrow />
+                        </a>
+                      );
+                    })}
+                    {m.point && !flat && (
+                      <button className="panel-more-btn" type="button" aria-expanded={more === i} aria-controls={`more-${i}`} tabIndex={i === sel ? 0 : -1} onClick={() => setMore(more === i ? -1 : i)}>
+                        {more === i ? 'Less' : 'Details'}
+                        <Arrow kind="down" />
+                      </button>
+                    )}
+                  </div>
+                )}
+                {m.point && (
+                  <div id={`more-${i}`} className="panel-more" data-open={flat || more === i} inert={!flat && more !== i}>
+                    <p className="panel-point">{m.point}</p>
+                  </div>
+                )}
               </div>
             </li>
           ))}

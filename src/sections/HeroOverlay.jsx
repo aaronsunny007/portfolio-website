@@ -1,6 +1,8 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import { profile, roles } from '../content/profile';
+import { useCallback, useId, useRef, useState } from 'react';
+import { profile, roleCount } from '../content/profile';
 import Arrow from '../components/Arrow';
+import RoleList from '../components/RoleList';
+import useEscape from '../components/useEscape';
 
 export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay }) {
   const [open, setOpen] = useState(false);
@@ -8,16 +10,11 @@ export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay
   const panelId = useId();
 
   // Escape closes the panel and hands focus back to the control that opened it
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => {
-      if (e.key !== 'Escape') return;
-      setOpen(false);
-      trigger.current?.focus();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+  const close = useCallback(() => {
+    setOpen(false);
+    trigger.current?.focus();
+  }, []);
+  useEscape(open, close);
 
   return (
     <div className={`hero-ui ${showUi ? 'is-on' : ''}`}>
@@ -42,22 +39,13 @@ export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay
           <button ref={trigger} className="roles-trigger" type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
             <i className="roles-dot" aria-hidden="true" />
             {profile.status}
-            <span className="roles-count">{roles.reduce((n, g) => n + g.titles.length, 0)} roles</span>
+            <span className="roles-count">{roleCount} roles</span>
             <i className="roles-caret" aria-hidden="true" />
           </button>
         </div>
         <div id={panelId} className="hero-roles" inert={!open}>
           <div className="hero-roles-scroll" data-lenis-prevent tabIndex={0} role="region" aria-label="Roles I am open to">
-            {roles.map((g) => (
-              <section key={g.group}>
-                <h2 className="roles-head">{g.group}</h2>
-                <ul className="roles-list">
-                  {g.titles.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
-              </section>
-            ))}
+            <RoleList />
           </div>
         </div>
       </div>

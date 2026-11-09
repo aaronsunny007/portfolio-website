@@ -271,6 +271,7 @@ export const view = {
   pe: 0.6, // page progress (0..1) at the end of the career section: where the page's travel picks up after the car has landed
   tall: false, // portrait screens: the active card docks to the bottom and the car rides high in the frame
   panels: [], // DOM cards, in checkpoint order, then the ahead card
+  heights: [], // px, each card's own height (cards are as tall as their content)
   layer: null, // the fixed layer the cards live in
   link: null, // the thin line from the active card to the car
   wrap: null, // the .night wrapper
