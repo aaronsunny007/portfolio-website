@@ -35,6 +35,26 @@ export function radialTexture(size = 128) {
   return toTexture(c);
 }
 
+/** The floating route's surface: asphalt, worn edge lines, a dashed centre line and a chevron that points the way. v runs along the direction of travel. */
+export function routeTexture() {
+  const [c, g] = canvas(128, 300);
+  g.fillStyle = '#161b22';
+  g.fillRect(0, 0, 128, 300);
+  const rand = rng(3);
+  for (let i = 0; i < 700; i++) {
+    g.fillStyle = `rgba(255,255,255,${0.02 + rand() * 0.04})`;
+    g.fillRect(rand() * 128, rand() * 300, 1.5, 1.5);
+  }
+  g.fillStyle = 'rgba(235,238,242,0.42)'; // lane edges, just inside the kerbs, and a dashed centre line
+  g.fillRect(14, 0, 3, 300);
+  g.fillRect(111, 0, 3, 300);
+  for (let y = 10; y < 300; y += 100) g.fillRect(62.5, y, 3, 50);
+  const t = toTexture(c);
+  t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 4;
+  return t;
+}
+
 /** A painted chequered finish line, worn: 16 x 3 squares, hard edges, grain over the top. */
 export function finishTexture() {
   const [c, g] = canvas(256, 48);

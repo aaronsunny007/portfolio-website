@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
 import Nav from './components/Nav';
 import Loader from './components/Loader';
@@ -8,11 +8,28 @@ import PitCrew from './sections/PitCrew';
 import Track from './sections/Track';
 import Garage from './sections/Garage';
 import Finish from './sections/Finish';
+import Shutters from './components/Shutters';
 import { clock, T } from './three/timeline';
 import { hasWebGL } from './three/webgl';
+import { scroller } from './scroller';
+
+// If the night scene cannot start (no context, or its code fails to load) the career falls back to a plain list.
+class SceneGuard extends Component {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onFail();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 const Stage = lazy(() => import('./three/Stage'));
-const NightCircuit = lazy(() => import('./three/NightCircuit'));
+const loadNight = () => import('./three/NightCircuit');
+const NightCircuit = lazy(loadNight);
 const ORDER = ['driftStart', 'reveal', 'ui', 'end'];
 
 export default function App({ reduceMotion }) {
@@ -20,15 +37,29 @@ export default function App({ reduceMotion }) {
   const [heroActive, setHeroActive] = useState(true);
   const [skipped, setSkipped] = useState(false); // a skipped opening uncovers the portrait quickly
   const [covered, setCovered] = useState(clock.t >= T.end); // the portrait fully hides the 3D stage, so stop rendering it
+  const [sceneFailed, setSceneFailed] = useState(false);
   const hero = useRef();
   const timers = useRef([]);
   const reached = (b) => beat && ORDER.indexOf(beat) >= ORDER.indexOf(b);
+  // The road scene is built while the opening is still playing, so it is ready to take over the moment the opening resolves: its code is
+  // fetched with the first beat and it mounts at the zip reveal, drawing one frame to compile. It draws every frame once the opening has
+  // ended (or the visitor has scrolled on), and the hero opens onto it. Scrolling on early must never reveal an empty page.
+  const webgl = hasWebGL() && !sceneFailed;
+  const showNight = webgl && (reached('reveal') || !heroActive);
+  const nightLive = reached('end') || !heroActive;
+  useEffect(() => {
+    if (beat && webgl && !reduceMotion) loadNight();
+  }, [beat, webgl, reduceMotion]);
 
   // Smooth scroll (off for reduced motion)
   useEffect(() => {
     if (reduceMotion) return;
     const lenis = new Lenis({ autoRaf: true, lerp: 0.12 });
-    return () => lenis.destroy();
+    scroller.lenis = lenis;
+    return () => {
+      scroller.lenis = null;
+      lenis.destroy();
+    };
   }, [reduceMotion]);
 
   // Stop rendering the 3D scene when the hero is off screen
@@ -38,25 +69,24 @@ export default function App({ reduceMotion }) {
     return () => io.disconnect();
   }, []);
 
+  // The opening's stage keeps drawing until its own clock reaches the end: stopping it on a real-time timer froze that clock short of
+  // the end beat, so the end never arrived and the road scene was never started. A skip still has the quick wipe to finish first.
+  const skippedRef = useRef(false);
   const onBeat = useCallback((b) => {
     setBeat(b);
-    if (b === null) {
-      timers.current.forEach(clearTimeout);
-      timers.current = [];
-      setCovered(false);
-    } else if (b === 'reveal') {
-      timers.current.push(setTimeout(() => setCovered(true), T.revealLen * 1000 + 250));
-    } else if (b === 'end') {
-      timers.current.push(setTimeout(() => setCovered(true), 700)); // a skip lands here directly
-    }
+    clearTimeout(timers.current[0]);
+    if (b === null) setCovered(false);
+    else if (b === 'end') timers.current[0] = setTimeout(() => setCovered(true), skippedRef.current ? 600 : 0);
   }, []);
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const skip = () => {
+    skippedRef.current = true;
     setSkipped(true);
     clock.t = T.end;
   };
   const replay = () => {
+    skippedRef.current = false;
     setSkipped(false);
     setBeat(null);
     setCovered(false);
@@ -69,13 +99,16 @@ export default function App({ reduceMotion }) {
       <a className="skip-link" href="#main">Skip to content</a>
       <Nav visible={reached('ui')} />
       {/* The persistent night road starts once the opening has settled. No WebGL: the plain page background stays. */}
-      {reached('end') && hasWebGL() && (
-        <Suspense fallback={null}>
-          <NightCircuit still={reduceMotion} />
-        </Suspense>
+      {showNight && (
+        <SceneGuard onFail={() => setSceneFailed(true)}>
+          <Suspense fallback={null}>
+            <NightCircuit still={reduceMotion} show={nightLive} />
+          </Suspense>
+        </SceneGuard>
       )}
+      <Shutters reduceMotion={reduceMotion} />
       <main id="main">
-        <section className="hero" id="ignition" ref={hero} aria-labelledby="hero-title">
+        <section className={`hero ${covered && nightLive && webgl ? 'is-open' : ''}`} id="ignition" ref={hero} aria-labelledby="hero-title">
           {/* Reduced motion: no drift, no dial, no 3D. The settled hero is on screen immediately. */}
           {!reduceMotion && (
             <Suspense fallback={null}>
@@ -87,7 +120,7 @@ export default function App({ reduceMotion }) {
           <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion} onSkip={skip} onReplay={replay} />
         </section>
         <PitCrew />
-        <Track reduceMotion={reduceMotion} />
+        <Track reduceMotion={reduceMotion} flat={!webgl} />
         <Garage />
         <Finish />
       </main>
