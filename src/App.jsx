@@ -9,8 +9,10 @@ import Track from './sections/Track';
 import Garage from './sections/Garage';
 import Finish from './sections/Finish';
 import { clock, T } from './three/timeline';
+import { hasWebGL } from './three/webgl';
 
 const Stage = lazy(() => import('./three/Stage'));
+const NightCircuit = lazy(() => import('./three/NightCircuit'));
 const ORDER = ['driftStart', 'reveal', 'ui', 'end'];
 
 export default function App({ reduceMotion }) {
@@ -66,6 +68,12 @@ export default function App({ reduceMotion }) {
     <>
       <a className="skip-link" href="#main">Skip to content</a>
       <Nav visible={reached('ui')} />
+      {/* The persistent night road starts once the opening has settled. No WebGL: the plain page background stays. */}
+      {reached('end') && hasWebGL() && (
+        <Suspense fallback={null}>
+          <NightCircuit still={reduceMotion} />
+        </Suspense>
+      )}
       <main id="main">
         <section className="hero" id="ignition" ref={hero} aria-labelledby="hero-title">
           {/* Reduced motion: no drift, no dial, no 3D. The settled hero is on screen immediately. */}
@@ -79,7 +87,7 @@ export default function App({ reduceMotion }) {
           <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion} onSkip={skip} onReplay={replay} />
         </section>
         <PitCrew />
-        <Track />
+        <Track reduceMotion={reduceMotion} />
         <Garage />
         <Finish />
       </main>
