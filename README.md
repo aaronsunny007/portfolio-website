@@ -27,12 +27,15 @@ npm run dev
 | `src/sections/ProjectArt.jsx` | Conceptual drawings for the six flagships and the full-garage vignettes |
 | `src/styles/projects.css`, `controls.css` | Toolkit console, garage display and paddock; the per-season control families |
 | `src/styles/hardware.css`, `src/components/pointerFx.js` | The tactile parts: SUNNY emblem, GitHub key, Open code, selector plates, Full garage; one delegated pointer handler for tilt and specular edge |
+| `src/styles/hero.css` | The hero's words set straight over the photo (no panel), the red-stroke name reveal, the Open to Roles panel and the "I am P1" annotation |
 
 `Driver.jsx`, `RealDriver.jsx`, `SunnyDriver.jsx`, `driverPath.js` and `Wordmark.jsx` (the old walk-in avatar and 3D name) are no longer mounted by the opening. They are kept untouched, and `timeline.js` still carries the few legacy keys they read.
 
 ## The portrait
 
-`public/images/portrait.webp` is the full-resolution photo (1362×762) shown as shot: no blur filter and no dimming, only a long eased scrim on the left so the copy stays readable and there is no seam between text and picture. To swap it, keep roughly the same framing (about 16:9, the person right of centre) and update the `aspect-ratio` on `.hero-portrait` and the `width`/`height` in `Portrait.jsx`. If the framing differs, adjust `object-position` on `.hero-portrait img` in `src/index.css` (one value for desktop, one in the `max-width: 720px` block for phones).
+`public/images/portrait.webp` is the full-resolution photo (1362×762) shown as shot: no blur filter and no dimming, only a long eased scrim on the left so the copy stays readable and there is no seam between text and picture. To swap it, keep roughly the same framing (about 16:9, the person right of centre) and update the `aspect-ratio` on `.hero-portrait` and the `width`/`height` in `Portrait.jsx`. If the framing differs, adjust `--fx` / `--fy` (the crop's focal point, read by the photo, its ambient copies and the annotation) on `.hero-portrait` in `src/index.css`: one pair for desktop, one in the phone blocks.
+
+The "I am P1" annotation is drawn in the photo's own pixel grid (1362 × 762) inside the photo's box, so it stays on the subject at any crop. If the photo changes, redraw it: the leader path and arrowhead in `Portrait.jsx`, and `.p1-text`'s `left` / `top` (percent of the photo) in `src/styles/hero.css`.
 
 ## Dev hooks
 

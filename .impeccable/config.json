@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-11-10T04:32:43.400Z",
         "reason": "user confirmed: brief asks for a satin-aluminium SUNNY wordmark (light upper surfaces, darker lower edges)"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/hero.css"
+        ],
+        "createdAt": "2026-11-10T06:00:00.000Z",
+        "reason": "false positive: .hero-stroke::before is the 5px red leading edge of the name-reveal wipe (a moving mask edge the brief asks for), not an accent border on a card"
       }
     ]
   }

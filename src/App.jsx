@@ -138,9 +138,9 @@ export default function App({ reduceMotion }) {
               </Suspense>
             </SceneGuard>
           )}
-          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} settled={reached('end') && !reduceMotion} paused={!heroActive} />
+          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} settled={reached('end') && !reduceMotion} paused={!heroActive} annotated={reached('ui')} />
           {!reduceMotion && <Loader key={run} release={skipped} />}
-          <HeroOverlay showUi={reached('ui')} ended={reached('end')} canReplay={!reduceMotion && !stageFailed} onSkip={skip} onReplay={replay} />
+          <HeroOverlay showUi={reached('ui')} fast={skipped} ended={reached('end')} canReplay={!reduceMotion && !stageFailed} onSkip={skip} onReplay={replay} />
         </section>
         <PitCrew />
         <Track reduceMotion={reduceMotion} flat={!webgl} />

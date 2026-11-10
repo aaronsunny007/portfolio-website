@@ -12,6 +12,7 @@ import './index.css';
 import './styles/projects.css';
 import './styles/controls.css';
 import './styles/hardware.css';
+import './styles/hero.css';
 import App from './App';
 import { clock, startTimeFromUrl, T } from './three/timeline';
 

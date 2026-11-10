@@ -4,12 +4,14 @@ import { profile } from '../content/profile';
 // The settled hero. public/images/portrait.webp is the full-resolution photo (1362×762, no border, no screenshot bars).
 // To swap in a different one, overwrite that file; keep about 16:9 framing with the person right of centre.
 const SRC = `${import.meta.env.BASE_URL}images/portrait.webp`;
+const W = 1362; // the photo's own pixel grid: the annotation is drawn in it, so it stays on the subject at any crop (see .p1-frame)
+const H = 762;
 
 /**
   Sits above the 3D stage and is uncovered left to right once the car has left the frame.
   The picture dissolves into the page's asphalt on every side so it reads as the scene the car just drove out of, not a card.
 */
-export default function Portrait({ revealed, fast, parallax, settled, paused }) {
+export default function Portrait({ revealed, fast, parallax, settled, paused, annotated }) {
   const [loaded, setLoaded] = useState(false);
   const move = useRef();
 
@@ -47,6 +49,16 @@ export default function Portrait({ revealed, fast, parallax, settled, paused }) 
             <i className="amb amb-smoke-r"><b /></i>
             <i className="amb amb-wet"><b /></i>
             <i className="amb-glow" />
+          </div>
+          {/* The personal annotation lives in the photo's own transformed box, so parallax, push-in and cropping carry it with the picture. */}
+          <div className={`p1-frame ${annotated ? 'is-on' : ''} ${fast ? 'is-fast' : ''}`}>
+            <p className="p1-text">
+              I am <b>P1</b>
+            </p>
+            <svg className="p1-line" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+              <path className="p1-leader" d="M1120 152 Q1078 180 1027 183" pathLength="1" />
+              <path className="p1-head" d="M1037 187.6 L1027 183 L1036.4 177.3" />
+            </svg>
           </div>
         </div>
         <i className="portrait-light" aria-hidden="true" />

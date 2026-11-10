@@ -1,0 +1,156 @@
+/* ---------- Hero: the words, set straight over the photograph ----------
+   No panel. The name, the introduction and the actions share the photo's own dark left side; a soft local fade (no edge) keeps them readable.
+   The reveal is CSS keyed on `.hero-ui.is-on` (and `.p1-frame.is-on`): the class goes away on a replay and comes back at the "ui" beat, so the
+   sequence restarts exactly then and never because of a re-render. `--t` scales every duration and delay: 1 normally, small after Skip.
+   Reduced motion (index.css) turns every animation off, so the base styles here are the finished composition. */
+
+.hero-ui { --t: 1; position: absolute; inset: 0; z-index: 9; pointer-events: none; } /* above the ignition gauge, so Skip works while it is up */
+.hero-ui.is-fast { --t: 0.12; }
+.hero-ui a, .hero-ui button, .hero-roles { pointer-events: auto; }
+.hero-ui :is(a, button, [tabindex]) { scroll-margin: 96px 0; } /* a focused control scrolls clear of the fixed nav */
+.hero-ui:not(.is-on) :is(.hero-copy, .scroll-cue) { visibility: hidden; }
+
+.hero-copy {
+  --name: clamp(48px, min(6.6vw, 11svh), 108px);
+  position: absolute; z-index: 0; isolation: isolate; left: clamp(20px, 5vw, 76px); top: clamp(92px, 15svh, 150px); width: min(580px, 46vw);
+  display: grid; justify-items: start; gap: var(--space-4);
+}
+/* a soft local fade for contrast: it is transparent at every edge of its own box, so no rectangle can be seen */
+.hero-copy::before {
+  content: ""; position: absolute; z-index: -1; inset: -90px -200px -110px -140px; pointer-events: none;
+  background: radial-gradient(closest-side at 42% 50%, rgba(7, 9, 13, 0.56), rgba(7, 9, 13, 0.34) 52%, rgba(7, 9, 13, 0));
+}
+
+.hero-name { position: relative; width: max-content; max-width: 100vw; margin: 0 0 var(--space-1); font: 900 var(--name)/0.86 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; text-shadow: 0 6px 40px rgba(0, 0, 0, 0.75); }
+.hero-name-ink { display: block; }
+.hero-name-first, .hero-name-last { display: block; }
+.hero-name-last { color: var(--drift-red); }
+/* the stroke: a narrow red edge, with a faint trail on the cleared side, that travels the width of the name; the name is revealed behind it */
+.hero-stroke { position: absolute; left: 0; top: -6%; bottom: -6%; width: 100%; pointer-events: none; opacity: 0; }
+.hero-stroke::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; margin-left: -2px; background: var(--drift-red); box-shadow: 0 0 14px rgba(225, 6, 0, 0.45); }
+.hero-stroke::after { content: ""; position: absolute; right: 100%; top: 0; bottom: 0; width: 96px; margin-right: -2px; background: linear-gradient(90deg, rgba(225, 6, 0, 0), rgba(225, 6, 0, 0.3)); }
+
+.hero-alias { margin: 0; font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase; color: var(--chalk-400); text-shadow: 0 1px 12px rgba(0, 0, 0, 0.9); }
+.hero-alias b { font-weight: 600; color: var(--chalk-100); }
+.hero-focus { display: flex; align-items: center; gap: var(--space-3); margin: 0; font: 600 clamp(13px, 1.05vw, 15px)/1.3 var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase; color: var(--chalk-100); text-shadow: 0 1px 14px rgba(0, 0, 0, 0.9); }
+.hero-focus::before { content: ""; flex: none; width: 2px; height: 14px; background: var(--drift-red); }
+.hero-tagline { margin: 0; max-width: 31ch; font: 500 clamp(17px, 1.45vw, 21px)/1.5 var(--font-body); color: var(--chalk-100); text-shadow: 0 1px 16px rgba(0, 0, 0, 0.9); }
+
+/* the actions: the primary key under the introduction, the availability control a clear step below it */
+.hero-actions { position: relative; display: grid; justify-items: start; gap: var(--space-5); margin-top: var(--space-3); }
+.hero-go { min-height: 52px; padding-inline: var(--space-8); font-size: 14px; }
+.hero-roles-wrap { justify-self: start; }
+.roles-trigger {
+  display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--ctl-h); padding: 0 var(--space-4); cursor: pointer;
+  border: 1px solid rgba(255, 176, 32, 0.34); border-radius: var(--radius-sm); background: rgba(14, 17, 23, 0.62); color: var(--chalk-100);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.4);
+  font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase;
+  transition: background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-brake);
+}
+.roles-trigger:hover { background: rgba(22, 27, 34, 0.82); border-color: rgba(255, 176, 32, 0.6); }
+.roles-trigger:active { transform: translateY(var(--press)); }
+.roles-trigger[aria-expanded="true"] { background: rgba(22, 27, 34, 0.9); border-color: var(--signal-amber); }
+.roles-trigger .arrow { transition: transform var(--dur-ui) var(--ease-brake); }
+.roles-trigger:hover .arrow { transform: translate(1px, -1px); }
+.roles-trigger[aria-expanded="true"] .arrow { transform: rotate(90deg); }
+.roles-dot { flex: none; width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--signal-amber); }
+
+/* the roles panel unrolls beside the text column (desktop windows) or opens beneath the control (where the hero flows and grows); the count lives here, not on the control */
+.hero-roles {
+  position: absolute; left: 416px; bottom: 0; width: 300px; --roles-h: min(300px, 36svh); /* beside the text column, never over the name */
+  background: var(--asphalt-800); border: 1px solid var(--asphalt-700); box-shadow: var(--lift);
+  visibility: hidden; opacity: 0; clip-path: inset(0 100% 0 0); transform: translateX(-14px);
+  transition: clip-path 340ms var(--ease-brake), transform 340ms var(--ease-brake), opacity 200ms linear, visibility 0s linear 340ms;
+}
+.hero-ui.is-open .hero-roles { visibility: visible; opacity: 1; clip-path: inset(0); transform: none; transition-delay: 0s; }
+.hero-roles-scroll { min-height: 0; max-height: var(--roles-h); overflow-y: auto; overscroll-behavior: contain; padding-inline: 24px; scrollbar-width: thin; scrollbar-color: var(--asphalt-500) transparent; }
+.hero-roles-scroll > :first-child { margin-top: 20px; }
+.hero-roles-scroll > :last-child { margin-bottom: 20px; }
+.hero-roles-scroll > section + section { margin-top: 22px; }
+.hero-roles-scroll:focus-visible { outline-offset: -3px; }
+.roles-total { margin: 0 0 var(--space-4); font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase; color: var(--signal-amber); }
+.roles-head { margin: 0 0 var(--space-2); font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); color: var(--chalk-400); }
+.roles-list { margin: 0; padding: 0; list-style: none; }
+.roles-list li { padding: var(--space-2) 0; border-top: 1px solid var(--line); font: 600 var(--text-sm)/1.35 var(--font-body); color: var(--chalk-100); }
+
+.hero-gh { display: none; }
+.hero-skip { position: absolute; right: clamp(8px, 4vw, 52px); bottom: 12px; }
+.scroll-cue {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--ctl-h); padding: 0 var(--space-3);
+  font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase; color: var(--chalk-400); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px;
+  opacity: 0; transition: opacity 600ms linear 600ms, color var(--dur-fast) var(--ease-brake), text-decoration-color var(--dur-fast) var(--ease-brake);
+}
+.hero-ui.is-on .scroll-cue { opacity: 1; }
+.scroll-cue:hover { color: var(--chalk-100); text-decoration-color: var(--drift-red); }
+
+/* ---------- the reveal ---------- */
+@keyframes name-clear { from { clip-path: inset(-30% 120% -30% -20%); } to { clip-path: inset(-30% -20% -30% -20%); } }
+@keyframes stroke-sweep { from { transform: translateX(-20%); } to { transform: translateX(120%); } }
+@keyframes stroke-fade { 0% { opacity: 0; } 8% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes hero-rise { from { opacity: 0; transform: translateY(12px); visibility: hidden; } to { opacity: 1; transform: none; visibility: visible; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.hero-ui.is-on .hero-name-ink { animation: name-clear calc(0.95s * var(--t)) cubic-bezier(0.65, 0, 0.35, 1) both; }
+.hero-ui.is-on .hero-stroke { animation: stroke-sweep calc(0.95s * var(--t)) cubic-bezier(0.65, 0, 0.35, 1) both, stroke-fade calc(0.95s * var(--t)) linear both; }
+.hero-ui.is-on .hero-copy::before { animation: fade-in calc(0.7s * var(--t)) linear both; }
+.hero-ui.is-on .hero-copy > :is(.hero-alias, .hero-focus, .hero-tagline, .hero-actions) { animation: hero-rise calc(0.6s * var(--t)) var(--ease-brake) calc(var(--d) * var(--t)) both; }
+.hero-alias { --d: 0.6s; }
+.hero-focus { --d: 0.72s; }
+.hero-tagline { --d: 0.84s; }
+.hero-actions { --d: 1s; }
+
+/* ---------- "I am P1": a restrained annotation, drawn on the photo's own pixel grid ----------
+   The frame is exactly the rectangle the photo occupies inside its box (object-fit: cover at --fx / --fy), found from the box's own size with
+   container units: no script, no resize listener. Text and line are placed in the photo's coordinates (1362 x 762), so at every crop and size
+   the leader ends beside the shoulder it was drawn for, and it moves with the photo's parallax and push-in. */
+.portrait-move { container-type: size; }
+.p1-frame {
+  --t: 1; --iw: max(100cqw, 100cqh * 1.7874); --ih: max(100cqh, 100cqw / 1.7874);
+  position: absolute; width: var(--iw); height: var(--ih); pointer-events: none;
+  left: calc((100cqw - var(--iw)) * var(--fx)); top: calc((100cqh - var(--ih)) * var(--fy));
+}
+.p1-frame.is-fast { --t: 0.12; }
+.p1-frame:not(.is-on) { visibility: hidden; }
+.p1-text {
+  position: absolute; left: 82.9%; top: 14.7%; margin: 0; white-space: nowrap; font: 800 max(13px, calc(var(--iw) * 0.0172))/1 var(--font-display); letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--chalk-100); text-shadow: 0 1px 14px rgba(0, 0, 0, 0.85);
+}
+.p1-text b { font-weight: 800; color: var(--drift-red); }
+.p1-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.p1-line path { fill: none; stroke: var(--chalk-100); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.p1-leader { stroke-dasharray: 1; stroke-dashoffset: 0; opacity: 0.85; }
+.p1-head { opacity: 0.9; }
+@keyframes p1-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.p1-frame.is-on .p1-text { animation: hero-rise calc(0.5s * var(--t)) var(--ease-brake) calc(1.3s * var(--t)) both; }
+.p1-frame.is-on .p1-leader { animation: p1-draw calc(0.7s * var(--t)) cubic-bezier(0.3, 0, 0.2, 1) calc(1.5s * var(--t)) both; }
+.p1-frame.is-on .p1-head { animation: fade-in calc(0.2s * var(--t)) linear calc(2.1s * var(--t)) both; }
+
+/* ---------- phones, narrow windows and portrait tablets: the photo is a crop at the top, the words flow beneath it and the hero grows to hold them ---------- */
+@media (max-width: 720px), (max-aspect-ratio: 1/1) {
+  .hero { height: auto; min-height: max(100svh, 560px); }
+  .hero .stage, .loader { bottom: auto; height: max(100svh, 560px); } /* the opening still plays in one screen, whatever the hero's height */
+  .hero-ui { position: relative; inset: auto; display: flex; flex-direction: column; min-height: max(100svh, 560px); padding: calc(44px + max(62svh, 340px) - 44px) 0 76px; }
+  .hero-copy { position: relative; left: auto; top: auto; width: auto; padding-inline: max(20px, env(safe-area-inset-left)) max(20px, env(safe-area-inset-right)); gap: var(--space-3); --name: clamp(40px, 14.2vw, 88px); }
+  .hero-copy::before { inset: -70px -40px -60px; background: radial-gradient(closest-side at 40% 40%, rgba(7, 9, 13, 0.55), rgba(7, 9, 13, 0)); }
+  .hero-tagline { font-size: 17px; max-width: 34ch; }
+  .hero-actions { justify-items: stretch; gap: var(--space-4); width: min(100%, 420px); }
+  .hero-roles-wrap { justify-self: stretch; }
+  .roles-trigger { width: 100%; justify-content: flex-start; }
+  .roles-trigger .arrow { margin-left: auto; }
+  /* the photo's left scrim and red rim light end with the photo, in the same fade, so no edge is left where the words begin */
+  .hero.is-open :is(.portrait-fade, .portrait-light) { -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0, #000 78%, transparent 100%); }
+  .scroll-cue { display: none; }
+  .hero-skip { right: max(8px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); }
+  /* the panel opens beneath the control, inside the flow */
+  .hero-roles {
+    position: static; width: auto; margin: var(--space-2) 0 0; border: 0; box-shadow: none; background: rgba(14, 17, 23, 0.9); box-shadow: inset 0 0 0 1px var(--asphalt-700);
+    display: grid; grid-template-rows: 0fr; clip-path: none; transform: none; opacity: 1;
+    transition: grid-template-rows 340ms var(--ease-brake), visibility 0s linear 340ms;
+  }
+  .hero-ui.is-open .hero-roles { grid-template-rows: 1fr; }
+  .hero-roles-scroll { --roles-h: min(34svh, 300px); overflow-y: auto; }
+}
+/* phone widths: the nav's GitHub key is hidden, so the hero keeps its own small link */
+@media (max-width: 720px) { .hero-gh { display: inline-flex; justify-self: start; padding-inline: 0; min-height: var(--ctl-h); } }
+/* the narrowest phones: keep the focus line on one row */
+@media (max-width: 400px) { .hero-focus { gap: var(--space-2); font-size: 12px; letter-spacing: 0.03em; } }

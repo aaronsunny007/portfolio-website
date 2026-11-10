@@ -5,9 +5,12 @@ export const profile = {
   // Legal name, shown only as the home-page headline. Everywhere else the site says Sunny / Sunny Aaron.
   legal: { given: 'Aaron Prakash', family: 'Gandi' },
   role: 'AI Engineer',
+  // The hero's one focus line: the licence "Class" below, written out as areas of work (no seniority or results claimed).
+  focus: 'AI engineering · AI security · MLOps',
   tagline: 'Controlled chaos. AI systems that stay in line when things go sideways.',
   location: 'Belfast, NI',
   status: 'Open to roles',
+  statusTitle: 'Open to Roles', // the hero control's label (title case); `status` stays the sentence form used in running text
   github: 'https://github.com/aaronsunny007',
   // TODO(Sunny): add your public email, LinkedIn URL and CV (public/cv/Sunny-Aaron-CV.pdf).
   email: '',
