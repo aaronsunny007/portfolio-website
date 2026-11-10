@@ -26,6 +26,7 @@ npm run dev
 | `src/sections/` | Hero overlay, Pit Crew, Track, Garage, Finish |
 | `src/sections/ProjectArt.jsx` | Conceptual drawings for the six flagships and the full-garage vignettes |
 | `src/styles/projects.css`, `controls.css` | Toolkit console, garage display and paddock; the per-season control families |
+| `src/styles/hardware.css`, `src/components/pointerFx.js` | The tactile parts: SUNNY emblem, GitHub key, Open code, selector plates, Full garage; one delegated pointer handler for tilt and specular edge |
 
 `Driver.jsx`, `RealDriver.jsx`, `SunnyDriver.jsx`, `driverPath.js` and `Wordmark.jsx` (the old walk-in avatar and 3D name) are no longer mounted by the opening. They are kept untouched, and `timeline.js` still carries the few legacy keys they read.
 

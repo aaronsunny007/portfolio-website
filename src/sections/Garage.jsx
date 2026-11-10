@@ -89,12 +89,14 @@ export default function Garage() {
         intro={`${featured.length} flagship builds to inspect, the other ${rest.length} in the full garage. Each one opens its code on GitHub.`}
       />
       <div className="bay-layout reveal">
-        <ul className="bay-rail" aria-label="Flagship builds" style={{ '--i': at, '--n': featured.length }}>
+        <ul className="bay-rail" aria-label="Flagship builds">
           {featured.map((p, i) => (
             <li key={p.slug}>
-              <button className="bay-pick" type="button" aria-pressed={i === at} aria-controls={bayId} onClick={() => setSel(p.slug)}>
-                <span className="bay-pick-n">{pad(i + 1)}</span>
-                <span className="bay-pick-name">{p.title}</span>
+              <button className="bay-pick" data-tilt type="button" aria-pressed={i === at} aria-controls={bayId} onClick={() => setSel(p.slug)}>
+                <span className="bay-plate">
+                  <span className="bay-pick-n">{pad(i + 1)}</span>
+                  <span className="bay-pick-name">{p.title}</span>
+                </span>
               </button>
             </li>
           ))}
@@ -103,8 +105,11 @@ export default function Garage() {
       </div>
       <div className="fleet">
         <button className={`garage-toggle ${all ? 'is-open' : ''}`} type="button" aria-expanded={all} aria-controls={listId} onClick={() => setAll((v) => !v)}>
-          <span>{all ? `Hide the full garage (${rest.length})` : `Full garage (${rest.length} more)`}</span>
-          <Arrow kind="down" />
+          <span className="gt-face">
+            {all ? 'Hide full garage' : 'Full garage'}
+            <span className="gt-count">{all ? `${rest.length} shown` : `${rest.length} more`}</span>
+            <Arrow kind="down" />
+          </span>
         </button>
         <ul id={listId} className="paddock" hidden={!all}>
           {rest.map((p) => (

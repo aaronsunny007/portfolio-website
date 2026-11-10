@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/styles/hardware.css"
+        ],
+        "createdAt": "2026-11-10T04:32:43.400Z",
+        "reason": "user confirmed: brief asks for a satin-aluminium SUNNY wordmark (light upper surfaces, darker lower edges)"
+      }
+    ]
+  }
+}

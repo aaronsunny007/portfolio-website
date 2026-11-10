@@ -66,38 +66,7 @@
 .deck-nav button[aria-current="step"] { color: var(--chalk-100); box-shadow: inset 0 0 0 1px var(--drift-red); }
 .deck-nav button[aria-current="step"]::before { display: block; background: conic-gradient(var(--drift-red) var(--arc), transparent 0); animation: arc-fill 420ms var(--ease-out-strong) both; }
 
-/* ---------- Season 3 · Garage: bay selectors and inspection controls ---------- */
-.bay-pick {
-  --face: var(--asphalt-900); --shell: var(--line);
-  position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; height: 48px; padding: 0 var(--space-4) 0 var(--space-3); border: 0; text-align: left; cursor: pointer; color: var(--chalk-100);
-  background: var(--shell); clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle)) 100%, 0 100%);
-  transition: color var(--dur-fast) var(--ease-brake), background-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong);
-}
-.bay-pick::before { content: ""; position: absolute; inset: 1px; z-index: 0; background: var(--face); clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle) + 0.6px) 100%, 0 100%); transition: background-color var(--dur-fast) var(--ease-brake); }
-.bay-pick > * { position: relative; z-index: 1; }
-.bay-pick:hover { --shell: var(--line-strong); --face: var(--asphalt-800); }
-.bay-pick:active { transform: translateX(2px); --face: var(--asphalt-700); }
-/* the clipped shell hides an outline, so the focus ring is the shell itself: a 2px sky-blue edge that follows the angled end */
-.bay-pick:focus-visible { outline: 0; --shell: var(--livery-sky); }
-.bay-pick:focus-visible::before { inset: 2px; clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle) + 1.2px) 100%, 0 100%); }
-.bay-pick[aria-pressed="true"] { --shell: var(--line-strong); --face: var(--asphalt-800); }
-.bay-pick-n { font: 600 var(--text-meta) var(--font-mono); letter-spacing: var(--track-meta); color: var(--chalk-400); transition: color var(--dur-fast) var(--ease-brake), text-shadow var(--dur-fast) var(--ease-brake); }
-.bay-pick[aria-pressed="true"] .bay-pick-n { color: var(--signal-amber); text-shadow: 0 0 10px rgba(255, 176, 32, 0.7); } /* the bay number lights up, amber, like a workshop sign */
-.bay-pick-name { font: 800 22px/1.1 var(--font-display); text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* the mechanical indicator: one red slider that travels to the selected bay and stops firmly */
-@media (min-width: 901px) {
-  .bay-rail::before { content: ""; position: absolute; left: 0; top: calc(var(--i, 0) * var(--step)); width: 5px; height: 48px; background: var(--drift-red); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25); transition: top 260ms var(--ease-travel); pointer-events: none; }
-}
-@media (max-width: 900px) {
-  .bay-pick { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; height: 56px; padding-block: 4px; }
-  .bay-pick-name { font-size: 20px; }
-  .bay-pick[aria-pressed="true"]::before { background: linear-gradient(var(--drift-red), var(--drift-red)) 0 100% / 100% 3px no-repeat, var(--face); }
-}
-/* primary inspection actions: a square-shouldered plate with one angled corner and a darker lower edge, so it reads as a pressable part */
-.btn-edge { border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--angle)), calc(100% - var(--angle)) 100%, 0 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -3px 0 rgba(0, 0, 0, 0.38); transition: background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake), color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong), box-shadow var(--dur-fast) var(--ease-out-strong); }
-.btn-edge.btn-secondary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.5); }
-.btn-edge:active { transform: translateY(var(--press)); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5); }
-.btn-edge:focus-visible { outline-offset: -4px; }
+/* ---------- Season 3 · Garage: inspection controls (the selector plates, Open code and Full garage live in hardware.css) ---------- */
 .bay-more { white-space: nowrap; display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--ctl-h); padding: 0; background: transparent; border: 0; cursor: pointer; font: 800 13px/16px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--chalk-100); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; transition: text-decoration-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong); }
 .bay-more:hover { text-decoration-color: var(--drift-red); }
 .bay-more:active { transform: translateY(var(--press)); }

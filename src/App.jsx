@@ -13,6 +13,7 @@ import { clock, T } from './three/timeline';
 import { hasWebGL } from './three/webgl';
 import { scroller } from './scroller';
 import { MAX_WAIT_MS } from './components/ignition';
+import { installPointerFx } from './components/pointerFx';
 
 // If the night scene cannot start (no context, or its code fails to load) the career falls back to a plain list.
 class SceneGuard extends Component {
@@ -52,6 +53,8 @@ export default function App({ reduceMotion }) {
   useEffect(() => {
     if (beat && webgl && !reduceMotion) loadNight();
   }, [beat, webgl, reduceMotion]);
+
+  useEffect(installPointerFx, []);
 
   // Smooth scroll (off for reduced motion)
   useEffect(() => {

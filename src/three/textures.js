@@ -35,61 +35,6 @@ export function radialTexture(size = 128) {
   return toTexture(c);
 }
 
-/**
- * The underglow's pool, in the car's own footprint (plane 4.4 x 6.4 model units, chassis about 1.7 x 4.0). The emitter is under the chassis
- * and hidden by it, so the light is strongest just outside the sills and falls off softly with distance; it breaks up where wet asphalt
- * scatters it. White: the material tints it. Drawn once, nothing is lit in real time.
- */
-export function underglowTexture() {
-  const W = 256;
-  const H = 384;
-  const [c, g] = canvas(W, H);
-  const fw = 100;
-  const fh = 236;
-  const off = 1000; // the shape is drawn off the canvas and only its blurred shadow lands on it: glow with no hard outline
-  g.shadowColor = 'rgba(255,255,255,1)';
-  g.shadowOffsetX = off;
-  g.fillStyle = '#fff';
-  for (const [blur, a] of [[96, 0.9], [52, 0.75], [20, 0.55]]) {
-    g.shadowBlur = blur;
-    g.globalAlpha = a;
-    g.beginPath();
-    g.roundRect((W - fw) / 2 - off, (H - fh) / 2, fw, fh, 42);
-    g.fill();
-  }
-  g.shadowBlur = 0;
-  g.shadowOffsetX = 0;
-  g.globalAlpha = 1;
-  const rand = rng(11);
-  g.globalCompositeOperation = 'destination-out'; // breakup: patches and faint streaks along the wet surface
-  for (let i = 0; i < 240; i++) {
-    const x = rand() * W;
-    const y = rand() * H;
-    const r = 3 + rand() * 15;
-    const gr = g.createRadialGradient(x, y, 0, x, y, r);
-    gr.addColorStop(0, `rgba(0,0,0,${0.08 + rand() * 0.22})`);
-    gr.addColorStop(1, 'rgba(0,0,0,0)');
-    g.fillStyle = gr;
-    g.fillRect(x - r, y - r, r * 2, r * 2);
-  }
-  for (let i = 0; i < 36; i++) {
-    g.fillStyle = `rgba(0,0,0,${0.03 + rand() * 0.07})`;
-    g.fillRect(rand() * W, 0, 1 + rand() * 3, H);
-  }
-  g.globalCompositeOperation = 'destination-in'; // nothing reaches the edge of the plane
-  g.save();
-  g.translate(W / 2, H / 2);
-  g.scale(W / H, 1);
-  const m = g.createRadialGradient(0, 0, 0, 0, 0, H / 2);
-  m.addColorStop(0, '#fff');
-  m.addColorStop(0.72, 'rgba(255,255,255,0.9)');
-  m.addColorStop(1, 'rgba(255,255,255,0)');
-  g.fillStyle = m;
-  g.fillRect(-H / 2, -H / 2, H, H);
-  g.restore();
-  return toTexture(c);
-}
-
 /** A soft black blob with a darker core: the contact shadow under a tyre, and the body's shadow on the road. */
 export function contactTexture() {
   const [c, g] = canvas(64, 64);

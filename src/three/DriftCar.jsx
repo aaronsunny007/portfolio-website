@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { ARC, FLY, route, view, airAt, squashAt, stretchAt, flightAt, landSquash, carAt, newFrame, routeToWorld, LEN } from './journey';
+import { ARC, FLY, ROAD_W, route, view, airAt, squashAt, stretchAt, flightAt, landSquash, carAt, newFrame, routeToWorld, LEN } from './journey';
 import { liftWheels, TYRE_R } from './wheels';
-import { underglowTexture, contactTexture } from './textures';
+import { contactTexture } from './textures';
 
 // The hero's car, on the career route: dark body, neon-green blades, the same wheels that steer and spin.
 const URL = (typeof window !== 'undefined' && window.__CAR_URL) || `${import.meta.env.BASE_URL}models/car.glb`;
@@ -31,6 +31,44 @@ function blade(len, h, th = 0.022) {
   return g;
 }
 
+// The underglow, as light falling on the road. The road is an unlit material, so scene lights cannot reach it: the light is computed here,
+// per pixel, from concealed strip emitters under the sills (inverse-square-like falloff from the nearest strip, a finite reach), and it is
+// seen through the asphalt's own grain, which is anchored to the road (not to the car) so it does not swim as the car moves.
+// The mesh follows the road under the car (see the per-frame rows in DriftCar), and fades out before the road's edge so no light lands off it.
+const POOL = { NX: 12, NZ: 18, HX: 2.0, HZ: 3.2 }; // the footprint in model units, wider and longer than the chassis (about 1.7 x 4.0)
+const poolVert = /* glsl */ `
+  attribute vec2 aLocal;
+  uniform float uS; uniform float uScale;
+  varying vec2 vL; varying vec2 vRoad;
+  void main() {
+    vL = aLocal;
+    vRoad = vec2(aLocal.x * uScale, uS + aLocal.y * uScale);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }`;
+const poolFrag = /* glsl */ `
+  uniform vec3 uColor; uniform float uOpacity; uniform float uYaw; uniform float uHalf;
+  varying vec2 vL; varying vec2 vRoad;
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float vnoise(vec2 p) {
+    vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+  }
+  float seg(vec2 p, vec2 a, vec2 b) { vec2 pa = p - a; vec2 ba = b - a; return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0)); }
+  void main() {
+    // the light belongs to the body, so it turns with the body's slide; the road does not
+    float c = cos(uYaw); float s = sin(uYaw);
+    vec2 p = vec2(c * vL.x - s * vL.y, s * vL.x + c * vL.y);
+    float d = min(min(seg(p, vec2(-0.6, -1.4), vec2(-0.6, 1.4)), seg(p, vec2(0.6, -1.4), vec2(0.6, 1.4))), min(seg(p, vec2(-0.5, -1.7), vec2(0.5, -1.7)), seg(p, vec2(-0.5, 1.7), vec2(0.5, 1.7))));
+    float e = 1.0 / pow(1.0 + (d * d) / 0.12, 1.5);
+    e *= 1.0 - smoothstep(0.7, 1.55, d);
+    // asphalt: grain and larger wear catch the light unevenly
+    float g = 0.55 * vnoise(vRoad * 26.0) + 0.3 * vnoise(vRoad * 7.0 + 3.1) + 0.15 * vnoise(vRoad * 2.3);
+    float tex = mix(0.5, 1.35, g);
+    float road = 1.0 - smoothstep(uHalf - 0.3, uHalf, abs(vRoad.x));
+    gl_FragColor = vec4(uColor * e * tex * road * uOpacity, 1.0);
+    #include <colorspace_fragment>
+  }`;
+
 const smokeVert = /* glsl */ `
   attribute float aSize; attribute float aAlpha;
   uniform float uScale;
@@ -54,10 +92,9 @@ export default function DriftCar({ low, still }) {
   const { size, camera } = useThree();
   const root = useRef(); // where the car is, in the world
   const body = useRef(); // its lean and slide
-  const poolTex = useMemo(() => underglowTexture(), []);
   const contactTex = useMemo(() => contactTexture(), []);
   const groundYaw = useRef(); // the footprint on the road: it turns with the body's slide, but does not lean with it
-  const poolMat = useRef();
+  const poolMesh = useRef();
   const shadowMat = useRef();
 
   const car = useMemo(() => {
@@ -103,7 +140,45 @@ export default function DriftCar({ low, still }) {
     return { geo, mat, pool, cursor: 0, owed: 0 };
   }, [MAX]);
   useEffect(() => () => [smoke.geo, smoke.mat].forEach((o) => o.dispose()), [smoke]);
-  useEffect(() => () => [poolTex, contactTex].forEach((t) => t.dispose()), [poolTex, contactTex]);
+
+  // the light on the road: a grid under the car whose rows are laid on the road ahead and behind it (see useFrame), with the shader above
+  const glow = useMemo(() => {
+    const { NX, NZ, HX, HZ } = POOL;
+    const n = (NX + 1) * (NZ + 1);
+    const pos = new Float32Array(n * 3);
+    const loc = new Float32Array(n * 2);
+    const idx = [];
+    for (let j = 0; j <= NZ; j++) {
+      for (let i = 0; i <= NX; i++) {
+        const k = j * (NX + 1) + i;
+        loc[k * 2] = -HX + (2 * HX * i) / NX;
+        loc[k * 2 + 1] = -HZ + (2 * HZ * j) / NZ;
+        pos[k * 3] = loc[k * 2];
+        pos[k * 3 + 1] = 0.03;
+        pos[k * 3 + 2] = loc[k * 2 + 1];
+        if (i < NX && j < NZ) idx.push(k, k + NX + 1, k + 1, k + 1, k + NX + 1, k + NX + 2);
+      }
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('aLocal', new THREE.BufferAttribute(loc, 2));
+    geo.setIndex(idx);
+    const mat = new THREE.ShaderMaterial({
+      vertexShader: poolVert,
+      fragmentShader: poolFrag,
+      uniforms: { uColor: { value: new THREE.Color(GREEN) }, uOpacity: { value: 0 }, uYaw: { value: 0 }, uS: { value: 0 }, uScale: { value: SCALE }, uHalf: { value: ROAD_W / 2 } },
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2,
+    });
+    return { geo, mat };
+  }, []);
+  useEffect(() => () => [glow.geo, glow.mat].forEach((o) => o.dispose()), [glow]);
+  useEffect(() => () => contactTex.dispose(), [contactTex]);
 
   const S = useMemo(
     () => ({
@@ -117,6 +192,7 @@ export default function DriftCar({ low, still }) {
       m4: new THREE.Matrix4(),
       w: new THREE.Vector3(),
       a2: new THREE.Vector3(),
+      r: new THREE.Vector3(),
       lastU: view.t,
       lastS: view.t * LEN + view.xo,
       slip: 0,
@@ -173,8 +249,28 @@ export default function DriftCar({ low, still }) {
     // the light and the shadows are on the road: gone while the car is airborne, back as it touches down
     groundYaw.current.rotation.y = S.slip;
     const grounded = (1 - sstep(0.02, 0.45, air)) * view.ws;
-    poolMat.current.opacity = 0.95 * grounded;
     shadowMat.current.opacity = 0.7 * grounded;
+    // the light on the road: each row of the grid is laid on the road at its own distance ahead or behind, so it follows crests, dips and
+    // bends instead of lying as one flat sheet (a gentle cross-slope between rows is not followed)
+    const pm = poolMesh.current;
+    pm.visible = grounded > 0.01;
+    if (pm.visible) {
+      const { NX, NZ, HX, HZ } = POOL;
+      const P = glow.geo.attributes.position;
+      const sc = g.scale.x || SCALE;
+      for (let j = 0; j <= NZ; j++) {
+        const z = -HZ + (2 * HZ * j) / NZ;
+        at(sNow + z * sc, S.r).sub(pos);
+        const lx = clamp(S.r.dot(S.x) / sc, -1.5, 1.5);
+        const ly = clamp(S.r.dot(S.up) / sc, -0.8, 0.8);
+        for (let i = 0; i <= NX; i++) P.setXYZ(j * (NX + 1) + i, -HX + (2 * HX * i) / NX + lx, ly + 0.03, z);
+      }
+      P.needsUpdate = true;
+      const u = glow.mat.uniforms;
+      u.uOpacity.value = 0.45 * grounded;
+      u.uYaw.value = S.slip;
+      u.uS.value = sNow;
+    }
 
     // suspension: the body drops onto its wheels after landing and lifts a little before the lip
     const c = 0.3 * squash - 0.07 * stretch;
@@ -242,7 +338,8 @@ export default function DriftCar({ low, still }) {
   });
 
   const { w, zMax, zMin, skirt, flick, edge } = blades;
-  const bladeMat = { color: BLADE, side: THREE.DoubleSide, fog: false };
+  // lit, not flat: the trim takes the scene's light (and the underglow's), so it reads as painted plastic rather than a glowing outline
+  const bladeMat = { color: BLADE, emissive: BLADE, emissiveIntensity: 0.1, roughness: 0.55, metalness: 0.2, side: THREE.DoubleSide, fog: false };
   return (
     <>
       <group ref={root} visible={false} scale={SCALE}>
@@ -252,28 +349,31 @@ export default function DriftCar({ low, still }) {
           {[1, -1].map((s) => (
             <group key={s}>
               <mesh geometry={skirt} position={[s > 0 ? w : -w - 0.022, 0.2, -0.9]} scale={[s, 1, 1]}>
-                <meshBasicMaterial {...bladeMat} />
+                <meshStandardMaterial {...bladeMat} />
               </mesh>
               <mesh geometry={flick} position={[s > 0 ? w * 0.97 : -w * 0.97 - 0.022, 0.5, 0.95]} scale={[s, 1, 1]}>
-                <meshBasicMaterial {...bladeMat} />
+                <meshStandardMaterial {...bladeMat} />
               </mesh>
             </group>
           ))}
           <mesh geometry={edge} position={[0, 0.07, zMax - 0.04]}>
-            <meshBasicMaterial {...bladeMat} />
+            <meshStandardMaterial {...bladeMat} />
           </mesh>
           <mesh geometry={edge} position={[0, 0.5, zMin + 0.02]} scale={[0.9, 1, 1]}>
-            <meshBasicMaterial {...bladeMat} />
+            <meshStandardMaterial {...bladeMat} />
           </mesh>
-          {/* a restrained green on the lower body, from the emitter underneath */}
-          <pointLight position={[0, 0.1, 0]} color={GREEN} intensity={6} distance={2.4} decay={2} />
+          {/* a restrained green on the lower body: two low lights just outside the sills, where the strips under the chassis would spill */}
+          {[1, -1].map((x) => (
+            <pointLight key={x} position={[x * (w + 0.25), 0.07, 0]} color={GREEN} intensity={2.2} distance={1.7} decay={2} />
+          ))}
           <hemisphereLight args={['#8fdcd8', '#b0287f', 0.45]} />
           <directionalLight position={[-3, 6, -4]} intensity={0.8} color="#dff1ff" />
           <pointLight position={[-3.2, 1.4, -1.2]} color="#1aa7ad" intensity={14} distance={9} decay={1.6} />
           <pointLight position={[3.2, 1.4, -1.2]} color="#b0287f" intensity={14} distance={9} decay={1.6} />
         </group>
+        <mesh ref={poolMesh} geometry={glow.geo} material={glow.mat} frustumCulled={false} renderOrder={6} />
         <group ref={groundYaw}>
-          {/* the body's shadow, then a dark contact patch under each tyre, then the green pool falling on the road around the chassis */}
+          {/* the light on the road is drawn first (above); the body's shadow and a dark contact patch under each tyre then dim it where the chassis blocks it */}
           <mesh rotation-x={-Math.PI / 2} position={[0, 0.022, 0]} renderOrder={7}>
             <planeGeometry args={[2.5, 4.6]} />
             <meshBasicMaterial ref={shadowMat} map={contactTex} transparent depthWrite={false} fog={false} />
@@ -284,10 +384,6 @@ export default function DriftCar({ low, still }) {
               <meshBasicMaterial map={contactTex} transparent opacity={0.6} depthWrite={false} fog={false} />
             </mesh>
           ))}
-          <mesh rotation-x={-Math.PI / 2} position={[0, 0.03, 0]} renderOrder={7}>
-            <planeGeometry args={[4.4, 6.4]} />
-            <meshBasicMaterial ref={poolMat} map={poolTex} color={GREEN} transparent blending={THREE.AdditiveBlending} depthWrite={false} fog={false} />
-          </mesh>
         </group>
       </group>
       <points geometry={smoke.geo} material={smoke.mat} frustumCulled={false} renderOrder={8} />

@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { FaGithub } from 'react-icons/fa';
 import { profile } from '../content/profile';
 
 const LINKS = [
@@ -79,7 +80,8 @@ export default function Nav({ visible }) {
       </nav>
       <div className="nav-right">
         <span className="nav-sector">S{Math.max(0, sector)} / 4</span>
-        <a className="btn btn-primary btn-sm" href={profile.cv || profile.github} target="_blank" rel="noreferrer">
+        <a className="key" data-spec href={profile.cv || profile.github} target="_blank" rel="noreferrer">
+          {!profile.cv && <FaGithub aria-hidden="true" />}
           {profile.cv ? 'CV' : 'GitHub'}
         </a>
       </div>

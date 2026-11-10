@@ -1,0 +1,123 @@
+/* Hardware: the tactile parts of the cockpit. One material language, satin graphite housings with a lit upper edge, a darker underside,
+   and a mounting shadow; the Drift red is kept for the part that is selected or primary. Depth is built from layers (a face and a base that
+   share one silhouette), so a press moves the face toward its base and the exposed edge and the shadow shrink together.
+   Pointer effects are set by src/components/pointerFx.js; every state also works without a pointer. */
+
+/* ---------- SUNNY: a satin-aluminium emblem ---------- */
+.nav-mark {
+  background:
+    linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.95) 50%, transparent 58%) 100% 0 / 260% 100% no-repeat,
+    linear-gradient(180deg, #f6f8fa 0%, #d5dbe2 40%, #9ca5b0 52%, #c4ccd5 62%, #8d96a2 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.7));
+}
+.nav-mark span { color: var(--drift-red); -webkit-text-fill-color: var(--drift-red); }
+@keyframes sunny-sheen { from { background-position: 100% 0, 0 0; } to { background-position: 0% 0, 0 0; } }
+.nav-mark:hover, .nav-mark:focus-visible { animation: sunny-sheen 800ms var(--ease-out-strong) both; } /* one pass, then it settles */
+
+/* ---------- GitHub: a raised key for an external destination ---------- */
+.key {
+  position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 10px; min-height: var(--ctl-h-sm); padding: 0 var(--space-4) 0 var(--space-3);
+  font: 800 13px/16px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--chalk-100); cursor: pointer; border-radius: var(--radius-key);
+  background: linear-gradient(180deg, #272e38 0%, #181d24 52%, #11151b 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -2px 0 rgba(0, 0, 0, 0.5), 0 3px 0 #05070a, 0 9px 14px rgba(0, 0, 0, 0.45);
+  transition: transform var(--dur-fast) var(--ease-out-strong), box-shadow var(--dur-fast) var(--ease-out-strong), background-color var(--dur-fast) var(--ease-brake);
+}
+.key svg { flex: none; width: 17px; height: 17px; }
+/* the specular edge: a ring of light that rests along the upper edge and glides toward the pointer */
+.key::before { content: ""; position: absolute; inset: 0; z-index: -1; padding: 1px; border-radius: inherit; pointer-events: none; opacity: 0.45; transition: opacity var(--dur-ui) var(--ease-brake);
+  background: radial-gradient(80px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.7), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+/* the red accent: a short lit bar on the lower edge of the face */
+.key::after { content: ""; position: absolute; left: 50%; bottom: 4px; z-index: -1; width: 16px; height: 2px; margin-left: -8px; border-radius: 1px; background: var(--drift-red); transition: width var(--dur-ui) var(--ease-out-strong), margin-left var(--dur-ui) var(--ease-out-strong); }
+.key:hover, .key:focus-visible { background-color: #1b2129; }
+.key:hover::before, .key:focus-visible::before { opacity: 1; }
+.key:hover::after, .key:focus-visible::after { width: 28px; margin-left: -14px; }
+.key:active { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.5), 0 1px 0 #05070a, 0 3px 6px rgba(0, 0, 0, 0.45); }
+.key:focus-visible { outline-offset: 5px; }
+
+/* ---------- Open code: one solid object, a red face raised over a dark-red base ---------- */
+/* the face is ::before, cut at the lower right; the base is a drop-shadow of that same cut face, so both share one silhouette and one depth direction */
+.btn-edge, .btn-edge:hover, .btn-edge:active {
+  --face-hi: #ff4d41; --face: #e10600; --face-lo: #bb0500; --base: #6b0300;
+  position: relative; isolation: isolate; border: 0; border-radius: 0; background: transparent; color: var(--on-red);
+  filter: drop-shadow(0 4px 0 var(--base)) drop-shadow(0 9px 7px rgba(0, 0, 0, 0.45));
+  transition: transform var(--dur-fast) var(--ease-out-strong), filter var(--dur-fast) var(--ease-out-strong);
+}
+.btn-edge.btn-secondary, .btn-edge.btn-secondary:hover, .btn-edge.btn-secondary:active { --face-hi: #343c48; --face: #232932; --face-lo: #181c23; --base: #05070a; color: var(--chalk-100); }
+.btn-edge::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; transition: filter var(--dur-fast) var(--ease-brake);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--angle)), calc(100% - var(--angle)) 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0 1px, transparent 1px), linear-gradient(180deg, var(--face-hi), var(--face) 55%, var(--face-lo));
+}
+.btn-edge:hover::before, .btn-edge:focus-visible::before { filter: brightness(1.12); }
+.btn-edge:active { transform: translateY(3px); filter: drop-shadow(0 1px 0 var(--base)) drop-shadow(0 3px 3px rgba(0, 0, 0, 0.45)); }
+.btn-edge:focus-visible { outline-offset: 6px; }
+.btn-edge .arrow { transition: transform var(--dur-ui) var(--ease-brake); }
+
+/* ---------- flagship selectors: plates suspended in a fixed formation ---------- */
+/* the button is the stable slot (it never moves, so the hit area never changes); only the plate inside it is lifted and tilted */
+.bay-rail { perspective: 700px; }
+.bay-pick { position: relative; display: block; width: 100%; height: 52px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; color: var(--chalk-100); }
+.bay-pick:focus-visible { outline-offset: 2px; }
+.bay-plate {
+  --edge: #07090c; --rx: 0deg; --ry: 0deg; --lift: 0px; --out: 0px;
+  position: absolute; inset: 0 0 4px 0; display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; padding: 0 var(--space-4) 0 var(--space-3);
+  transform: translate3d(var(--out), 0, var(--lift)) rotateX(var(--rx)) rotateY(var(--ry));
+  filter: drop-shadow(0 3px 0 var(--edge)) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 200ms var(--ease-out-strong), filter 200ms var(--ease-out-strong);
+}
+/* the angled graphite face, with a lit upper edge; the 1px inset gives the plate a thin rim */
+.bay-plate::before, .bay-plate::after { content: ""; position: absolute; z-index: 0; clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle)) 100%, 0 100%); }
+.bay-plate::before { inset: 0; background: rgba(255, 255, 255, 0.1); }
+.bay-plate::after { inset: 1px 1px 0 1px; clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle) + 0.7px) 100%, 0 100%); background: linear-gradient(180deg, #232a34, #161b22 60%, #12161c); }
+.bay-plate > * { position: relative; z-index: 1; transition: transform 200ms var(--ease-out-strong), color var(--dur-fast) var(--ease-brake); }
+.bay-pick-n { align-self: center; justify-self: start; min-width: 24px; padding: 1px 0; text-align: center; font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); color: var(--chalk-400); background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.07); }
+.bay-pick-name { font: 800 22px/1.1 var(--font-display); text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); transform: translate(calc(var(--ry) * -0.4), calc(var(--rx) * 0.4)); }
+/* hover and keyboard focus: forward and tilted. The pointer sets --rx/--ry; without a pointer the plate takes a fixed, small angle */
+.bay-pick:focus-visible .bay-plate { --ry: -2deg; --lift: 14px; --out: 4px; }
+@media (hover: hover) and (pointer: fine) { .bay-pick:hover .bay-plate { --lift: 14px; --out: 4px; } .bay-pick:hover .bay-plate:not([data-live]) { --ry: -2deg; } }
+.bay-pick:hover .bay-plate::after, .bay-pick:focus-visible .bay-plate::after { background: linear-gradient(180deg, #2a323d, #1a2028 60%, #151a21); }
+.bay-pick:active .bay-plate { --lift: 0px; --out: 0px; --rx: 0deg !important; --ry: 0deg !important; filter: drop-shadow(0 1px 0 var(--edge)) drop-shadow(0 3px 3px rgba(0, 0, 0, 0.4)); }
+/* selected: raised a little further, with a steady red edge; the number is read as lit */
+.bay-pick[aria-pressed="true"] .bay-plate { --lift: 8px; --out: 6px; --edge: #4a0300; }
+.bay-pick[aria-pressed="true"] .bay-plate::after { background: linear-gradient(90deg, var(--drift-red) 0 3px, transparent 3px), linear-gradient(180deg, #2a323d, #1a2028 60%, #151a21); }
+.bay-pick[aria-pressed="true"] .bay-pick-n { color: var(--chalk-100); }
+.bay-pick[aria-pressed="true"]:hover .bay-plate, .bay-pick[aria-pressed="true"]:focus-visible .bay-plate { --lift: 12px; --out: 8px; }
+@media (max-width: 900px) {
+  .bay-rail { perspective: none; }
+  .bay-pick { height: 60px; }
+  .bay-plate { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; justify-items: start; padding-block: 4px; }
+  .bay-pick-n { min-width: 0; padding: 0; background: none; box-shadow: none; }
+  .bay-pick-name { font-size: 20px; max-width: 100%; }
+  .bay-pick[aria-pressed="true"] .bay-plate::after { background: linear-gradient(var(--drift-red), var(--drift-red)) 0 100% / 100% 3px no-repeat, linear-gradient(180deg, #2a323d, #1a2028 60%, #151a21); }
+  .bay-pick .bay-plate, .bay-pick[aria-pressed="true"] .bay-plate, .bay-pick:focus-visible .bay-plate { --out: 0px; --lift: 0px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bay-plate, .bay-plate > *, .bay-pick .bay-plate { --rx: 0deg !important; --ry: 0deg !important; --lift: 0px !important; --out: 0px !important; }
+  .bay-pick-name { transform: none; }
+}
+
+/* ---------- Full garage: a raised drawer-release control ---------- */
+/* the button is the base (a lip under the face); the face is the part that moves, so a press closes the visible gap */
+.garage-toggle {
+  display: inline-flex; flex-direction: column; justify-content: flex-start; min-width: 296px; min-height: calc(var(--ctl-h) + 7px); /* one width in both states, so the label change does not move the control */ padding: 0 0 6px; cursor: pointer; color: var(--chalk-100);
+  background: #05070a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-key);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.05), 0 10px 18px -4px rgba(0, 0, 0, 0.55);
+}
+.gt-face {
+  display: flex; align-items: center; flex: 1; gap: var(--space-4); min-height: var(--ctl-h); padding: 0 var(--space-4) 0 var(--space-5); border-radius: calc(var(--radius-key) - 1px);
+  font: 800 13px/16px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase;
+  background: linear-gradient(180deg, #2a313b 0%, #1a1f26 55%, #141920 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: transform var(--dur-fast) var(--ease-out-strong), background-color var(--dur-fast) var(--ease-brake), box-shadow var(--dur-fast) var(--ease-out-strong);
+}
+.gt-face .gt-count { margin-left: auto; }
+.gt-count { padding: 3px var(--space-2); border-radius: 3px; font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); color: var(--chalk-400); background: rgba(0, 0, 0, 0.45); box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.07); }
+.garage-toggle:hover .gt-face { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.09); }
+.garage-toggle:active .gt-face, .garage-toggle.is-open .gt-face { transform: translateY(4px); }
+.garage-toggle.is-open .gt-face { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -2px 0 var(--drift-red); }
+.garage-toggle.is-open:active .gt-face { transform: translateY(4px); }
+.garage-toggle:focus-visible { outline-offset: 4px; }
+.garage-toggle .arrow { transition: transform var(--dur-ui) var(--ease-brake); }
+.garage-toggle.is-open .arrow { transform: rotate(180deg); }

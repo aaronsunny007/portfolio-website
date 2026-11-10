@@ -185,16 +185,3 @@
   .pad:hover .sweep { animation: vg-sweep 900ms var(--ease-out-strong) both; }
   .pad:hover .vpop { animation: vg-pop 500ms var(--d, 0s) ease-out both; }
 }
-
-/* the full-garage disclosure */
-.garage-toggle {
-  display: inline-flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-5); min-height: var(--ctl-h); cursor: pointer;
-  font: 800 13px/16px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--chalk-100);
-  background: var(--asphalt-900); border: 1px solid var(--line-strong);
-  transition: background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-brake);
-}
-.garage-toggle:hover { background: var(--asphalt-800); border-color: var(--chalk-400); }
-.garage-toggle:active { transform: translateY(var(--press)); }
-.garage-toggle[aria-expanded="true"] { background: var(--asphalt-700); border-color: var(--chalk-400); }
-.garage-toggle .arrow { transition: transform var(--dur-ui) var(--ease-brake); }
-.garage-toggle.is-open .arrow { transform: rotate(180deg); }
