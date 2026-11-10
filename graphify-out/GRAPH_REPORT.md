@@ -1,122 +1,147 @@
-# Graph Report - portfolio-website  (2026-11-02)
+# Graph Report - portfolio-website  (2026-11-10)
 
 ## Corpus Check
-- Corpus is ~4,928 words - fits in a single context window. You may not need a graph.
+- 110 files · ~114,800 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 6 file(s) not represented in the graph (top: .css 4, (none) 1, .glb 1)
 
 ## Summary
-- 133 nodes · 200 edges · 10 communities (8 shown, 2 thin omitted)
-- Extraction: 86% EXTRACTED · 12% INFERRED · 2% AMBIGUOUS · INFERRED: 25 edges (avg confidence: 0.82)
-- Token cost: 325,061 input · 0 output
+- 400 nodes · 907 edges · 20 communities (16 shown, 4 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.82)
+- Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
+- Scroll Journey and DriftCar
+- UI Components and Nav
+- Opening Car and Drift FX
+- Driver Avatars (legacy)
+- Night Circuit Scene
+- App Shell and Ignition
+- Dashboard Cluster and Tach
+- Package Manifest
 - Runtime Dependencies
-- Dev Tooling and Linting
-- App Shell and Pages
-- 3D Scenes (R3F)
-- Car Model Textures
-- Vite and React Template
-- HTML Entry and Logos
-- npm Scripts
+- Dev Dependencies
+- READMEs and Design Canvas
+- Styles and Entry Point
+- Project Art and Gates
+- ESLint Config
+- NPM Scripts
+- GitHub Pages Deploy
+- Screenshot Script
+- Vite Config
 
 ## God Nodes (most connected - your core abstractions)
-1. `react` - 10 edges
-2. `framer-motion` - 9 edges
-3. `Car 3D model (MDL14063 GLB, BMW)` - 9 edges
-4. `React + Vite Template` - 6 edges
-5. `scripts` - 5 edges
-6. `@react-three/drei` - 5 edges
-7. `@react-three/fiber` - 5 edges
-8. `vite` - 5 edges
-9. `Packed ORM texture (Image_1_1: R occlusion, G roughness, B metalness)` - 5 edges
-10. `Image_4_4 packed occlusion/roughness/metalness texture` - 5 edges
+1. `react` - 28 edges
+2. `three` - 17 edges
+3. `App()` - 17 edges
+4. `DriftCar()` - 16 edges
+5. `Scene()` - 16 edges
+6. `Route()` - 14 edges
+7. `Arrow()` - 12 edges
+8. `@react-three/fiber` - 11 edges
+9. `PitCrew()` - 11 edges
+10. `SectionHeader()` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Vite Logo (with dark-mode parenthesis styling)` --references--> `vite`  [INFERRED]
-  src/assets/vite.svg → package.json
-- `React Logo (atom)` --references--> `react`  [INFERRED]
-  src/assets/react.svg → package.json
-- `Social Icon SVG Sprite (Bluesky, Discord, Docs, GitHub, Social, X)` --conceptually_related_to--> `Navbar()`  [AMBIGUOUS]
-  public/icons.svg → src/components/Navbar.jsx
-- `BMWScene()` --references--> `Car 3D model (MDL14063 GLB, BMW)`  [EXTRACTED]
-  src/components/BMWScene.jsx → public/models/Image_0_0.jpeg
-- `Vite Logo (with dark-mode parenthesis styling)` --semantically_similar_to--> `Favicon (Vite lightning-bolt logo, purple)`  [INFERRED] [semantically similar]
-  src/assets/vite.svg → public/favicon.svg
+- `Check car model licence before publishing` --semantically_similar_to--> `Car model licence unconfirmed (ItsDiyor, BMW badges)`  [INFERRED] [semantically similar]
+  design/README.md → README.md
+- `Design tokens at canvas/ds/drift/tokens.json` --conceptually_related_to--> `Portfolio told as a drift run`  [INFERRED]
+  design/README.md → README.md
+- `App()` --indirect_call--> `installPointerFx()`  [INFERRED]
+  src/App.jsx → src/components/pointerFx.js
+- `App()` --calls--> `Finish()`  [EXTRACTED]
+  src/App.jsx → src/sections/Finish.jsx
+- `App()` --calls--> `Garage()`  [EXTRACTED]
+  src/App.jsx → src/sections/Garage.jsx
 
 ## Import Cycles
 - None detected.
 
-## Hyperedges (group relationships)
-- **Unused Vite/React scaffold boilerplate assets** — readme_react_vite_template, src_assets_react_react_logo, src_assets_vite_vite_logo, public_icons_social_sprite [INFERRED 0.75]
-- **Image_1_1 channel splits form one packed ORM texture** — public_models_image_1_1_channels_r_texture, public_models_image_1_1_channels_g_texture, public_models_image_1_1_channels_b_texture, public_models_image_1_1_packed_orm_texture [INFERRED 0.85]
-- **PBR texture set of the MDL14063 car GLB** — public_models_image_0_0_texture, public_models_image_2_2_texture, public_models_image_3_3_texture, public_models_image_1_1_packed_orm_texture, public_models_mdl14063_reversed_car_model [INFERRED 0.85]
-- **Image_4_4 R/G/B channel splits form one packed ORM texture** — public_models_image_4_4_channels_r_texture, public_models_image_4_4_channels_g_texture, public_models_image_4_4_channels_b_texture, public_models_image_4_4_orm_packed_texture [INFERRED 0.85]
-- **Texture maps of the MDL14063 car GLB** — public_models_image_4_4_orm_packed_texture, public_models_image_5_5_texture, public_models_image_6_6_channels_r_texture, public_models_nomershax_7_texture, public_models_mdl14063_reversed_car_model [INFERRED 0.85]
+## Communities (20 total, 4 thin omitted)
 
-## Communities (10 total, 2 thin omitted)
+### Community 0 - "Scroll Journey and DriftCar"
+Cohesion: 0.06
+Nodes (60): gsap, SECTIONS, wiper, blade(), clamp(), DriftCar(), POOL, sstep() (+52 more)
 
-### Community 0 - "Runtime Dependencies"
+### Community 1 - "UI Components and Nav"
 Cohesion: 0.09
-Nodes (30): dependencies, @fontsource/exo-2@^5.2.8, @fontsource/inter@^5.2.8, @fontsource/orbitron@^5.2.8, framer-motion@^12.38.0, gsap@^3.15.0, lenis@^1.3.23, react-icons@^5.6.0 (+22 more)
+Nodes (43): react, Arrow(), Career(), hold(), pad(), ContactActions(), LINKS, RoleList() (+35 more)
 
-### Community 1 - "Dev Tooling and Linting"
+### Community 2 - "Opening Car and Drift FX"
+Cohesion: 0.08
+Nodes (45): @react-three/drei, @react-three/fiber, three, Car(), Headlights(), REAR, SkidMarks(), TyreSmoke() (+37 more)
+
+### Community 3 - "Driver Avatars (legacy)"
 Cohesion: 0.09
-Nodes (24): devDependencies, autoprefixer@^10.5.0, eslint@^10.2.1, @eslint/js@^10.0.1, eslint-plugin-react-hooks@^7.1.1, eslint-plugin-react-refresh@^0.5.2, globals@^17.5.0, postcss@^8.5.14 (+16 more)
+Nodes (36): apply(), buildRig(), C, KEYS, LEAN, mix(), rng(), root$ (+28 more)
 
-### Community 2 - "App Shell and Pages"
-Cohesion: 0.16
-Nodes (13): react@^19.2.5, Social Icon SVG Sprite (Bluesky, Discord, Docs, GitHub, Social, X), framer-motion, react, App(), React Logo (atom), AboutPage(), projects (+5 more)
+### Community 4 - "Night Circuit Scene"
+Cohesion: 0.13
+Nodes (28): clamp01(), dummy, ease(), HALF_FOV, LAMP_Z, MAGENTA, NightCircuit(), place() (+20 more)
 
-### Community 3 - "3D Scenes (R3F)"
+### Community 5 - "App Shell and Ignition"
+Cohesion: 0.13
+Nodes (19): App(), loadNight(), NightCircuit, ORDER, SceneGuard, Stage, IDLE, MAX_WAIT_MS (+11 more)
+
+### Community 6 - "Dashboard Cluster and Tach"
+Cohesion: 0.22
+Nodes (15): Dashboard(), drawCluster(), GEAR_AT, rrect(), shape(), arc(), drawTach(), LED_FROM (+7 more)
+
+### Community 7 - "Package Manifest"
+Cohesion: 0.12
+Nodes (15): name, private, type, version, autoprefixer, lenis, postcss, react-icons (+7 more)
+
+### Community 8 - "Runtime Dependencies"
+Cohesion: 0.13
+Nodes (15): dependencies, @fontsource/big-shoulders-display, @fontsource/jetbrains-mono, @fontsource/manrope, gsap, lenis, react, react-dom (+7 more)
+
+### Community 9 - "Dev Dependencies"
+Cohesion: 0.14
+Nodes (14): devDependencies, autoprefixer, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals, postcss (+6 more)
+
+### Community 10 - "READMEs and Design Canvas"
 Cohesion: 0.17
-Nodes (13): @react-three/drei@^10.7.7, @react-three/fiber@^9.6.1, @react-three/drei, @react-three/fiber, Hero Image (isometric layered tiles), Layered Stack / Build Layers Motif, BMW(), BMWScene() (+5 more)
+Nodes (9): DRIFT design canvas: 7 boards (hero, phone hero, opening storyboard, Pit Crew, Track, Garage, Finish), render/: three.js page and Playwright script rendering the car stills, Design tokens at canvas/ds/drift/tokens.json, All copy lives in src/content (edit there), Dev hooks: ?t=, ?tier=, ?fixed, window.__clock, Portfolio told as a drift run, Portrait: full-res photo, long eased left scrim, no blur, Reduced motion skips dial, 3D scene and drift (+1 more)
 
-### Community 4 - "Car Model Textures"
-Cohesion: 0.17
-Nodes (15): Image_0_0 - Normal map atlas (tyre tread/sidewall, grille mesh, BMW roundel emboss, wheel/brake rings), Image_1_1 B channel - Metalness (per-material flat tiles of 5x5 ORM atlas), Image_1_1 G channel - Roughness (per-material grey tiles, tyre tread, wheel UV islands), Image_1_1 R channel - Occlusion-slot mask (bright UV islands: 5-spoke rim, tyre, seats, body/interior panels), Packed ORM texture (Image_1_1: R occlusion, G roughness, B metalness), Image_2_2 - Base colour atlas (BMW roundel badges, M-stripe badge, tyre tread, brake disc, blue paint, brown leather swatches), Image_3_3 - Detail normal map (fine fabric/carbon weave, hex mesh, brushed lines for interior trim), Image_4_4 B channel (metalness map, trim/badge atlas) (+7 more)
+### Community 11 - "Styles and Entry Point"
+Cohesion: 0.18
+Nodes (5): @fontsource/big-shoulders-display, @fontsource/jetbrains-mono, @fontsource/manrope, react-dom, startTimeFromUrl()
 
-### Community 5 - "Vite and React Template"
-Cohesion: 0.28
-Nodes (7): @vitejs/plugin-react@^6.0.1, Hot Module Replacement (HMR), React + Vite Template, @vitejs/plugin-react (Oxc), @vitejs/plugin-react-swc (SWC), vite, @vitejs/plugin-react
+### Community 12 - "Project Art and Gates"
+Cohesion: 0.33
+Nodes (4): at(), dot(), FLAGSHIP, GATE_X
 
-### Community 6 - "HTML Entry and Logos"
-Cohesion: 0.29
-Nodes (6): index.html SPA Entry Page, #root Mount Point, react-dom@^19.2.5, Favicon (Vite lightning-bolt logo, purple), react-dom, Vite Logo (with dark-mode parenthesis styling)
+### Community 13 - "ESLint Config"
+Cohesion: 0.33
+Nodes (5): eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals
 
-### Community 7 - "npm Scripts"
+### Community 14 - "NPM Scripts"
 Cohesion: 0.40
 Nodes (5): scripts, build, dev, lint, preview
 
-## Ambiguous Edges - Review These
-- `Hero()` → `Hero Image (isometric layered tiles)`  [AMBIGUOUS]
-  src/assets/hero.png · relation: references
-- `Navbar()` → `Social Icon SVG Sprite (Bluesky, Discord, Docs, GitHub, Social, X)`  [AMBIGUOUS]
-  public/icons.svg · relation: conceptually_related_to
-- `Image_1_1 R channel - Occlusion-slot mask (bright UV islands: 5-spoke rim, tyre, seats, body/interior panels)` → `Packed ORM texture (Image_1_1: R occlusion, G roughness, B metalness)`  [AMBIGUOUS]
-  public/models/Image_1_1@channels=R.jpeg · relation: implements
+### Community 15 - "GitHub Pages Deploy"
+Cohesion: 1.00
+Nodes (3): build job: npm ci, lint, build, upload dist, deploy job: actions/deploy-pages to github-pages, Deploy to GitHub Pages workflow
 
 ## Knowledge Gaps
-- **12 isolated node(s):** `Hot Module Replacement (HMR)`, `Social Icon SVG Sprite (Bluesky, Discord, Docs, GitHub, Social, X)`, `React Logo (atom)`, `Layered Stack / Build Layers Motif`, `Image_1_1 B channel - Metalness (per-material flat tiles of 5x5 ORM atlas)` (+7 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 28 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **13 isolated node(s):** `@tailwindcss/vite`, `react-router-dom`, `@tailwindcss/postcss`, `@types/react`, `@types/react-dom` (+8 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 140 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `App Shell and Pages` to `Runtime Dependencies`, `3D Scenes (R3F)`, `Vite and React Template`, `HTML Entry and Logos`?**
-  _High betweenness centrality (0.221) - this node is a cross-community bridge._
-- **Are the 8 inferred relationships involving `Car 3D model (MDL14063 GLB, BMW)` (e.g. with `Image_0_0 - Normal map atlas (tyre tread/sidewall, grille mesh, BMW roundel emboss, wheel/brake rings)` and `Packed ORM texture (Image_1_1: R occlusion, G roughness, B metalness)`) actually correct?**
-  _`Car 3D model (MDL14063 GLB, BMW)` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Hot Module Replacement (HMR)`, `Social Icon SVG Sprite (Bluesky, Discord, Docs, GitHub, Social, X)`, `React Logo (atom)` to the rest of the system?**
-  _12 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Runtime Dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.09032258064516129 - nodes in this community are weakly interconnected._
-- **Why does `BMWScene()` connect `3D Scenes (R3F)` to `Car Model Textures`?**
-  _High betweenness centrality (0.198) - this node is a cross-community bridge._
-
-### Low-confidence Hints
-_AMBIGUOUS edges — the extractor was unsure. Verify before acting on these._
-
-- **What is the exact relationship between `Hero()` and `Hero Image (isometric layered tiles)`?**
-  _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **What is the exact relationship between `Navbar()` and `Social Icon SVG Sprite (Bluesky, Discord, Docs, GitHub, Social, X)`?**
-  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **Why does `react` connect `UI Components and Nav` to `Scroll Journey and DriftCar`, `Opening Car and Drift FX`, `Driver Avatars (legacy)`, `Night Circuit Scene`, `App Shell and Ignition`, `Dashboard Cluster and Tach`, `Package Manifest`, `Styles and Entry Point`?**
+  _High betweenness centrality (0.284) - this node is a cross-community bridge._
+- **What connects `@tailwindcss/vite`, `react-router-dom`, `@tailwindcss/postcss` to the rest of the system?**
+  _13 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Scroll Journey and DriftCar` be split into smaller, more focused modules?**
+  _Cohesion score 0.06349206349206349 - nodes in this community are weakly interconnected._
+- **Why does `three` connect `Opening Car and Drift FX` to `Scroll Journey and DriftCar`, `Driver Avatars (legacy)`, `Night Circuit Scene`, `Package Manifest`?**
+  _High betweenness centrality (0.144) - this node is a cross-community bridge._
+- **Should `UI Components and Nav` be split into smaller, more focused modules?**
+  _Cohesion score 0.08630952380952381 - nodes in this community are weakly interconnected._
+- **Why does `dependencies` connect `Runtime Dependencies` to `Package Manifest`?**
+  _High betweenness centrality (0.067) - this node is a cross-community bridge._
+- **Should `Opening Car and Drift FX` be split into smaller, more focused modules?**
+  _Cohesion score 0.08455625436757512 - nodes in this community are weakly interconnected._
