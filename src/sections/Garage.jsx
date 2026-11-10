@@ -1,138 +1,67 @@
 import { useId, useState } from 'react';
-import useMedia from '../components/useMedia';
 import { projects } from '../content/projects';
 import SectionHeader from '../components/SectionHeader';
 import useReveal from '../components/useReveal';
 import Arrow from '../components/Arrow';
+import { FlagshipArt, Vignette } from './ProjectArt';
 
-const BADGE = { PRO: 'badge-pro' };
+const pad = (n) => String(n).padStart(2, '0');
 
-// One small flow diagram per flagship, drawn from what the project description says. Conceptual, never a screenshot or a measurement.
-const Node = ({ x, y, w, h, hot, label }) => (
-  <>
-    <rect className={hot ? 'nodea' : 'node'} x={x} y={y} width={w} height={h} rx="3" />
-    {label && <text x={x + w / 2} y={y + h + 16}>{label}</text>}
-  </>
-);
-const Arr = ({ d }) => <path className="ln" d={d} />;
-
-function Art({ kind }) {
-  const shapes = {
-    // Warden: a request passes eight gates on its way from the agent to the tool server
-    gate: (
-      <>
-        <Node x={16} y={78} w={52} h={44} label="AGENT" />
-        <Node x={252} y={78} w={52} h={44} label="MCP SERVER" />
-        {Array.from({ length: 8 }, (_, i) => (
-          <path key={i} className={i === 7 ? 'a' : 'dim'} d={`M${96 + i * 15} 66 V134`} />
-        ))}
-        <Arr d="M68 100 H252" />
-        <circle className="cf" cx="146" cy="100" r="4" />
-        <text x="152" y="156">8 GATES</text>
-      </>
-    ),
-    // Ledger: a report is retrieved from, an answer is cited, and a calculator rechecks the numbers
-    curve: (
-      <>
-        <Node x={16} y={64} w={52} h={64} label="REPORT" />
-        <path className="dim" d="M26 82H58M26 94H58M26 106H48" />
-        <circle className="node" cx="148" cy="96" r="20" />
-        <path className="ln" d="M162 111 L176 126" />
-        <text x="148" y="148">RETRIEVE</text>
-        <Node x={232} y={64} w={72} h={64} hot label="CITED ANSWER" />
-        <path className="dim" d="M242 82H294M242 94H282" />
-        <text x="268" y="116" style={{ fill: 'var(--signal-red)' }}>[1] ✓</text>
-        <Arr d="M68 96 H126 M168 96 H232" />
-      </>
-    ),
-    // Financial-NRF: the score barely moves between a correct and a wrong source
-    bars: (
-      <>
-        <path className="dim" d="M40 150 H280" />
-        <rect className="bf" x="84" y="66" width="52" height="84" />
-        <rect className="cf" x="184" y="72" width="52" height="78" />
-        <path className="dim" strokeDasharray="4 4" d="M84 66 H236" />
-        <text x="110" y="168">CORRECT SOURCE</text>
-        <text x="210" y="168">WRONG SOURCE</text>
-        <text x="160" y="50">RELIABILITY SCORE</text>
-      </>
-    ),
-    // AEGIS: spot the campaign, write the rule, prove it is safe, deploy it
-    shield: (
-      <>
-        <Arr d="M56 100 H264" />
-        {['ATTACK', 'RULE', 'VERIFY', 'DEPLOY'].map((t, i) => (
-          <g key={t}>
-            <circle className={i === 0 ? 'nodea' : 'node'} cx={56 + i * 69.3} cy="100" r="14" />
-            <text x={56 + i * 69.3} y="140">{t}</text>
-          </g>
-        ))}
-      </>
-    ),
-    // Red Team: versioned attacks go to a judge, and the verdict gates the release in CI
-    grid: (
-      <>
-        {Array.from({ length: 9 }, (_, i) => (
-          <rect key={i} className={i === 4 ? 'cf' : 'gf'} x={20 + (i % 3) * 22} y={64 + Math.floor(i / 3) * 22} width="16" height="16" />
-        ))}
-        <text x="52" y="150">ATTACKS</text>
-        <Arr d="M92 96 H134" />
-        <circle className="node" cx="160" cy="96" r="22" />
-        <text x="160" y="100">AI</text>
-        <text x="160" y="150">JUDGE</text>
-        <Arr d="M184 96 H226" />
-        <path className="nodea" d="M262 70 L288 96 L262 122 L236 96 Z" />
-        <text x="262" y="150">CI GATE</text>
-      </>
-    ),
-    // PulseCity: three lines polled every five minutes, landing in one lakehouse
-    pulse: (
-      <>
-        {[['TUBE', 62], ['DLR', 100], ['OVERGROUND', 138]].map(([t, y]) => (
-          <g key={t}>
-            <path className="a" d={`M20 ${y} L70 ${y} L82 ${y - 14} L96 ${y + 12} L108 ${y} L190 ${y}`} />
-            <text x="20" y={y - 10} style={{ textAnchor: 'start' }}>{t}</text>
-          </g>
-        ))}
-        <Node x={212} y={50} w={92} h={100} />
-        <text x="258" y="104">LAKEHOUSE</text>
-      </>
-    ),
-  };
+// One build on the bench: a compact header, the drawing beside a short explanation, one evidence line, and a disclosure for the rest.
+// Choosing a build and opening its code are separate controls; the code link never sits inside the disclosure.
+function Display({ p, id }) {
+  const [run, setRun] = useState(0);
+  const [open, setOpen] = useState(false);
+  const moreId = useId();
   return (
-    <svg className="art" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <path className="g" d="M0 50H320M0 100H320M0 150H320M80 0V200M160 0V200M240 0V200" />
-      {shapes[kind]}
-    </svg>
-  );
-}
-
-function Inspection({ p, id }) {
-  return (
-    <article id={id} className="inspect" aria-label={`${p.title}, selected build`}>
-      <div className="inspect-media">
-        <span className={`badge ${BADGE[p.cls] ?? ''} bay-badge`}>{p.cls}</span>
-        <Art kind={p.art} />
+    <article id={id} className={`bay ac-${p.accent}`} aria-label={`${p.title}, selected build`}>
+      <header className="bay-head">
+        <div className="bay-id">
+          <span className="bay-area">{p.area}</span>
+          <h3 className="bay-title">{p.title}</h3>
+        </div>
+        <a className="btn btn-primary btn-edge" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
+          Open code
+          <Arrow />
+        </a>
+      </header>
+      <div className="bay-main">
+        <figure className="bay-art" aria-label={p.flow}>
+          <div className="bay-art-svg">
+            <FlagshipArt kind={p.art} run={run} />
+          </div>
+          <figcaption className="bay-art-bar">
+            <span className="bay-tag">Conceptual demonstration</span>
+            <button className="bay-replay" type="button" onClick={() => setRun((r) => r + 1)} aria-label={`Replay the ${p.title} demonstration`}>
+              Replay
+            </button>
+          </figcaption>
+        </figure>
+        <div className="bay-copy">
+          <p className="bay-pitch">{p.pitch}</p>
+          <p className="bay-evidence">
+            <span>Evidence</span>
+            {p.facts[p.lead ?? 0]}
+          </p>
+        </div>
       </div>
-      <p className="bay-cap">
-        {p.flow}
-        <small>Conceptual diagram, not a screenshot.</small>
-      </p>
-      <div className="inspect-body">
-        <span className="bay-area">{p.area}</span>
-        <h3 className="bay-title">{p.title}</h3>
-        <p className="bay-pitch">{p.pitch}</p>
-        <ul className="inspect-facts" aria-label="Evidence from the project description">
-          {p.facts.map((f) => (
-            <li key={f}>{f}</li>
-          ))}
-        </ul>
-        <div className="inspect-foot">
-          <span className="bay-repo">{p.repo.split('/').pop()}</span>
-          <a className="btn btn-primary" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
-            Open the code
-            <Arrow />
-          </a>
+      <div className="bay-foot">
+        <button className="bay-more" type="button" aria-expanded={open} aria-controls={moreId} onClick={() => setOpen((o) => !o)}>
+          Explore the build
+          <Arrow kind="down" />
+        </button>
+        <span className="bay-repo">{p.repo.split('/').pop()}</span>
+      </div>
+      <div id={moreId} className="bay-detail" data-open={open} inert={!open}>
+        <div className="bay-detail-in">
+          <ul aria-label="Evidence from the project description">
+            {p.facts.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+          <p>
+            {p.flow}.<small>Conceptual diagram, not a screenshot and not a live result.</small>
+          </p>
         </div>
       </div>
     </article>
@@ -147,11 +76,11 @@ export default function Garage() {
   const featured = projects.filter((p) => p.cls === 'PRO');
   const rest = projects.filter((p) => p.cls !== 'PRO');
   const [sel, setSel] = useState(featured[0].slug);
-  const inline = useMedia('(max-width: 900px)'); // narrow: the detail opens directly under the build that was picked
-  const active = featured.find((p) => p.slug === sel);
+  const at = Math.max(0, featured.findIndex((p) => p.slug === sel));
+  const active = featured[at];
 
   return (
-    <section className="section" id="garage" aria-labelledby="garage-title" ref={ref}>
+    <section className="section section-garage" id="garage" aria-labelledby="garage-title" ref={ref}>
       <SectionHeader
         id="garage-title"
         sector="S3 / The Garage"
@@ -160,38 +89,44 @@ export default function Garage() {
         intro={`${featured.length} flagship builds to inspect, the other ${rest.length} in the full garage. Each one opens its code on GitHub.`}
       />
       <div className="bay-layout reveal">
-        <ul className="bay-index" aria-label="Flagship builds">
-          {featured.map((p, i) => {
-            const on = p.slug === sel;
-            return (
-              <li key={p.slug} className={on ? 'is-on' : ''}>
-                <button className="bay-pick" type="button" aria-pressed={on} aria-controls={bayId} onClick={() => setSel(p.slug)}>
-                  <span className="bay-pick-n">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="bay-pick-name">{p.title}</span>
-                  <span className="bay-pick-line">{p.purpose}</span>
-                </button>
-                {inline && on && <Inspection key={p.slug} p={p} id={bayId} />}
-              </li>
-            );
-          })}
+        <ul className="bay-rail" aria-label="Flagship builds" style={{ '--i': at, '--n': featured.length }}>
+          {featured.map((p, i) => (
+            <li key={p.slug}>
+              <button className="bay-pick" type="button" aria-pressed={i === at} aria-controls={bayId} onClick={() => setSel(p.slug)}>
+                <span className="bay-pick-n">{pad(i + 1)}</span>
+                <span className="bay-pick-name">{p.title}</span>
+              </button>
+            </li>
+          ))}
         </ul>
-        {!inline && <Inspection key={active.slug} p={active} id={bayId} />}
+        <Display key={active.slug} p={active} id={bayId} />
       </div>
       <div className="fleet">
         <button className={`garage-toggle ${all ? 'is-open' : ''}`} type="button" aria-expanded={all} aria-controls={listId} onClick={() => setAll((v) => !v)}>
           <span>{all ? `Hide the full garage (${rest.length})` : `Full garage (${rest.length} more)`}</span>
           <Arrow kind="down" />
         </button>
-        <ul id={listId} className="fleet-list surface" hidden={!all}>
+        <ul id={listId} className="paddock" hidden={!all}>
           {rest.map((p) => (
-            <li key={p.slug}>
-              <span className={`badge ${BADGE[p.cls] ?? ''}`}>{p.cls}</span>
-              <a className="fleet-link" href={p.repo} target="_blank" rel="noreferrer">
-                {p.title}
-                <Arrow />
-              </a>
-              <span className="fleet-area">{p.area}</span>
-              <p>{p.pitch}</p>
+            <li key={p.slug} className={`pad ac-${p.accent}`}>
+              <div className="pad-face">
+                <div className="pad-art">
+                  <Vignette kind={p.vg} />
+                </div>
+                <div className="pad-body">
+                  <span className="pad-class">
+                    {p.cls}
+                    <i aria-hidden="true" />
+                    {p.area}
+                  </span>
+                  <h4 className="pad-title">{p.title}</h4>
+                  <p>{p.pitch}</p>
+                  <a className="btn btn-secondary btn-sm btn-edge" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
+                    Open code
+                    <Arrow />
+                  </a>
+                </div>
+              </div>
             </li>
           ))}
         </ul>

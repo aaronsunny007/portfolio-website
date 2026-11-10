@@ -1,46 +1,41 @@
-import { useId, useState } from 'react';
-import { profile, toolkit } from '../content/profile';
-import { evidenceProject } from '../content/projects';
+import { useEffect, useId, useRef, useState } from 'react';
+import { profile } from '../content/profile';
+import { view } from '../three/journey';
+import { scroller } from '../scroller';
+import { buildGroups, START, pickGroup, pickTool, current } from '../components/toolkit';
 import Arrow from '../components/Arrow';
 import SectionHeader from '../components/SectionHeader';
 import useReveal from '../components/useReveal';
 import useMedia from '../components/useMedia';
 
 // Each tool, with the real projects it was used in. The names come from content/profile.js, the descriptions from content/projects.js.
-const TOOLS = toolkit.map((g) => ({
-  group: g.group,
-  tools: g.tools.map(([name, used]) => ({ name, projects: used.split(', ').map(evidenceProject).filter(Boolean) })),
-}));
-
-function Evidence({ tool, id }) {
-  const n = tool.projects.length;
-  return (
-    <div id={id} className="bench-evidence">
-      <p className="bench-evidence-label">
-        {tool.name} <span>· used in {n} {n === 1 ? 'project' : 'projects'}</span>
-      </p>
-      <ul>
-        {tool.projects.map((p) => (
-          <li key={p.slug}>
-            <h4>{p.title}</h4>
-            <p>{p.pitch}</p>
-            <a className="evidence" href={p.repo} target="_blank" rel="noreferrer">
-              Open the code
-              <Arrow />
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+const GROUPS = buildGroups();
+const pad = (n) => String(n).padStart(2, '0');
 
 export default function PitCrew() {
   const ref = useReveal();
-  const [sel, setSel] = useState('Python');
-  const inline = useMedia('(max-width: 720px)'); // on a phone the evidence opens under the row that was tapped
+  const [sel, setSel] = useState(START);
   const evId = useId();
-  const current = TOOLS.flatMap((g) => g.tools).find((t) => t.name === sel);
+  const out = useRef();
+  const touched = useRef(false); // only a deliberate choice may move the page, never the first render
+  const stacked = useMedia('(max-width: 900px)');
+  const group = GROUPS[sel.g];
+  const tool = current(GROUPS, sel);
+  const n = tool.projects.length;
+
+  // Stacked layout: if the result sits behind the cockpit after a choice, bring it into the clear space, gently.
+  useEffect(() => {
+    if (!touched.current || !stacked || !out.current) return;
+    const r = out.current.getBoundingClientRect();
+    const clear = window.innerHeight - (view.dashH || 0) - 16;
+    const dy = Math.min(r.bottom - clear, r.top - 88);
+    if (dy > 1) scroller.to(window.scrollY + dy, window.matchMedia('(prefers-reduced-motion: reduce)').matches, 0.6);
+  }, [sel, stacked]);
+  const choose = (next) => {
+    touched.current = true;
+    setSel(next);
+  };
+
   return (
     <section className="section" id="pit-crew" aria-labelledby="pit-crew-title" ref={ref}>
       <SectionHeader id="pit-crew-title" sector="S1 / Pit Crew" title="The" accent="driver." />
@@ -72,34 +67,55 @@ export default function PitCrew() {
         </div>
       </article>
       <h3 className="sub reveal">Toolkit</h3>
-      <p className="bench-hint reveal">Select a tool to see where it was used.</p>
-      <div className="toolkit surface reveal">
-        {TOOLS.map((g) => (
-          <div key={g.group} className="toolgroup">
-            <div className="toolgroup-label">
-              <span>{g.group}</span>
-              <span className="toolgroup-count">{String(g.tools.length).padStart(2, '0')}</span>
-            </div>
-            <ul>
-              {g.tools.map((t) => {
-                const on = t.name === sel;
-                return (
-                  <li key={t.name} className={on ? 'is-on' : ''}>
-                    <button className="tool" type="button" aria-pressed={on} aria-controls={evId} onClick={() => setSel(t.name)}>
-                      <span className="tool-name">{t.name}</span>
-                      <span className="tool-n">{t.projects.length}</span>
-                    </button>
-                    {inline && on && <Evidence tool={t} id={evId} />}
-                  </li>
-                );
-              })}
-            </ul>
+      <p className="bench-hint reveal">Choose a group, then a tool, to see the projects it was used in.</p>
+      <div className="console reveal">
+        <div className="console-pick surface">
+          <div className="console-groups" role="group" aria-label="Toolkit groups">
+            {GROUPS.map((g, i) => (
+              <button key={g.group} className="grp" type="button" aria-pressed={i === sel.g} onClick={() => choose(pickGroup(i))}>
+                <i className="contact" aria-hidden="true" />
+                <span className="grp-name">{g.group}</span>
+                <span className="grp-n">{pad(g.tools.length)}</span>
+              </button>
+            ))}
           </div>
-        ))}
+          <ul className="console-tools" aria-label={`${group.group} tools`}>
+            {group.tools.map((t, i) => (
+              <li key={t.name}>
+                <button className="tool" type="button" aria-pressed={i === sel.t} aria-controls={evId} onClick={() => choose(pickTool(sel, i))}>
+                  <i className="contact" aria-hidden="true" />
+                  <span className="tool-name">{t.name}</span>
+                  <span className="tool-n" aria-label={`${t.projects.length} ${t.projects.length === 1 ? 'project' : 'projects'}`}>
+                    {t.projects.length}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <section id={evId} ref={out} key={`${group.group}/${tool.name}`} className="console-out" aria-label={`Projects that used ${tool.name}`}>
+          <p className="console-label">
+            {tool.name} <span>· used in {n} {n === 1 ? 'project' : 'projects'}</span>
+          </p>
+          <ul>
+            {tool.projects.map((p) => (
+              <li key={p.slug}>
+                <div className="ev-top">
+                  <h4>{p.title}</h4>
+                  <a className="evidence" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
+                    Open code
+                    <Arrow />
+                  </a>
+                </div>
+                <span className="ev-area">{p.area}</span>
+                <p>{p.pitch}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
-      {!inline && <Evidence key={current.name} tool={current} id={evId} />}
       <p className="sr-only" role="status">
-        {current.name}: used in {current.projects.map((p) => p.title).join(', ')}.
+        {tool.name}: used in {tool.projects.map((p) => p.title).join(', ')}.
       </p>
     </section>
   );

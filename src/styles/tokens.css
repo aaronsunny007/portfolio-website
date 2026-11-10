@@ -16,6 +16,10 @@
   --livery-navy: #1c3f94;
   --signal-amber: #ffb020;
   --headlight: #dcebff;
+  /* illustration light: used inside project art and small contacts, never as a container border */
+  --diag-cyan: #3fd0e8;
+  --adv-magenta: #e5409f;
+  --glow-green: #5dff3c;
 
   --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
@@ -45,6 +49,11 @@
   /* the one cut-corner proportion, 45 degrees, for plates and panels */
   --cut: 16px;
 
+  /* seasonal control shapes: soft (contact), square (pit crew), angled (garage) */
+  --radius-soft: 12px;
+  --angle: 10px;
+  --press: 1px;
+
   --lift: 0 16px 32px rgba(0, 0, 0, 0.5);
   /* material vocabulary: a lit top edge on raised faces, a shallow shadow inside recessed housings */
   --edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -55,5 +64,6 @@
   --ease-launch: cubic-bezier(0.55, 0, 0.9, 0.35);
   --ease-brake: cubic-bezier(0.15, 0.7, 0.3, 1);
   --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-travel: cubic-bezier(0.65, 0, 0.35, 1);
 }

@@ -30,8 +30,8 @@ export default function HeroOverlay({ showUi, ended, canReplay, onSkip, onReplay
           </p>
           <p className="hero-tagline">{profile.tagline}</p>
           <div className="row">
-            <a className="btn btn-primary" href="#garage">Enter the Garage</a>
-            <a className="btn btn-secondary" href={profile.github} target="_blank" rel="noreferrer">
+            <a className="btn btn-primary btn-ig" href="#garage">Enter the Garage</a>
+            <a className="btn btn-secondary btn-ig" href={profile.github} target="_blank" rel="noreferrer">
               GitHub
               <Arrow />
             </a>

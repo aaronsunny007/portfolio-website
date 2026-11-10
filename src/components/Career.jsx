@@ -156,7 +156,7 @@ export default function Career({ reduceMotion, flat }) {
         {!flat && (
           <nav className="deck-nav" aria-label="Go to a milestone">
             {milestones.map((m, i) => (
-              <button key={m.title} type="button" aria-label={`Milestone ${i + 1} of ${N}: ${m.title}`} aria-current={i === sel ? 'step' : undefined} className={i <= sel ? 'is-reached' : ''} onClick={() => select(i)}>
+              <button key={m.title} type="button" aria-label={`Milestone ${i + 1} of ${N}: ${m.title}`} aria-current={i === sel ? 'step' : undefined} className={i <= sel ? 'is-reached' : ''} style={{ '--p': (i + 1) / N }} onClick={() => select(i)}>
                 {pad(i)}
               </button>
             ))}

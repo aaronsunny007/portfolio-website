@@ -1,0 +1,120 @@
+/* Season control families. The persistent nav is not touched: a season's character belongs to its own local controls.
+   Every family keeps the shared button roles (primary red, secondary charcoal, tertiary text), the 44px touch size, a visible
+   focus ring, and the same pressed / selected / expanded states; they differ in silhouette, material and local feedback. */
+
+/* a selected control is also shown in shape (an edge, a lit contact, a filled arc), never by colour alone */
+.contact { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--asphalt-700); box-shadow: inset 0 0 0 1px var(--line-strong); transition: background-color var(--dur-fast) var(--ease-brake), box-shadow var(--dur-fast) var(--ease-brake); }
+
+/* ---------- Season 0 · Arrival: glossy ignition controls ---------- */
+.btn-ig {
+  position: relative; overflow: hidden; isolation: isolate; border-radius: var(--radius-sm); color: var(--chalk-100);
+  background: linear-gradient(180deg, #1d222b 0%, #0b0e13 54%, #06080b 100%); border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.6), 0 6px 14px rgba(0, 0, 0, 0.45);
+  transition: transform var(--dur-fast) var(--ease-out-strong), box-shadow var(--dur-fast) var(--ease-out-strong), background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake);
+}
+.btn-ig::before { content: ""; position: absolute; inset: 1px 1px 50% 1px; z-index: -1; pointer-events: none; border-radius: inherit; background: linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.02)); }
+.btn-ig::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 38%; z-index: -1; pointer-events: none; opacity: 0; transform: skewX(-20deg); background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.34), transparent); }
+@keyframes ig-sheen { 0% { left: -60%; opacity: 0; } 25% { opacity: 1; } 100% { left: 130%; opacity: 0; } }
+.btn-ig:hover::after, .btn-ig:focus-visible::after { animation: ig-sheen 560ms var(--ease-out-strong) both; } /* one pass, then it settles */
+.btn-ig:active { transform: translateY(var(--press)) scale(0.985); box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4); }
+.btn-ig.btn-primary { background: linear-gradient(180deg, #ff2d1f 0%, #e10600 48%, #9d0300 100%); border-color: rgba(255, 130, 120, 0.5); color: var(--on-red); }
+.btn-ig.btn-primary:hover { background: linear-gradient(180deg, #ff3d30 0%, #d60500 48%, #920300 100%); }
+.btn-ig.btn-primary:active { background: linear-gradient(180deg, #d60500, #a30400); }
+/* the secondary keeps a red contact along its foot, the primary's quiet sibling */
+.btn-ig.btn-secondary { background: linear-gradient(180deg, #1d222b 0%, #0b0e13 54%, #06080b 100%); border-color: rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 var(--drift-red), 0 6px 14px rgba(0, 0, 0, 0.45); }
+.btn-ig.btn-secondary:hover { background: linear-gradient(180deg, #252b36 0%, #10141a 54%, #080a0e 100%); border-color: rgba(255, 255, 255, 0.28); }
+.btn-ig.btn-secondary:active { background: #07090d; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), inset 0 -2px 0 var(--drift-red); }
+
+/* ---------- Season 1 · Pit Crew: recessed diagnostic selectors ---------- */
+.grp, .tool {
+  position: relative; display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: var(--ctl-h); padding: 0 var(--space-3);
+  background: var(--asphalt-950); color: var(--chalk-400); border: 1px solid var(--line); border-radius: var(--radius-sm); box-shadow: var(--recess); text-align: left; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake), color var(--dur-fast) var(--ease-brake), box-shadow var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong);
+}
+.grp { font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase; }
+.tool { min-height: 48px; font: 800 var(--text-body)/1.3 var(--font-body); color: var(--chalk-100); }
+.grp:hover, .tool:hover { color: var(--chalk-100); border-color: var(--line-strong); background: var(--asphalt-900); }
+.grp:active, .tool:active { transform: translateY(var(--press)); box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.65); }
+.grp[aria-pressed="true"], .tool[aria-pressed="true"] { color: var(--chalk-100); background: var(--asphalt-800); border-color: var(--line-strong); box-shadow: var(--recess), inset 0 -2px 0 var(--drift-red); }
+.tool[aria-pressed="true"] { box-shadow: var(--recess), inset 2px 0 0 var(--drift-red); }
+.grp-name, .tool-name { flex: 1; min-width: 0; }
+.grp-n, .tool-n { font: 600 var(--text-meta) var(--font-mono); letter-spacing: var(--track-meta); color: var(--chalk-400); }
+.grp[aria-pressed="true"] .grp-n, .tool[aria-pressed="true"] .tool-n { color: var(--chalk-100); }
+.grp[aria-pressed="true"] .contact, .tool[aria-pressed="true"] .contact { background: var(--diag-cyan); box-shadow: 0 0 8px rgba(63, 208, 232, 0.75); }
+/* the trace: a thin line from the lit tool across to its evidence, drawn once when the selection lands */
+@media (min-width: 901px) {
+  .console-tools li { position: relative; }
+  .tool[aria-pressed="true"]::after { content: ""; position: absolute; left: 100%; top: 50%; width: calc(var(--space-4) + var(--space-8) + var(--space-4) + 1px); height: 1px; transform-origin: 0 50%; pointer-events: none; background: linear-gradient(90deg, var(--drift-red), var(--diag-cyan)); animation: trace 360ms var(--ease-travel) both; }
+}
+
+/* ---------- Season 2 · Track: numbered checkpoint markers ---------- */
+@property --arc { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes arc-fill { from { --arc: 0deg; } }
+.deck-nav { gap: var(--space-2); }
+.deck-nav button {
+  position: relative; width: var(--ctl-h); min-width: var(--ctl-h); padding: 0; border: 0; border-radius: 50%; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line-strong);
+  transition: color var(--dur-fast) var(--ease-brake), box-shadow var(--dur-fast) var(--ease-brake), background-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong);
+}
+.deck-nav button::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; --arc: calc(var(--p, 1) * 360deg); display: none;
+  background: conic-gradient(var(--chalk-400) var(--arc), transparent 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+}
+.deck-nav button.is-reached::before { display: block; }
+.deck-nav button:hover { box-shadow: inset 0 0 0 1px var(--chalk-400); background: var(--asphalt-800); }
+.deck-nav button:active { transform: scale(0.95); background: var(--asphalt-700); }
+.deck-nav button[aria-current="step"] { color: var(--chalk-100); box-shadow: inset 0 0 0 1px var(--drift-red); }
+.deck-nav button[aria-current="step"]::before { display: block; background: conic-gradient(var(--drift-red) var(--arc), transparent 0); animation: arc-fill 420ms var(--ease-out-strong) both; }
+
+/* ---------- Season 3 · Garage: bay selectors and inspection controls ---------- */
+.bay-pick {
+  --face: var(--asphalt-900); --shell: var(--line);
+  position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; height: 48px; padding: 0 var(--space-4) 0 var(--space-3); border: 0; text-align: left; cursor: pointer; color: var(--chalk-100);
+  background: var(--shell); clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle)) 100%, 0 100%);
+  transition: color var(--dur-fast) var(--ease-brake), background-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong);
+}
+.bay-pick::before { content: ""; position: absolute; inset: 1px; z-index: 0; background: var(--face); clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle) + 0.6px) 100%, 0 100%); transition: background-color var(--dur-fast) var(--ease-brake); }
+.bay-pick > * { position: relative; z-index: 1; }
+.bay-pick:hover { --shell: var(--line-strong); --face: var(--asphalt-800); }
+.bay-pick:active { transform: translateX(2px); --face: var(--asphalt-700); }
+/* the clipped shell hides an outline, so the focus ring is the shell itself: a 2px sky-blue edge that follows the angled end */
+.bay-pick:focus-visible { outline: 0; --shell: var(--livery-sky); }
+.bay-pick:focus-visible::before { inset: 2px; clip-path: polygon(0 0, 100% 0, calc(100% - var(--angle) + 1.2px) 100%, 0 100%); }
+.bay-pick[aria-pressed="true"] { --shell: var(--line-strong); --face: var(--asphalt-800); }
+.bay-pick-n { font: 600 var(--text-meta) var(--font-mono); letter-spacing: var(--track-meta); color: var(--chalk-400); transition: color var(--dur-fast) var(--ease-brake), text-shadow var(--dur-fast) var(--ease-brake); }
+.bay-pick[aria-pressed="true"] .bay-pick-n { color: var(--signal-amber); text-shadow: 0 0 10px rgba(255, 176, 32, 0.7); } /* the bay number lights up, amber, like a workshop sign */
+.bay-pick-name { font: 800 22px/1.1 var(--font-display); text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* the mechanical indicator: one red slider that travels to the selected bay and stops firmly */
+@media (min-width: 901px) {
+  .bay-rail::before { content: ""; position: absolute; left: 0; top: calc(var(--i, 0) * var(--step)); width: 5px; height: 48px; background: var(--drift-red); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25); transition: top 260ms var(--ease-travel); pointer-events: none; }
+}
+@media (max-width: 900px) {
+  .bay-pick { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; height: 56px; padding-block: 4px; }
+  .bay-pick-name { font-size: 20px; }
+  .bay-pick[aria-pressed="true"]::before { background: linear-gradient(var(--drift-red), var(--drift-red)) 0 100% / 100% 3px no-repeat, var(--face); }
+}
+/* primary inspection actions: a square-shouldered plate with one angled corner and a darker lower edge, so it reads as a pressable part */
+.btn-edge { border-radius: 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--angle)), calc(100% - var(--angle)) 100%, 0 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -3px 0 rgba(0, 0, 0, 0.38); transition: background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake), color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong), box-shadow var(--dur-fast) var(--ease-out-strong); }
+.btn-edge.btn-secondary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.5); }
+.btn-edge:active { transform: translateY(var(--press)); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5); }
+.btn-edge:focus-visible { outline-offset: -4px; }
+.bay-more { white-space: nowrap; display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--ctl-h); padding: 0; background: transparent; border: 0; cursor: pointer; font: 800 13px/16px var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--chalk-100); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; transition: text-decoration-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong); }
+.bay-more:hover { text-decoration-color: var(--drift-red); }
+.bay-more:active { transform: translateY(var(--press)); }
+.bay-more .arrow { transition: transform var(--dur-ui) var(--ease-brake); }
+.bay-more[aria-expanded="true"] .arrow { transform: rotate(180deg); }
+.bay-replay { min-height: var(--ctl-h); padding: 0 var(--space-3); background: transparent; color: var(--chalk-400); border: 0; cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; font: 600 var(--text-meta)/16px var(--font-mono); letter-spacing: var(--track-meta); text-transform: uppercase; transition: color var(--dur-fast) var(--ease-brake), text-decoration-color var(--dur-fast) var(--ease-brake), transform var(--dur-fast) var(--ease-out-strong); }
+.bay-replay:hover { color: var(--chalk-100); text-decoration-color: var(--drift-red); }
+.bay-replay:active { transform: translateY(var(--press)); }
+
+/* ---------- Season 4 · Contact: wide, soft communication controls ---------- */
+.finish .btn:not(.btn-ghost) { min-height: 52px; padding: 0 var(--space-8); border-radius: var(--radius-soft); letter-spacing: 0.04em; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 2px 0 rgba(0, 0, 0, 0.4); transition: background-color var(--dur-fast) var(--ease-brake), border-color var(--dur-fast) var(--ease-brake), transform 100ms var(--ease-out-strong), box-shadow 100ms var(--ease-out-strong); }
+.finish .btn:not(.btn-ghost):active { transform: translateY(2px); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4); }
+.finish .copy { border-radius: var(--radius-soft); overflow: hidden; }
+.finish .copy .btn:not(.btn-ghost) { min-height: 50px; border-radius: 0; box-shadow: none; }
+.finish .roles-btn { padding-inline: var(--space-6); background: linear-gradient(180deg, rgba(255, 176, 32, 0.09), transparent 70%), var(--asphalt-900); border-color: rgba(255, 176, 32, 0.4); }
+.finish .roles-btn:hover { background: linear-gradient(180deg, rgba(255, 176, 32, 0.14), transparent 70%), var(--asphalt-800); border-color: rgba(255, 176, 32, 0.6); }
+.finish .roles-btn[aria-expanded="true"] { background: linear-gradient(180deg, rgba(255, 176, 32, 0.16), transparent 70%), var(--asphalt-800); border-color: var(--signal-amber); }
+/* availability: a small amber lamp, steady (it is a status, not a notification) */
+.roles-dot { box-shadow: 0 0 0 3px rgba(255, 176, 32, 0.18), 0 0 8px rgba(255, 176, 32, 0.55); }
+.finish-roles { transition-duration: 260ms, 0s; transition-delay: 0s, 260ms; }

@@ -24,6 +24,8 @@ npm run dev
 | `src/sections/Portrait.jsx` | The settled hero portrait, its reveal and its blend into the page |
 | `public/images/portrait.webp` | The portrait (see below) |
 | `src/sections/` | Hero overlay, Pit Crew, Track, Garage, Finish |
+| `src/sections/ProjectArt.jsx` | Conceptual drawings for the six flagships and the full-garage vignettes |
+| `src/styles/projects.css`, `controls.css` | Toolkit console, garage display and paddock; the per-season control families |
 
 `Driver.jsx`, `RealDriver.jsx`, `SunnyDriver.jsx`, `driverPath.js` and `Wordmark.jsx` (the old walk-in avatar and 3D name) are no longer mounted by the opening. They are kept untouched, and `timeline.js` still carries the few legacy keys they read.
 
