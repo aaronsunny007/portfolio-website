@@ -7,21 +7,21 @@ import { FlagshipArt, Vignette } from './ProjectArt';
 
 const pad = (n) => String(n).padStart(2, '0');
 
-// One build on the bench: a compact header, the drawing beside a short explanation, one evidence line, and a disclosure for the rest.
+// One build on the bench: a compact header, the drawing beside a short explanation, one build-detail line, and a disclosure for the rest.
 // Choosing a build and opening its code are separate controls; the code link never sits inside the disclosure.
 function Display({ p, id }) {
   const [run, setRun] = useState(0);
   const [open, setOpen] = useState(false);
   const moreId = useId();
   return (
-    <article id={id} className={`bay ac-${p.accent}`} aria-label={`${p.title}, selected build`}>
+    <article id={id} className={`bay ac-${p.accent}`} aria-label={`${p.title} — selected build`}>
       <header className="bay-head">
         <div className="bay-id">
           <span className="bay-area">{p.area}</span>
           <h3 className="bay-title">{p.title}</h3>
         </div>
-        <a className="btn btn-primary btn-edge" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
-          Open code
+        <a className="btn btn-primary btn-edge" href={p.repo} target="_blank" rel="noreferrer" aria-label={`View the ${p.title} repository on GitHub`}>
+          View code
           <Arrow />
         </a>
       </header>
@@ -31,36 +31,38 @@ function Display({ p, id }) {
             <FlagshipArt kind={p.art} run={run} />
           </div>
           <figcaption className="bay-art-bar">
-            <span className="bay-tag">Conceptual demonstration</span>
-            <button className="bay-replay" type="button" onClick={() => setRun((r) => r + 1)} aria-label={`Replay the ${p.title} demonstration`}>
-              Replay
+            <span className="bay-tag">Illustrated workflow. Not a live run.</span>
+            <button className="bay-replay" type="button" onClick={() => setRun((r) => r + 1)} aria-label={`Replay the illustrated ${p.title} workflow`}>
+              Replay workflow
             </button>
           </figcaption>
         </figure>
         <div className="bay-copy">
+          <p className="bay-tagline">{p.tagline}</p>
           <p className="bay-pitch">{p.pitch}</p>
-          <p className="bay-evidence">
-            <span>Evidence</span>
-            {p.facts[p.lead ?? 0]}
+          <p className="bay-evidence" aria-label={`Implementation or evaluation detail for ${p.title}`}>
+            <span>Build detail</span>
+            {p.featured}
           </p>
         </div>
       </div>
       <div className="bay-foot">
         <button className="bay-more" type="button" aria-expanded={open} aria-controls={moreId} onClick={() => setOpen((o) => !o)}>
-          Explore the build
+          {open ? 'Close details' : 'Inside the build'}
           <Arrow kind="down" />
         </button>
         <span className="bay-repo">{p.repo.split('/').pop()}</span>
       </div>
       <div id={moreId} className="bay-detail" data-open={open} inert={!open}>
         <div className="bay-detail-in">
-          <ul aria-label="Evidence from the project description">
+          <ul aria-label={`Implementation or evaluation detail for ${p.title}`}>
             {p.facts.map((f) => (
               <li key={f}>{f}</li>
             ))}
           </ul>
           <p>
-            {p.flow}.<small>Conceptual diagram, not a screenshot and not a live result.</small>
+            <small>The workflow</small>
+            {p.flow}
           </p>
         </div>
       </div>
@@ -84,12 +86,11 @@ export default function Garage() {
       <SectionHeader
         id="garage-title"
         sector="S3 / The Garage"
-        title="Every build"
-        accent="in the bay."
-        intro={`${featured.length} flagship builds to inspect, the other ${rest.length} in the full garage. Each one opens its code on GitHub.`}
+        title="Inspect the work."
+        intro={`${featured.length} featured builds. ${rest.length} more in the garage. Open a project for the decisions, the checks and the code.`}
       />
       <div className="bay-layout reveal">
-        <ul className="bay-rail" aria-label="Flagship builds">
+        <ul className="bay-rail" aria-label="Choose a featured build">
           {featured.map((p, i) => (
             <li key={p.slug}>
               <button className="bay-pick" data-tilt type="button" aria-pressed={i === at} aria-controls={bayId} onClick={() => setSel(p.slug)}>
@@ -106,35 +107,39 @@ export default function Garage() {
       <div className="fleet">
         <button className={`garage-toggle ${all ? 'is-open' : ''}`} type="button" aria-expanded={all} aria-controls={listId} onClick={() => setAll((v) => !v)}>
           <span className="gt-face">
-            {all ? 'Hide full garage' : 'Full garage'}
-            <span className="gt-count">{all ? `${rest.length} shown` : `${rest.length} more`}</span>
+            {all ? 'Close the full garage' : 'Open the full garage'}
+            <span className="gt-count">{all ? `${rest.length} builds shown` : `${rest.length} more builds`}</span>
             <Arrow kind="down" />
           </span>
         </button>
-        <ul id={listId} className="paddock" hidden={!all}>
-          {rest.map((p) => (
-            <li key={p.slug} className={`pad ac-${p.accent}`}>
-              <div className="pad-face">
-                <div className="pad-art">
-                  <Vignette kind={p.vg} />
+        <div id={listId} hidden={!all}>
+          <p className="paddock-intro">Client work, experiments and smaller builds. Pick one and get into the code.</p>
+          <ul className="paddock">
+            {rest.map((p) => (
+              <li key={p.slug} className={`pad ac-${p.accent}`}>
+                <div className="pad-face">
+                  <div className="pad-art">
+                    <Vignette kind={p.vg} />
+                  </div>
+                  <div className="pad-body">
+                    <span className="pad-class">
+                      {p.cls}
+                      <i aria-hidden="true" />
+                      {p.area}
+                    </span>
+                    <h4 className="pad-title">{p.title}</h4>
+                    {p.status && <span className="pad-status">{p.status}</span>}
+                    <p>{p.pitch}</p>
+                    <a className="btn btn-secondary btn-sm btn-edge" href={p.repo} target="_blank" rel="noreferrer" aria-label={`View the ${p.title} repository on GitHub`}>
+                      View code
+                      <Arrow />
+                    </a>
+                  </div>
                 </div>
-                <div className="pad-body">
-                  <span className="pad-class">
-                    {p.cls}
-                    <i aria-hidden="true" />
-                    {p.area}
-                  </span>
-                  <h4 className="pad-title">{p.title}</h4>
-                  <p>{p.pitch}</p>
-                  <a className="btn btn-secondary btn-sm btn-edge" href={p.repo} target="_blank" rel="noreferrer" aria-label={`Open the ${p.title} code on GitHub`}>
-                    Open code
-                    <Arrow />
-                  </a>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

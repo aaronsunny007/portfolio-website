@@ -2,9 +2,10 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { clock, carState } from './timeline';
+import { clock, carState, smooth } from './timeline';
 import { drivePose } from './drive';
-import { liftWheels, TYRE_R } from './wheels';
+import { liftWheels, TYRE_R, WHEEL_DEFS } from './wheels';
+import { radialTexture } from './textures';
 
 // A host that can't serve .glb can point at the same file under another name (window.__CAR_URL).
 const URL = (typeof window !== 'undefined' && window.__CAR_URL) || `${import.meta.env.BASE_URL}models/car.glb`;
@@ -13,6 +14,7 @@ export default function Car() {
   const { scene } = useGLTF(URL);
   const outer = useRef();
   const inner = useRef();
+  const beam = useRef();
 
   const { model, wheels } = useMemo(() => {
     const m = scene.clone(true);
@@ -58,21 +60,41 @@ export default function Car() {
       w.pivot.rotation.y = w.front ? steer : 0;
       w.pivot.rotation.x = w.front ? roll0 : (roll0 * 1.35) % (Math.PI * 2); // the driven rears spin faster than the car moves
     }
+    // the beams come up as the car turns in: the road ahead of it lights before the car is in frame, then the beams swing across it with the slide
+    beam.current.intensity = BEAM * (0.12 + 0.88 * smooth(0.05, 0.95, clock.t));
     Object.assign(carState, { x: p.x, z: p.z, yaw, slip: p.slip, speed: p.speed });
   });
 
   return (
     <group ref={outer} position={[-20, 0, 0]}>
+      <ContactShadows />
       <group ref={inner}>
         <primitive object={model} />
         {/* headlights: real light on the wet floor */}
-        <Headlights />
+        <Headlights beam={beam} />
       </group>
     </group>
   );
 }
 
-function Headlights() {
+const BEAM = 50;
+
+/** A soft dark pool under each tyre, laid on the road and carried with the car's heading (not its pitch or roll), so the tyres sit on the wet surface. */
+function ContactShadows() {
+  const map = useMemo(() => radialTexture(64), []);
+  return (
+    <>
+      {WHEEL_DEFS.map((w) => (
+        <mesh key={w.id} position={[w.centre.x, 0.006, w.centre.z]} rotation-x={-Math.PI / 2} renderOrder={1}>
+          <planeGeometry args={[0.62, 0.95]} />
+          <meshBasicMaterial map={map} color="#000" transparent opacity={0.7} depthWrite={false} polygonOffset polygonOffsetFactor={-1} toneMapped={false} />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+function Headlights({ beam }) {
   const target = useMemo(() => {
     const o = new THREE.Object3D();
     o.position.set(0, 0, 10);
@@ -82,10 +104,11 @@ function Headlights() {
     <>
       <primitive object={target} />
       <spotLight
+        ref={beam}
         position={[0, 0.7, 2.3]}
         target={target}
         color="#dcebff"
-        intensity={50}
+        intensity={BEAM}
         angle={0.5}
         penumbra={0.7}
         distance={22}

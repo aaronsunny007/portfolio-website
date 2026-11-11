@@ -5,9 +5,11 @@ export const T = {
   driftStart: 0.5, // the car enters from beyond the left edge
   driftLen: 2.8, // ...one sideways pass across the frame, and out through the right
   reveal: 1.0, // the zip starts as the car enters: the wipe edge trails the car's tail across the frame (car centre ~0.8 screen-widths/s)
-  revealLen: 2.45, // keep in step with --wipe in index.css
-  ui: 3.4, // nav, copy, chips, CTAs
-  end: 4.2,
+  revealLen: 2.45, // the photo is uncovered over this long, measured on the opening clock (see revealAt)
+  title: 3.0, // the name starts to arrive as the car clears the right edge (the pass ends at 3.3)
+  titleLen: 1.3, // ...and has settled this long after
+  ui: 4.0, // nav, P1, supporting copy and the actions: they follow the name (it has arrived by 4.0), in a short run
+  end: 4.8,
   // Legacy: only read by the unused avatar / wordmark modules (Driver, RealDriver, driverPath, Wordmark).
   name: 2.5,
   walkStart: 4.0,
@@ -32,6 +34,29 @@ export const smooth = (a, b, v) => {
 export const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
 export const easeOutBack = (x, s = 1.4) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
 export const lerp = THREE.MathUtils.lerp;
+
+/** How far the photograph has been uncovered (0..1) at opening time t. Driven by the scene clock, never by wall time, so a dropped frame
+ *  delays the photo and the car together and the photo can never cover a car that has not finished its pass. */
+/** The name's arrival at opening time t, as plain numbers the 3D title applies to its group. Pure, so a held or skipped clock gives the same pose.
+ *  Deeper and yawed at first (the sides of the letters show), it decelerates towards the viewer, overshoots a hair and settles; a light sweeps the bevels. */
+export function titleMotion(t) {
+  const p = clamp01((t - T.title) / T.titleLen);
+  const arrive = easeOutCubic(clamp01(p / 0.78));
+  const s = clamp01((p - 0.78) / 0.22); // the last fifth: the settle
+  const settle = Math.sin(s * Math.PI * 2.2) * Math.pow(1 - s, 2) * 0.35;
+  return {
+    p,
+    z: -330 * (1 - arrive),
+    x: -46 * (1 - arrive),
+    yaw: 0.62 * (1 - arrive) + 0.035 * settle,
+    pitch: -0.05 * (1 - arrive) + 0.012 * settle,
+    opacity: smooth(0, 0.2, p),
+    sweep: clamp01((p - 0.5) / 0.45), // 0..1 across the name, left to right (the way the car went)
+    edge: 0.45 + 0.9 * Math.sin(Math.PI * clamp01((p - 0.15) / 0.7)), // red edge light: up through the arrival, back to a quiet rest
+  };
+}
+
+export const revealAt = (t) => clamp01((t - T.reveal) / T.revealLen);
 
 /** Car → world transform helper: local point (x, y, z) to world, given pose. */
 export function carLocalToWorld(pose, lx, ly, lz, out = new THREE.Vector3()) {

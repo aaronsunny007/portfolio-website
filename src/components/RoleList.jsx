@@ -1,6 +1,6 @@
-import { roles } from '../content/profile';
+import { roles, rolesPanel, profile } from '../content/profile';
 
-// The roles I am open to, grouped. One list for the hero plate and the finish panel, so they can never disagree.
+// The target roles, grouped. One list for the hero plate and the finish panel, so they can never disagree.
 export default function RoleList() {
   return roles.map((g) => (
     <section key={g.group}>
@@ -12,4 +12,14 @@ export default function RoleList() {
       </ul>
     </section>
   ));
+}
+
+// The closing lines of the roles panel (the heading and introduction sit with each panel's own header).
+export function RolesFoot() {
+  return (
+    <div className="roles-foot">
+      <p>{rolesPanel.support}</p>
+      <p className="roles-loc">{profile.location}</p>
+    </div>
+  );
 }

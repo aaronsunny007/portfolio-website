@@ -78,10 +78,10 @@ export default function Loader({ release }) {
   if (gone) return null;
   const shown = done ? 100 : Math.floor(pct);
   return (
-    <div className={`loader ${done ? 'is-done' : ''}`} role="status" aria-busy={!done} aria-label={done ? 'Ready' : 'Starting up'}>
+    <div className={`loader ${done ? 'is-done' : ''}`} role="status" aria-busy={!done} aria-label={done ? 'Portfolio ready.' : 'Loading portfolio.'}>
       <canvas ref={cv} width={SIZE * DPR} height={SIZE * DPR} style={{ width: SIZE, height: SIZE }} aria-hidden="true" />
       <div className="loader-line" aria-hidden="true">
-        <span className="loader-label">{done ? 'Ready' : 'Ignition'}</span>
+        <span className="loader-label">{done ? 'Ready.' : 'Ignition'}</span>
         <span className="loader-read">{String(shown).padStart(3, '0')}</span>
       </div>
       <i className="loader-bar" aria-hidden="true">

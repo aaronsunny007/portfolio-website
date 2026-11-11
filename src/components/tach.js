@@ -59,7 +59,7 @@ export function drawTach(g, cx, cy, rpm, scale = 1) {
   }
   g.font = mono(600, 16);
   g.fillStyle = '#9aa4b0';
-  g.fillText('x1000 rpm', 0, 74);
+  g.fillText('×1000 rpm', 0, 74);
   // the needle: a narrow taper with a shadow on the face and a thin highlight along its length
   g.save();
   g.rotate(A0 + SWEEP * r);

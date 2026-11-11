@@ -166,7 +166,7 @@ export default function Route({ low, still }) {
     const t = still ? 0 : clock.elapsedTime;
     const tall = view.tall;
     const phone = size.width < 721;
-    const el0 = view.panels[0];
+    const el0 = view.panels[0] || view.panels[N];
     if (!el0) return;
     const card = S.card;
     if (card.sw !== size.width || card.sh !== size.height) {

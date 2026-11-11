@@ -15,24 +15,25 @@ const SLIP_MIN = 0.25;
 const MAX_SMOKE = 520;
 
 const smokeVert = /* glsl */ `
-  attribute float aSize; attribute float aAlpha; attribute float aRed;
+  attribute float aSize; attribute float aAlpha; attribute float aTint;
   uniform float uScale;
-  varying float vAlpha; varying float vRed;
+  varying float vAlpha; varying float vTint;
   void main() {
-    vAlpha = aAlpha; vRed = aRed;
+    vAlpha = aAlpha; vTint = aTint;
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
     gl_PointSize = aSize * uScale / -mv.z;
     gl_Position = projectionMatrix * mv;
   }`;
 const smokeFrag = /* glsl */ `
-  varying float vAlpha; varying float vRed;
+  varying float vAlpha; varying float vTint;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.0, d);
     a *= a * vAlpha;
     vec3 grey = vec3(0.56, 0.62, 0.7); // cool, as if lit by the street
-    vec3 red = vec3(1.0, 0.16, 0.08);
-    gl_FragColor = vec4(mix(grey, red, vRed), a);
+    vec3 red = vec3(1.0, 0.16, 0.08);   // the rear light on the plume
+    vec3 cyan = vec3(0.16, 0.8, 0.95);  // the street's neon, caught in the older smoke
+    gl_FragColor = vec4(mix(grey, vTint > 0.0 ? red : cyan, abs(vTint)), a);
   }`;
 
 export function TyreSmoke() {
@@ -48,7 +49,7 @@ export function TyreSmoke() {
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAX_SMOKE * 3), 3));
     g.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(MAX_SMOKE), 1));
     g.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(MAX_SMOKE), 1));
-    g.setAttribute('aRed', new THREE.BufferAttribute(new Float32Array(MAX_SMOKE), 1));
+    g.setAttribute('aTint', new THREE.BufferAttribute(new Float32Array(MAX_SMOKE), 1));
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 100);
     return g;
   }, []);
@@ -79,9 +80,10 @@ export function TyreSmoke() {
     p.vy = 0.25 + Math.random() * 0.45;
     p.vz = (Math.random() - 0.5) * 0.8;
     p.life = 0;
-    p.max = big ? 1.4 + Math.random() * 1.2 : 3.2;
+    p.max = big ? 1.8 + Math.random() * 1.4 : 3.2; // the plume hangs behind the car for a moment after it has gone
     p.s0 = big ? 0.4 : 0.8;
-    p.red = Math.random() < 0.08 ? 1 : 0;
+    const r = Math.random();
+    p.red = r < 0.07 ? 0.85 : r < 0.17 ? -0.7 : 0; // a few red and cyan puffs: restrained, the smoke stays grey
     p.a = big ? 0.1 : 0.04;
   }
 
@@ -112,7 +114,7 @@ export function TyreSmoke() {
     const pos = geo.attributes.position.array;
     const sz = geo.attributes.aSize.array;
     const al = geo.attributes.aAlpha.array;
-    const rd = geo.attributes.aRed.array;
+    const rd = geo.attributes.aTint.array;
     for (let i = 0; i < MAX_SMOKE; i++) {
       const p = pool[i];
       p.life += dt;
@@ -120,8 +122,9 @@ export function TyreSmoke() {
       p.x += p.vx * dt;
       p.y += p.vy * dt;
       p.z += p.vz * dt;
-      p.vx *= 0.985;
-      p.vz *= 0.985;
+      const drag = Math.pow(0.985, dt * 60); // per second, not per frame
+      p.vx *= drag;
+      p.vz *= drag;
       pos[i * 3] = p.x;
       pos[i * 3 + 1] = p.y;
       pos[i * 3 + 2] = p.z;
@@ -132,7 +135,7 @@ export function TyreSmoke() {
     geo.attributes.position.needsUpdate = true;
     geo.attributes.aSize.needsUpdate = true;
     geo.attributes.aAlpha.needsUpdate = true;
-    geo.attributes.aRed.needsUpdate = true;
+    geo.attributes.aTint.needsUpdate = true;
   });
 
   return <points ref={pts} geometry={geo} material={mat} frustumCulled={false} renderOrder={5} />;

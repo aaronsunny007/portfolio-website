@@ -3,7 +3,7 @@ import { profile } from '../content/profile';
 import Arrow from './Arrow';
 
 // The ways to get in touch, in one place so the finish row and the roles panel offer exactly the same actions.
-// Email is the primary action when there is an address; otherwise the code on GitHub is.
+// LinkedIn is the primary action. Email and CV controls exist only once their destination is set in src/content/profile.js.
 export default function ContactActions() {
   const [copy, setCopy] = useState(null); // null | 'ok' | 'fail'
   const timer = useRef();
@@ -35,16 +35,16 @@ export default function ContactActions() {
           </div>
         </>
       )}
-      <a className={hasEmail ? 'btn btn-secondary' : 'btn btn-primary'} href={profile.github} target="_blank" rel="noreferrer">
-        GitHub
-        <Arrow />
-      </a>
       {profile.linkedin && (
-        <a className="btn btn-secondary" href={profile.linkedin} target="_blank" rel="noreferrer">
-          LinkedIn
+        <a className={hasEmail ? 'btn btn-secondary' : 'btn btn-primary'} href={profile.linkedin} target="_blank" rel="noreferrer">
+          Connect on LinkedIn
           <Arrow />
         </a>
       )}
+      <a className={hasEmail || profile.linkedin ? 'btn btn-secondary' : 'btn btn-primary'} href={profile.github} target="_blank" rel="noreferrer">
+        Explore GitHub
+        <Arrow />
+      </a>
       {profile.cv && (
         <a className="btn btn-secondary" href={profile.cv}>
           Download CV

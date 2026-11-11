@@ -169,7 +169,7 @@ function Scene({ still, low }) {
     // Two poses, blended by w: the windshield on the road, and a seat behind the car on the route. Both face down the road.
     // The second follows the car, so the camera, the car and the deck of cards all move with the one value, view.t.
     const aspect = size.width / size.height;
-    view.tall = aspect < 1.15;
+    view.tall = aspect < 1.15 || size.width < 900; // below this the card docks under the scene instead of beside it (mirrored by the journey's CSS)
     // The camera rises into the route as the career section arrives, holds while the corners are driven, and comes down into the windshield
     // only once the car has left the lip and landed on the night road (view.ex), not when the section starts to scroll away.
     if (!still) view.w = Math.min(view.up, 1 - ease(clamp01((view.ex - 0.72) / 0.28)));
@@ -200,6 +200,16 @@ function Scene({ still, low }) {
     cams.look.lerpVectors(cams.al, cams.bl, e);
     camera.lookAt(cams.look);
     camera.updateMatrixWorld();
+    // The journey's card sits on the left, so the whole frame (road, car, lights) slides right by half the card's column while the camera
+    // is on the route. A view offset moves the projection only, so nothing in the scene is displaced from its road.
+    const dx = view.tall ? 0 : Math.round((Math.min(420, Math.max(340, size.width * 0.3)) + Math.min(64, Math.max(24, size.width * 0.04)) + 32) * 0.5 * e);
+    if (dx !== cams.dx || cams.sw !== size.width || cams.sh !== size.height) {
+      cams.dx = dx;
+      cams.sw = size.width;
+      cams.sh = size.height;
+      if (dx) camera.setViewOffset(size.width, size.height, -dx, 0, size.width, size.height);
+      else camera.clearViewOffset();
+    }
     if (import.meta.env.DEV) window.__cam = camera; // dev hook, like __clock
 
     // How fast things are moving, measured from the movement itself: the page's travel down the road, or the car's along the route.

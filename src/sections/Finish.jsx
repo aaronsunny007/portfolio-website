@@ -1,10 +1,10 @@
 import { useCallback, useId, useRef, useState } from 'react';
-import { profile, roleCount } from '../content/profile';
+import { profile, roleCount, rolesPanel } from '../content/profile';
 import { view } from '../three/journey';
 import { scroller } from '../scroller';
 import SectionHeader from '../components/SectionHeader';
 import ContactActions from '../components/ContactActions';
-import RoleList from '../components/RoleList';
+import RoleList, { RolesFoot } from '../components/RoleList';
 import useEscape from '../components/useEscape';
 import useReveal from '../components/useReveal';
 
@@ -29,16 +29,14 @@ export default function Finish() {
     if (dy > 1) scroller.to(window.scrollY + dy, window.matchMedia('(prefers-reduced-motion: reduce)').matches, 0.8);
   };
 
-  const hasEmail = Boolean(profile.email);
   return (
     <section className="section finish" id="finish" aria-labelledby="finish-title" ref={ref}>
       <div className="stopline" aria-hidden="true" />
       <SectionHeader
         id="finish-title"
         sector="S4 / Finish Line"
-        title="Let’s build something that"
-        accent="holds the line."
-        intro={`${profile.status} for AI engineering, AI security and MLOps. ${hasEmail ? 'Email is the quickest way in.' : 'The code is on GitHub.'}`}
+        title="What needs building?"
+        intro="I’m looking for an engineering role where I can own a piece of the work and see it through. Bring the problem, the constraints and the parts that still need figuring out. The code is open. Let’s talk about the work."
       />
       <div className="reveal">
         <ContactActions />
@@ -46,7 +44,7 @@ export default function Finish() {
           <button ref={trigger} className="btn btn-secondary roles-btn" type="button" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
             <i className="roles-dot" aria-hidden="true" />
             {profile.status}
-            <span className="roles-count">{roleCount} roles</span>
+            <span className="roles-count">{roleCount} role areas</span>
             <i className={`roles-caret ${open ? 'is-open' : ''}`} aria-hidden="true" />
           </button>
           <span className="finish-meta">{profile.location}</span>
@@ -55,25 +53,26 @@ export default function Finish() {
           <div className="finish-roles-inner surface">
             <header className="finish-roles-head">
               <div>
-                <h3>Roles I am open to</h3>
-                <p>{profile.location} · {profile.status}</p>
+                <h3>{rolesPanel.heading}</h3>
+                <p>{rolesPanel.intro}</p>
               </div>
               <button className="btn btn-ghost" type="button" onClick={close}>
                 Close
               </button>
             </header>
-            <div className="finish-roles-list" data-lenis-prevent tabIndex={0} role="region" aria-label="Roles I am open to">
+            <div className="finish-roles-list" data-lenis-prevent tabIndex={0} role="region" aria-label={rolesPanel.label}>
               <RoleList />
             </div>
+            <RolesFoot />
             <ContactActions />
           </div>
         </div>
       </div>
       <footer className="footer">
         <span>
-          © 2026 {profile.first} {profile.last}
+          © {new Date().getFullYear()} {profile.first} {profile.last}
         </span>
-        <span>Not affiliated with BMW AG. Built with three.js, React Three Fiber and Lenis.</span>
+        <span>Built with React, Three.js, React Three Fiber, GSAP and Lenis. Not affiliated with BMW AG.</span>
       </footer>
     </section>
   );

@@ -22,6 +22,7 @@
   --glow-green: #5dff3c;
 
   --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-driver: Oxanium, "Big Shoulders Display", Impact, sans-serif; /* the hero name only: Oxanium SemiBold, the same face the 3D title is cut from */
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
   --font-body: Manrope, "Segoe UI", system-ui, sans-serif;
 

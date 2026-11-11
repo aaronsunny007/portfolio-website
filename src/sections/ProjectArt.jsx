@@ -7,28 +7,37 @@ const at = (d, dur, delay, rest) => ({ offsetPath: `path('${d}')`, '--dur': `${d
 const wait = (s) => ({ '--d': `${s}s` });
 
 // ---------- flagship art, 400 x 200 ----------
-const GATE_X = Array.from({ length: 8 }, (_, i) => 116 + i * 25);
-const gateDelay = (x) => (0.3 + ((x - 76) / 248) * 1.9).toFixed(2);
+const GATE_X = Array.from({ length: 8 }, (_, i) => 112 + i * 16);
+const gateDelay = (x) => (0.6 + ((x - 112) / 112) * 1.4).toFixed(2);
 
 const FLAGSHIP = {
-  // Warden: a request crosses a run of security gates and arrives at the tool server
+  // Warden: ordinary requests pass the gateway to the tools; a candidate defence takes its own route through eight validation stages before enforcement
   gate: (
     <>
-      <text x="200" y="30">8-STAGE VALIDATION GATE</text>
-      <rect className="node" x="16" y="76" width="60" height="48" rx="3" />
-      <text x="46" y="104">AGENT</text>
-      <rect className="node hot" x="324" y="66" width="60" height="68" rx="3" />
-      <text x="354" y="96">MCP</text>
-      <text x="354" y="110">SERVER</text>
-      <path className="dim" d="M76 100 H324" />
-      {GATE_X.map((x, i) => (
+      <rect className="node" x="14" y="40" width="64" height="40" rx="3" />
+      <text x="46" y="64">AGENT</text>
+      <rect className="node hot" x="166" y="36" width="68" height="48" rx="3" />
+      <text x="200" y="56">SECURITY</text>
+      <text x="200" y="70">GATEWAY</text>
+      <rect className="node" x="322" y="40" width="64" height="40" rx="3" />
+      <text x="354" y="64">MCP TOOLS</text>
+      <path className="dim" d="M78 60 H166 M234 60 H322" />
+      <circle className="pkt trav" r="5" style={at('M78 60 H322', 1.8, 0.2, '100%')} />
+      <rect className="node" x="14" y="122" width="72" height="40" rx="3" />
+      <text x="50" y="140">CANDIDATE</text>
+      <text x="50" y="154">DEFENCE</text>
+      <path className="dim" d="M86 142 H258" />
+      <text x="168" y="116">8-STAGE VALIDATION</text>
+      {GATE_X.map((x) => (
         <g key={x}>
-          <path className="ac lit" style={wait(gateDelay(x))} d={`M${x} 52 V86 M${x} 114 V148`} />
-          <circle className="acf lit" style={wait(gateDelay(x))} cx={x} cy="100" r="3" />
-          <text x={x} y="170">{i + 1}</text>
+          <path className="ac lit" style={wait(gateDelay(x))} d={`M${x} 130 V136 M${x} 148 V154`} />
+          <circle className="acf lit" style={wait(gateDelay(x))} cx={x} cy="142" r="3" />
         </g>
       ))}
-      <circle className="pkt trav" r="6" style={{ ...at('M76 100 H324', 2.1, 0.3), '--rest': '100%' }} />
+      <circle className="pkt trav" r="5" style={at('M86 142 H258', 2, 0.6, '100%')} />
+      <rect className="node hot" x="258" y="122" width="84" height="40" rx="3" />
+      <text x="300" y="146">ENFORCEMENT</text>
+      <path className="ac dashed" d="M300 122 V102 H200 V84" />
     </>
   ),
   // Ledger: a passage in the report is retrieved, recomputed, and cited in the answer
@@ -43,10 +52,11 @@ const FLAGSHIP = {
       <circle className="node" cx="170" cy="101" r="22" />
       <path className="ln" d="M186 117 L198 129" />
       <text x="170" y="150">RETRIEVE</text>
+      <text x="271" y="93">CHECK</text>
       <path className="ln draw" style={wait(0.8)} pathLength="1" d="M192 101 H214" />
       <rect className="node" x="214" y="82" width="38" height="38" rx="3" />
       <text x="233" y="107" className="big">=</text>
-      <text x="233" y="168">RECOMPUTE</text>
+      <text x="233" y="168">CALCULATE</text>
       <path className="ln draw" style={wait(1.1)} pathLength="1" d="M252 101 H290" />
       <rect className="node hot in" style={wait(1.3)} x="290" y="52" width="94" height="96" rx="3" />
       <path className="dim in" style={wait(1.4)} d="M302 112 H372 M302 124 H360 M302 136 H368" />
@@ -56,31 +66,30 @@ const FLAGSHIP = {
       <path className="ac dashed in" style={wait(1.6)} d="M322 64 C322 6 66 6 66 88" />
     </>
   ),
-  // Financial-NRF: the reliability score barely moves between a supported and a mismatched source
+  // Financial-NRF (illustrative): the reliability score is compared between a correct and an incorrect source
   bars: (
     <>
-      <text x="200" y="22">DOES THE SCORE NOTICE THE SOURCE?</text>
       <g>
         <rect className="node" x="24" y="40" width="158" height="62" rx="3" />
         <path className="dim" d="M40 58 H160 M40 72 H150 M40 86 H156" />
         <path className="ac" d="M160 52 l6 7 l12 -14" />
-        <text x="103" y="120">SUPPORTED SOURCE</text>
+        <text x="103" y="120">CORRECT SOURCE</text>
       </g>
       <g>
         <rect className="node" x="218" y="40" width="158" height="62" rx="3" />
         <path className="dim" d="M234 58 H354 M234 86 H350" />
         <path className="warn" d="M234 72 H342" />
         <path className="warn" d="M348 50 l14 14 m0 -14 l-14 14" />
-        <text x="297" y="120">MISMATCHED SOURCE</text>
+        <text x="297" y="120">INCORRECT SOURCE</text>
       </g>
-      <text x="24" y="146" className="l">SCORE</text>
+      <text x="24" y="146" className="l">RELIABILITY SCORE</text>
       <rect className="track" x="24" y="152" width="158" height="12" />
       <rect className="fill grow" style={wait(0.2)} x="24" y="152" width="126" height="12" />
-      <text x="218" y="146" className="l">SCORE</text>
+      <text x="218" y="146" className="l">RELIABILITY SCORE</text>
       <rect className="track" x="218" y="152" width="158" height="12" />
       <rect className="fill grow" style={wait(0.5)} x="218" y="152" width="120" height="12" />
       <path className="warn dashed in" style={wait(1.1)} d="M150 148 V170 M338 148 V170" />
-      <text x="200" y="188" className="in" style={wait(1.1)}>BARELY MOVES</text>
+      <text x="200" y="188" className="in" style={wait(1.1)}>COMPARE THE RESPONSE</text>
     </>
   ),
   // AEGIS: traffic flows to a protected service; the written rule stops the attack and lets real traffic through
@@ -94,18 +103,18 @@ const FLAGSHIP = {
       </defs>
       <ellipse cx="344" cy="104" rx="58" ry="46" fill="url(#pa-pool)" />
       <path className="svc" d="M344 62 L378 74 V104 C378 126 362 140 344 148 C326 140 310 126 310 104 V74 Z" />
-      <text x="344" y="108">SERVICE</text>
+      <text x="344" y="108">DEPLOY</text>
       <path className="dim" d="M20 76 H312 M20 128 H314" />
       <path className="ln dashed" d="M20 100 H238" />
-      <text x="20" y="62" style={{ textAnchor: 'start' }}>TRAFFIC</text>
-      <text x="20" y="150" style={{ textAnchor: 'start' }}>REAL TRAFFIC STILL PASSES</text>
+      <text x="20" y="62" style={{ textAnchor: 'start' }}>TRAFFIC CHECK</text>
+      <text x="20" y="150" style={{ textAnchor: 'start' }}>VALIDATE</text>
       <circle className="pkt ok trav" r="5" style={at('M20 76 H312', 1.6, 0.1, '100%')} />
       <circle className="pkt ok trav" r="5" style={at('M20 128 H314', 1.9, 0.4, '100%')} />
       <circle className="threat trav stop" r="7" style={at('M20 100 H238', 1.7, 0.2, '100%')} />
       <path className="rule in" style={wait(1.4)} d="M254 78 V122" />
       <path className="rule in" style={wait(1.4)} d="M244 78 H264 M244 122 H264" />
       <circle className="burst" style={wait(1.7)} cx="244" cy="100" r="10" />
-      <text x="254" y="68">BLOCK RULE</text>
+      <text x="254" y="68">CANDIDATE RULE</text>
       <text x="120" y="90">ATTACK CAMPAIGN</text>
     </>
   ),
@@ -122,13 +131,15 @@ const FLAGSHIP = {
       <text x="62" y="26">VERSIONED ATTACKS</text>
       <circle className="node hot" cx="196" cy="100" r="30" />
       <text className="big" x="196" y="109">AI</text>
-      <text x="196" y="150">VALIDATED</text>
-      <text x="196" y="162">AI JUDGE</text>
+      <text x="196" y="150">MODEL JUDGE</text>
+      <text x="196" y="58">RUN EVALUATION</text>
+      <text x="260" y="80">COMPARE</text>
+      <text x="260" y="91">DEFENCES</text>
       <path className="ln draw" style={wait(0.9)} pathLength="1" d="M226 100 H296" />
       <circle className="pkt trav" r="6" style={at('M104 112 C140 112 140 100 168 100 H296', 2, 0.5, '100%')} />
       <path className="gatebar in" style={wait(1.6)} d="M320 62 L350 100 L320 138 L290 100 Z" />
       <text className="big in" style={wait(1.6)} x="320" y="109">CI</text>
-      <text x="320" y="164">CI RELEASE GATE</text>
+      <text x="320" y="164">RELEASE GATE</text>
       <path className="dim" d="M350 100 H384 M376 94 l8 6 l-8 6" />
       <text x="372" y="84">SHIP</text>
     </>
@@ -149,11 +160,12 @@ const FLAGSHIP = {
       <circle className="pkt trav" r="4.5" style={at('M20 100 C60 100 90 60 130 60 S170 100 214 100 H292', 2.2, 0.6, '100%')} />
       <circle className="pkt trav" r="4.5" style={at('M20 148 C70 148 90 124 130 124 S180 100 214 100 H292', 2.2, 1, '100%')} />
       <path className="ac" d="M214 100 H292" />
-      <text x="253" y="88">EVERY 5 MIN</text>
+      <text x="253" y="80">5-MINUTE</text>
+      <text x="253" y="91">COLLECTION</text>
       <path className="ln" d="M292 70 v60 c0 12 60 12 60 0 v-60 M292 70 c0 -12 60 -12 60 0 c0 12 -60 12 -60 0 M292 92 c0 12 60 12 60 0 M292 112 c0 12 60 12 60 0" />
       <path className="ac" d="M292 70 c0 -12 60 -12 60 0" />
       <text x="322" y="156">LAKEHOUSE</text>
-      <text x="322" y="168">ON AZURE DATABRICKS</text>
+      <text x="322" y="168">RELIABILITY ANALYSIS</text>
     </>
   ),
 };

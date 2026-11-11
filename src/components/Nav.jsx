@@ -9,6 +9,8 @@ const LINKS = [
   ['#finish', 'Contact'],
 ];
 
+const SEASONS = ['Ignition', 'Pit Crew', 'The Track', 'The Garage', 'Finish Line'];
+
 export default function Nav({ visible }) {
   const [current, setCurrent] = useState('');
   const [scrolled, setScrolled] = useState(false);
@@ -58,11 +60,11 @@ export default function Nav({ visible }) {
     return () => ro.disconnect();
   }, [at]);
 
-  const sector = ['ignition', 'pit-crew', 'track', 'garage', 'finish'].indexOf(current);
+  const sector = Math.max(0, ['ignition', 'pit-crew', 'track', 'garage', 'finish'].indexOf(current));
 
   return (
     <header className={`nav ${visible || scrolled ? 'is-on' : ''} ${scrolled ? 'is-solid' : ''}`}>
-      <a className="nav-mark" href="#ignition" aria-label={`${profile.first} ${profile.last}, home`}>
+      <a className="nav-mark" href="#ignition" aria-label={`${profile.first} ${profile.last} — home`}>
         {profile.first}
         <span>.</span>
       </a>
@@ -79,10 +81,14 @@ export default function Nav({ visible }) {
         </ul>
       </nav>
       <div className="nav-right">
-        <span className="nav-sector">S{Math.max(0, sector)} / 4</span>
-        <a className="key" data-spec href={profile.cv || profile.github} target="_blank" rel="noreferrer">
-          {!profile.cv && <FaGithub aria-hidden="true" />}
-          {profile.cv ? 'CV' : 'GitHub'}
+        <span className="nav-sector">
+          <span aria-hidden="true">S{sector} / 4</span>
+          <span className="sr-only">Season {sector}: {SEASONS[sector]}</span>
+        </span>
+        {/* GitHub stays here whatever else exists; the CV and LinkedIn keys live in the hero. */}
+        <a className="key" data-spec href={profile.github} target="_blank" rel="noreferrer">
+          <FaGithub aria-hidden="true" />
+          GitHub
         </a>
       </div>
     </header>

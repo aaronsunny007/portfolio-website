@@ -5,9 +5,9 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import Car from './Car';
 import { TyreSmoke, SkidMarks } from './DriftFx';
-import { FIXED, T, clock, carState } from './timeline';
+import { FIXED, T, clock, carState, revealAt } from './timeline';
 
-const BEATS = ['driftStart', 'reveal', 'ui', 'end'];
+const BEATS = ['driftStart', 'reveal', 'title', 'ui', 'end'];
 
 function quality() {
   const forced = new URLSearchParams(window.location.search).get('tier');
@@ -17,14 +17,23 @@ function quality() {
   return small || weak ? 'medium' : 'high';
 }
 
-/** Advances the shared clock and tells the DOM when a beat is crossed. Runs before everything else. */
-function ClockDriver({ onBeat }) {
+/** Advances the shared clock, tells the DOM when a beat is crossed and publishes how far the photo is uncovered (--rv on the hero).
+ *  The one owner of the opening's time. Runs before everything else. */
+function ClockDriver({ onBeat, onReady }) {
   const last = useRef(-1);
-  useFrame((_, dt) => {
+  const hero = useRef(null);
+  const ready = useRef(false);
+  useFrame(({ gl }, dt) => {
     clock.running = true;
     if (!clock.hold || clock.step > 0) {
       clock.step = Math.max(0, clock.step - 1);
       clock.t += FIXED ? 1 / 30 : Math.min(dt, 1 / 20);
+    }
+    hero.current ??= gl.domElement.closest('.hero');
+    hero.current?.style.setProperty('--rv', revealAt(clock.t).toFixed(4));
+    if (!ready.current) {
+      ready.current = true;
+      onReady?.();
     }
     let idx = -1;
     BEATS.forEach((b, i) => {
@@ -118,7 +127,7 @@ function Lights() {
   );
 }
 
-export default function Stage({ active, onBeat }) {
+export default function Stage({ active, onBeat, onReady }) {
   const tier = useMemo(() => quality(), []);
   return (
     <Canvas
@@ -141,7 +150,7 @@ export default function Stage({ active, onBeat }) {
         <Lightformer form="rect" intensity={2.2} color="#e10600" position={[0, 1.5, -9]} scale={[16, 1.2, 1]} />
       </Environment>
       <Suspense fallback={null}>
-        <ClockDriver onBeat={onBeat} />
+        <ClockDriver onBeat={onBeat} onReady={onReady} />
         <Car />
         <SkidMarks />
         <TyreSmoke />

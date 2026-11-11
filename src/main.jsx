@@ -4,6 +4,8 @@ import '@fontsource/big-shoulders-display/800';
 import '@fontsource/big-shoulders-display/900';
 import '@fontsource/jetbrains-mono/500';
 import '@fontsource/jetbrains-mono/600';
+import '@fontsource/oxanium/600.css';
+import '@fontsource/oxanium/700.css'; // the P1 tab
 import '@fontsource/manrope/400';
 import '@fontsource/manrope/500';
 import '@fontsource/manrope/800';

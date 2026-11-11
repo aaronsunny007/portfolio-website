@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Lenis from 'lenis';
 import Nav from './components/Nav';
 import Loader from './components/Loader';
@@ -9,30 +9,17 @@ import Track from './sections/Track';
 import Garage from './sections/Garage';
 import Finish from './sections/Finish';
 import Shutters from './components/Shutters';
+import SceneGuard from './components/SceneGuard';
 import { clock, T } from './three/timeline';
 import { hasWebGL } from './three/webgl';
 import { scroller } from './scroller';
 import { MAX_WAIT_MS } from './components/ignition';
 import { installPointerFx } from './components/pointerFx';
 
-// If the night scene cannot start (no context, or its code fails to load) the career falls back to a plain list.
-class SceneGuard extends Component {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  componentDidCatch() {
-    this.props.onFail();
-  }
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
-}
-
 const Stage = lazy(() => import('./three/Stage'));
 const loadNight = () => import('./three/NightCircuit');
 const NightCircuit = lazy(loadNight);
-const ORDER = ['driftStart', 'reveal', 'ui', 'end'];
+const ORDER = ['driftStart', 'reveal', 'title', 'ui', 'end'];
 
 export default function App({ reduceMotion }) {
   const [beat, setBeat] = useState(clock.t >= T.end ? 'end' : null);
@@ -41,20 +28,35 @@ export default function App({ reduceMotion }) {
   const [covered, setCovered] = useState(clock.t >= T.end); // the portrait fully hides the 3D stage, so stop rendering it
   const [sceneFailed, setSceneFailed] = useState(false);
   const [run, setRun] = useState(0); // a replay mounts a fresh ignition gauge
+  const [titleReady, setTitleReady] = useState(false); // the 3D name has its geometry and is drawing
+  const [titleFailed, setTitleFailed] = useState(false); // it could not start (or never became ready): the heading's own styled text is shown instead
+  const [ready, setReady] = useState(false); // the stage has its car and its clock is running (stays true across a replay)
   const hero = useRef();
   const timers = useRef([]);
   const reached = (b) => beat && ORDER.indexOf(beat) >= ORDER.indexOf(b);
-  // The road scene is built while the opening is still playing, so it is ready to take over the moment the opening resolves: its code is
-  // fetched with the first beat and it mounts at the zip reveal, drawing one frame to compile. It draws every frame once the opening has
-  // ended (or the visitor has scrolled on), and the hero opens onto it. Scrolling on early must never reveal an empty page.
+  // The road scene is built while the opening is still playing, so it is ready to take over the moment the opening resolves. It mounts as
+  // soon as the stage's clock starts (under the ignition gauge, before the car is in frame): compiling its shaders is a hitch of about a
+  // second, and it must not land in the middle of the drift. It draws every frame once the opening has ended (or the visitor has scrolled
+  // on), and the hero opens onto it. Scrolling on early must never reveal an empty page.
   const webgl = hasWebGL() && !sceneFailed;
-  const showNight = webgl && (reached('reveal') || !heroActive);
+  const showNight = webgl && (ready || reached('reveal') || !heroActive);
   const nightLive = reached('end') || !heroActive;
   useEffect(() => {
-    if (beat && webgl && !reduceMotion) loadNight();
-  }, [beat, webgl, reduceMotion]);
+    if ((ready || beat) && webgl && !reduceMotion) loadNight();
+  }, [ready, beat, webgl, reduceMotion]);
 
   useEffect(installPointerFx, []);
+
+  // The 3D name is the visible title only once it is ready. If it has not become ready 1.5 s after its beat has arrived (its code
+  // failed to load, or the context was refused), the real heading is shown with its static styling and the 3D layer is dropped.
+  const title3d = !reduceMotion && hasWebGL() && !titleFailed;
+  const titleBeat = Boolean(reached('title'));
+  useEffect(() => {
+    if (!title3d || titleReady || !titleBeat) return;
+    const id = setTimeout(() => setTitleFailed(true), 1500);
+    return () => clearTimeout(id);
+  }, [title3d, titleReady, titleBeat]);
+  const titleMode = !title3d ? 'html' : titleReady ? '3d' : 'pending';
 
   // Smooth scroll (off for reduced motion)
   useEffect(() => {
@@ -93,14 +95,24 @@ export default function App({ reduceMotion }) {
     clock.t = T.end;
     onBeat('end');
   }, [onBeat]);
-  // A stage that fails to load, or a download that stalls, must never leave the visitor behind the opening.
+  // A stage that fails to load, or a download that stalls, must never leave the visitor behind the opening. The guard only covers the wait
+  // for the stage to start: once its clock runs, a slow machine plays the opening slowly instead of being thrown out of it.
   const [stageFailed, setStageFailed] = useState(false);
   useEffect(() => {
-    if (reduceMotion || beat) return;
-    const id = setTimeout(skip, MAX_WAIT_MS);
+    if (reduceMotion || ready) return;
+    // no WebGL at all: there is no opening to wait for, so land on the settled page now (the plain title and every action are already there)
+    const id = setTimeout(skip, hasWebGL() ? MAX_WAIT_MS : 0);
     return () => clearTimeout(id);
-  }, [beat, reduceMotion, skip]);
+  }, [ready, reduceMotion, skip]);
+  // Replay and Skip are one button in one place, so a double click on Replay would replay and then skip at once: a Skip within the first
+  // moments of a replay is ignored. (The guards above call skip() directly and are not affected.)
+  const replayedAt = useRef(-1e9);
+  const userSkip = useCallback(() => {
+    if (performance.now() - replayedAt.current > 700) skip();
+  }, [skip]);
   const replay = () => {
+    if (performance.now() - replayedAt.current < 700) return; // rapid repeated input restarts the opening once, not several times
+    replayedAt.current = performance.now();
     skippedRef.current = false;
     setSkipped(false);
     setBeat(null);
@@ -126,7 +138,7 @@ export default function App({ reduceMotion }) {
       <main id="main">
         <section className={`hero ${covered && nightLive && webgl ? 'is-open' : ''}`} id="ignition" ref={hero} aria-labelledby="hero-title">
           {/* Reduced motion: no drift, no dial, no 3D. The settled hero is on screen immediately. */}
-          {!reduceMotion && (
+          {!reduceMotion && hasWebGL() && (
             <SceneGuard
               onFail={() => {
                 setStageFailed(true);
@@ -134,13 +146,13 @@ export default function App({ reduceMotion }) {
               }}
             >
               <Suspense fallback={null}>
-                <Stage active={heroActive && !covered} onBeat={onBeat} />
+                <Stage active={heroActive && !covered} onBeat={onBeat} onReady={() => setReady(true)} />
               </Suspense>
             </SceneGuard>
           )}
-          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} settled={reached('end') && !reduceMotion} paused={!heroActive} annotated={reached('ui')} />
+          <Portrait revealed={reached('reveal')} fast={skipped} parallax={!reduceMotion} settled={reached('end') && !reduceMotion} paused={!heroActive} ended={reached('end')} marked={reached('ui')} />
           {!reduceMotion && <Loader key={run} release={skipped} />}
-          <HeroOverlay showUi={reached('ui')} fast={skipped} ended={reached('end')} canReplay={!reduceMotion && !stageFailed} onSkip={skip} onReplay={replay} />
+          <HeroOverlay showTitle={reached('title')} showUi={reached('ui')} fast={skipped} ended={reached('end')} canReplay={!reduceMotion && hasWebGL() && !stageFailed} onSkip={userSkip} onReplay={replay} title3d={title3d} titleMode={titleMode} onTitleReady={() => setTitleReady(true)} onTitleFail={() => setTitleFailed(true)} run={run} />
         </section>
         <PitCrew />
         <Track reduceMotion={reduceMotion} flat={!webgl} />
