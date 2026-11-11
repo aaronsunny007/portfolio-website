@@ -67,7 +67,7 @@ export default function Portrait({ revealed, fast, parallax, settled, paused, en
             ref={(img) => img?.complete && img.naturalWidth && setLoaded(true)}
           />
           {/* Ambient loop: soft-masked copies of this same photo drift over its own smoke and wet road. Starts once the opening has settled; none of it exists in reduced motion. */}
-          <div className={`portrait-ambient ${settled ? 'is-on' : ''} ${paused ? 'is-paused' : ''}`} style={{ '--src': `url(${SRC})` }} aria-hidden="true">
+          <div className={`portrait-ambient ${settled ? 'is-on' : ''} ${paused ? 'is-paused' : ''}`} style={{ '--src': `url(${new URL(SRC, document.baseURI).href})` }} aria-hidden="true">
             <i className="amb amb-smoke-l"><b /></i>
             <i className="amb amb-smoke-r"><b /></i>
             <i className="amb amb-wet"><b /></i>
