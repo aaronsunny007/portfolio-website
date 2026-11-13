@@ -25,22 +25,22 @@ export const profile = {
     ['Approach', 'Take ownership. Follow through.'],
     ['Off duty', 'Street cars and racing · Football · Biryani'],
   ],
-  // Behind the Wheel (sections/PitCrew). The brief's last sentence arrived cut off after "Open the builds and see the", so the
-  // references end after the three project lines; finish that sentence here when it is supplied.
-  statement: 'I take the build all the way.',
-  bio: [
-    'I’m Sunny, an AI engineer in Belfast. I take ownership of the whole problem: the model, the software around it, and the failures that show up when you put it to work.',
-    'If the next step needs a tool I haven’t used, I get up to speed and put it to the test. When something breaks, I trace the cause and work through it. Getting the first version running is the start; following through is how I work.',
-  ],
+  // Behind the Wheel (sections/PitCrew): a pass, a statement and three project references.
+  // The pass photograph is easy to swap: change `src`, `alt` and the crop (`pos` is the focal point, `zoom` how far in).
+  pass: { src: 'images/journey/02-security.webp', alt: 'Sunny Aaron smiling in a cream polo, with a blue-and-yellow macaw on his shoulder.', pos: '52% 30%', zoom: 1.45, reg: 'SA–007' },
+  statement: {
+    lead: 'The difficult bit has my attention.',
+    body: [
+      'I’m Sunny, an AI engineer in Belfast. I build the system and take responsibility for the awkward parts: an answer that sounds right but isn’t, a defence that blocks the wrong thing, a pipeline that fails halfway through.',
+      'If the work needs a tool I haven’t used, I get into it. I build a working version, test the assumptions and work through the failures. I want to understand the problem well enough to finish the job.',
+    ],
+    off: 'Away from the keyboard: street cars, racing, football and biryani.',
+  },
+  // `slug` finds the project (and its repository) in projects.js.
   references: [
-    { name: 'Ledger', line: 'checks the maths.' },
-    { name: 'Warden', line: 'checks new defences.' },
-    { name: 'Financial-NRF', line: 'questions the scores.' },
-  ],
-  offDuty: 'Off duty: street cars and racing, football, biryani.',
-  background: [
-    ['AI studies', 'MSc Artificial Intelligence, Ulster University'], // education context only: not stated as awarded
-    ['Foundation', 'BTech, Computer Science and Cybersecurity'],
+    { slug: 'ledger', question: 'Where did the answer come from?', line: 'Report citations and numerical checks.' },
+    { slug: 'warden', question: 'What is this tool request carrying?', line: 'Taint tracking and defence validation.' },
+    { slug: 'financial-nrf', question: 'What if the source is wrong?', line: 'Reliability scores under incorrect supporting material.' },
   ],
 };
 
@@ -78,16 +78,16 @@ export const milestones = [
   { id: 'financial-nrf', label: 'Financial-NRF', kind: 'Project', meta: 'Research project / 2026', title: 'A good score. A bad source.', text: 'My dissertation and paper draft examine whether reliability scores notice incorrect source material. Across the evaluated settings, they mostly missed it.',
     notes: 'The study covers two financial datasets and four open models, comparing how reliability scores respond when the supporting material changes.',
     evidence: [{ slug: 'financial-nrf', label: 'Explore Financial-NRF' }],
-    photo: { src: 'images/journey/04-financial-nrf.webp', alt: 'Sunny Aaron laughing in sunglasses and a patterned shirt at a café table, with an iced drink.', pos: '50% 52%', posM: '50% 52%', tall: 'y' } },
+    photo: { src: 'images/journey/04-financial-nrf.webp', alt: 'Sunny Aaron laughing in sunglasses and a patterned shirt at a café table, with an iced drink.', pos: '50% 52%', posM: '50% 52%' } },
   { id: 'tom-and-ollie', label: 'Tom & Ollie', kind: 'Project', meta: 'Client relaunch / 2026', title: 'Built around a real business.', text: 'A storefront relaunch for a Belfast cheesemonger, covering the backend, chilled-delivery checkout and order administration.',
     status: 'Built · Not deployed',
     notes: 'The relaunch was built with a FastAPI backend but did not proceed to deployment. The repository documents the storefront and backend work.',
     evidence: [{ slug: 'tom-and-ollie', label: 'Explore Tom & Ollie' }],
-    photo: { src: 'images/journey/05-tom-and-ollie.webp', alt: 'Sunny Aaron in a cream polo, looking to one side in front of a stone wall, with a castle on a rock behind him.', pos: '68% 47%', posM: '68% 46%', tall: 'm' } },
+    photo: { src: 'images/journey/05-tom-and-ollie.webp', alt: 'Sunny Aaron in a cream polo, looking to one side in front of a stone wall, with a castle on a rock behind him.', pos: '68% 47%', posM: '68% 46%' } },
   { id: 'warden-aegis', label: 'Warden & AEGIS', kind: 'Project', meta: 'Security projects / 2026', title: 'The defence gets tested too.', text: 'Warden validates candidate defences before enforcement. AEGIS checks generated blocking rules against traffic before deployment.',
     notes: 'Warden uses an eight-stage validation gate for candidate defences. AEGIS connects attack detection, rule generation and traffic checks before rule deployment.',
     evidence: [{ slug: 'warden', label: 'Explore Warden' }, { slug: 'aegis', label: 'Explore AEGIS' }],
-    photo: { src: 'images/journey/06-warden-aegis.webp', alt: 'Sunny Aaron in a navy zip jacket and sunglasses, looking to one side on a bridge, with stone and painted houses behind.', pos: '50% 46%', posM: '50% 46%', tall: 'm' } },
+    photo: { src: 'images/journey/06-warden-aegis.webp', alt: 'Sunny Aaron in a navy zip jacket and sunglasses, looking to one side on a bridge, with stone and painted houses behind.', pos: '50% 46%', posM: '50% 46%' } },
 ];
 
 // Not a milestone: where the route is heading. Shown apart from the corners, never lit on the map.

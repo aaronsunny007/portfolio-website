@@ -250,6 +250,27 @@ export const sideOf = (i) => (i % 2 ? -1 : 1);
 export const HEIGHT = [2.6, 3.8, 2.3, 3.6, 2.5, 3.4, 3.1];
 
 /**
+ * The journey's cards alternate: 01 on the right, 02 on the left, and so on. +1 is a card on the left (the scene slides right to leave it
+ * room), -1 a card on the right. Chapter 06 is on the left, and so is the plan ahead.
+ */
+export const cardSide = (i) => (i % 2 ? 1 : -1);
+// The card's column and the page gutter beside it, in px; src/index.css (.chapter-dock) uses the same numbers.
+export const cardW = (vw) => Math.min(760, Math.max(520, vw * 0.46));
+export const gutter = (vw) => Math.min(64, Math.max(24, vw * 0.04));
+// How far along a leg (0..1 of the scroll between two checkpoints) things happen, so the order is always: the car drives into the bend
+// (the jump leg: airborne, landing), then the scene slides to make room on the other side, then the new card arrives. Never all at once.
+const SHIFT = [0.5, 0.8]; // the scene's slide across
+const SHIFT_JUMP = [0.62, 0.84]; // after the landing (the landing is done by about 0.57)
+const SWITCH = 0.85; // the card changes
+const SWITCH_JUMP = 0.88;
+export const switchAt = (leg) => (leg === N - 2 ? SWITCH_JUMP : SWITCH);
+/** The scene's side factor at f of the way along `leg`: from cardSide(leg) to cardSide(leg + 1). */
+export const sideAt = (leg, f) => {
+  const [a, b] = leg === N - 2 ? SHIFT_JUMP : SHIFT;
+  return cardSide(leg) + (cardSide(leg + 1) - cardSide(leg)) * sstep(a, b, f);
+};
+
+/**
  * State shared by the page (DOM, ScrollTrigger) and the night scene. Plain mutable fields, read inside the frame loop.
  * The car, the camera and the cards are driven by scroll position only: nothing here advances on a timer.
  */
@@ -264,6 +285,7 @@ export const view = {
   dashH: 0, // px, the height the dashboard takes at the foot of the screen
   dash: null, // redraws the instrument cluster (set by the dashboard)
   sel: 0, // the active checkpoint
+  sx: -1, // which side the card is on, smoothed with the scroll (see cardSide): the scene slides to the other side
   v: 0, // the car's speed along the route, signed, smoothed (route units per second)
   speed: 0, // 0..1, how fast the scene is moving, for the instrument cluster
   wipe: 0, // 0..1 while the wipers make one pass (set by the section shutters)

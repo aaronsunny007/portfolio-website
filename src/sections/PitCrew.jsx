@@ -1,56 +1,65 @@
 import { profile } from '../content/profile';
+import { projects } from '../content/projects';
 import SectionHeader from '../components/SectionHeader';
+import Arrow from '../components/Arrow';
 import Toolkit from './Toolkit';
 import useReveal from '../components/useReveal';
 
-// Two balanced areas: who (the plate and the fields), then the introduction. Natural document flow, so it never sits behind the cockpit.
+const BASE = import.meta.env.BASE_URL; // the site may be served from a sub-path (GitHub Pages)
+
+// A night-time pit stop: a motorsport-style pass, a short statement, three project references. Three columns when there is room,
+// each at its own height; the references drop under the statement when it is tight. Natural document flow, so it never sits behind the cockpit.
 export default function PitCrew() {
   const ref = useReveal();
-  const field = (k) => profile.licence.find(([name]) => name === k)?.[1];
+  const { pass, statement, references } = profile;
 
   return (
-    <section className="section" id="pit-crew" aria-labelledby="pit-crew-title" ref={ref}>
+    <section className="section pit" id="pit-crew" aria-labelledby="pit-crew-title" ref={ref}>
       <SectionHeader id="pit-crew-title" sector="S1 / Pit Crew" title="Behind the wheel." />
-      <article className="credential surface reveal" aria-label="Driver profile">
-        <div className="credential-id">
-          <div className="licence-plate" aria-hidden="true">
-            <span>SA</span>
-            <b>07</b>
+      <div className="pit-bay reveal">
+        <div className="pass" role="group" aria-label={`${profile.first} ${profile.last}, driver pass`}>
+          <div className="pass-sheet">
+            <span className="pass-slot" aria-hidden="true" />
+            <div className="pass-photo">
+              <img src={BASE + pass.src} alt={pass.alt} width="900" height="1200" loading="lazy" decoding="async" style={{ '--pos': pass.pos, '--zoom': pass.zoom }} />
+            </div>
+            <div className="pass-text">
+              <span className="pass-name">
+                {profile.first} {profile.last}
+              </span>
+              <span className="pass-role">{profile.role}</span>
+              <span className="pass-base">{profile.location}</span>
+            </div>
+            <span className="pass-reg" aria-label={`Registration ${pass.reg}`}>
+              {pass.reg}
+            </span>
           </div>
-          <div className="licence-no">{profile.licenceNo.toUpperCase()}</div>
-          <h3>
-            {profile.first} {profile.last}
-          </h3>
-          <p className="credential-role">{profile.role}</p>
-          <p className="credential-base">{profile.location}</p>
-          <p className="credential-focus">{field('Discipline')}</p>
         </div>
-        <div className="credential-intro">
-          <p className="credential-statement">{profile.statement}</p>
-          {profile.bio.map((p) => (
+
+        <div className="pit-statement">
+          <h3 className="pit-lead">{statement.lead}</h3>
+          {statement.body.map((p) => (
             <p key={p}>{p}</p>
           ))}
-          <ul className="credential-refs" aria-label="Projects that show how I work">
-            {profile.references.map((r) => (
-              <li key={r.name}>
-                <a href="#garage">{r.name}</a> {r.line}
-              </li>
-            ))}
-          </ul>
-          <p className="credential-off">{profile.offDuty}</p>
-          <details className="credential-bg">
-            <summary>Background</summary>
-            <dl>
-              {profile.background.map(([k, v]) => (
-                <div key={k}>
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </details>
+          <p className="pit-off">{statement.off}</p>
         </div>
-      </article>
+
+        <ul className="pit-refs" aria-label="Projects that show how I work">
+          {references.map((r) => {
+            const p = projects.find((x) => x.slug === r.slug);
+            return (
+              <li key={r.slug}>
+                <a href={p.repo} target="_blank" rel="noreferrer" className="pit-ref-name">
+                  {p.title}
+                  <Arrow />
+                </a>
+                <span className="pit-ref-q">{r.question}</span>
+                <span className="pit-ref-line">{r.line}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       <Toolkit />
     </section>
   );

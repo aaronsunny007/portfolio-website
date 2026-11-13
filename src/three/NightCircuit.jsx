@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { quality } from './webgl';
 import { radialTexture, streakTexture, roadTexture, finishTexture } from './textures';
-import { view, carAt, routeToWorld, airAt, flightAt, LIP_X, FLY, ROLL, LEN as ROUTE_LEN } from './journey';
+import { view, cardW, gutter, carAt, routeToWorld, airAt, flightAt, LIP_X, FLY, ROLL, LEN as ROUTE_LEN } from './journey';
 import Route from './Route';
 import Roadside from './Roadside';
 import Dashboard from '../components/Dashboard';
@@ -200,9 +200,9 @@ function Scene({ still, low }) {
     cams.look.lerpVectors(cams.al, cams.bl, e);
     camera.lookAt(cams.look);
     camera.updateMatrixWorld();
-    // The journey's card sits on the left, so the whole frame (road, car, lights) slides right by half the card's column while the camera
+    // The journey's card alternates sides, so the whole frame (road, car, lights) slides away from it by half the card's column while the camera
     // is on the route. A view offset moves the projection only, so nothing in the scene is displaced from its road.
-    const dx = view.tall ? 0 : Math.round((Math.min(420, Math.max(340, size.width * 0.3)) + Math.min(64, Math.max(24, size.width * 0.04)) + 32) * 0.5 * e);
+    const dx = view.tall ? 0 : Math.round((cardW(size.width) + gutter(size.width) + 32) * 0.5 * e * view.sx);
     if (dx !== cams.dx || cams.sw !== size.width || cams.sh !== size.height) {
       cams.dx = dx;
       cams.sw = size.width;

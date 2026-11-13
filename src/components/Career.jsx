@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { milestones, ahead } from '../content/profile';
 import { projects } from '../content/projects';
 import Arrow from './Arrow';
-import { N, EXIT, legAt, exitAt, view } from '../three/journey';
+import { N, EXIT, legAt, exitAt, view, cardSide, switchAt, sideAt } from '../three/journey';
 import { scroller } from '../scroller';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -18,6 +18,9 @@ const BASE = import.meta.env.BASE_URL; // the site may be served from a sub-path
 const SPAN = N - 1 + EXIT; // the scroll runs on past the last milestone: the car leaves the route and drives onto the night road
 const pad = (i) => String(i + 1).padStart(2, '0');
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
+const stacked = () => window.matchMedia('(max-width: 899px), (max-aspect-ratio: 23/20)').matches; // mirrors view.tall: the card docks under the scene
+// The way a card leaves toward, and arrives from, its own edge of the screen. A docked card has one position, so it only rises and settles.
+const edge = (i) => (stacked() ? { x: 0, y: 14 } : { x: -cardSide(i) * 28, y: 0 });
 
 function Chapter({ m, i, flat, open, onToggle }) {
   const [broken, setBroken] = useState(false);
@@ -45,7 +48,7 @@ function Chapter({ m, i, flat, open, onToggle }) {
   }, [open]);
   return (
     <article className="chapter-card" aria-label={`Chapter ${i + 1} of ${N}: ${m.label}`} data-kind={m.kind.toLowerCase()}>
-      <figure className="chapter-photo" data-tall={m.photo.tall || undefined}>
+      <figure className="chapter-photo">
         {!broken && (
           <img src={BASE + m.photo.src} alt={m.photo.alt} width="900" height="1200" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" style={{ '--pos': m.photo.pos, '--pos-m': m.photo.posM }} onError={() => setBroken(true)} />
         )}
@@ -106,7 +109,6 @@ export default function Career({ reduceMotion, flat }) {
   const st = useRef(null);
   const prev = useRef(0);
   const shownRef = useRef(0);
-  const dir = useRef(1);
   const [sel, setSel] = useState(0);
   const [shown, setShown] = useState(0); // the chapter on the card: it follows sel once the old card has gone
   const [more, setMore] = useState(-1); // the chapter whose build notes are open; moving to another chapter closes them
@@ -127,6 +129,7 @@ export default function Career({ reduceMotion, flat }) {
     let cur = -1;
     const follow = reduceMotion ? null : gsap.quickTo(view, 't', { duration: 0.7, ease: 'power3.out' });
     const followXo = reduceMotion ? null : gsap.quickTo(view, 'xo', { duration: 0.7, ease: 'power3.out' });
+    const followSx = reduceMotion ? null : gsap.quickTo(view, 'sx', { duration: 0.7, ease: 'power2.out' });
     const plan = layer.current.querySelector('[data-panel]');
     const apply = (progress) => {
       const u = progress * SPAN;
@@ -135,12 +138,16 @@ export default function Career({ reduceMotion, flat }) {
       view.ex = Math.min(1, Math.max(0, (u - (N - 1)) / EXIT));
       const [te, xo] = exitAt(view.ex);
       const to = view.ex > 0 ? te : legAt(i, hold(c - i));
+      const f = c - i; // how far along the leg: the scene's side and the card both follow it, after the car has settled
+      const sx = sideAt(i, f);
       if (follow) {
         follow(to);
         followXo(xo);
+        followSx(sx);
       } else {
         view.t = to;
         view.xo = xo;
+        view.sx = sx;
       }
       // the chapter card gives way as the car leaves the route; the plan ahead then takes the same place on the left, never both at once
       const o = 1 - clamp01(view.ex / 0.15);
@@ -148,11 +155,11 @@ export default function Career({ reduceMotion, flat }) {
       [stage.current, rail.current].forEach((el) => {
         if (!el) return;
         el.style.opacity = o.toFixed(3);
-        el.style.visibility = o < 0.02 ? 'hidden' : 'visible';
+        el.style.visibility = o < 0.02 ? 'hidden' : ''; // '' keeps the layer's own hidden state: nothing here is focusable while the chapters are off screen
       });
       plan.style.opacity = a.toFixed(3);
       plan.style.visibility = a < 0.02 ? 'hidden' : 'visible';
-      const s = Math.round(c);
+      const s = f >= switchAt(i) ? i + 1 : i;
       if (s !== cur) {
         cur = s;
         view.sel = s;
@@ -167,9 +174,10 @@ export default function Career({ reduceMotion, flat }) {
     }, root);
     return () => {
       ctx.revert();
-      gsap.killTweensOf(view, 't,xo');
+      gsap.killTweensOf(view, 't,xo,sx');
       view.ex = 0;
       view.xo = 0;
+      view.sx = -1;
       st.current = null;
     };
   }, [flat, reduceMotion]);
@@ -181,16 +189,15 @@ export default function Career({ reduceMotion, flat }) {
     const card = stage.current?.firstElementChild;
     const from = shownRef.current;
     if (from === sel) {
-      if (card) gsap.to(card, { x: 0, rotate: 0, opacity: 1, duration: 0.2, overwrite: true, clearProps: 'transform,opacity' });
+      if (card) gsap.to(card, { x: 0, y: 0, opacity: 1, duration: 0.2, overwrite: true, clearProps: 'transform,opacity' });
       return;
     }
-    dir.current = sel > from ? 1 : -1;
     const swap = () => {
       shownRef.current = sel;
       setShown(sel);
     };
     if (reduceMotion || !card) return swap();
-    gsap.to(card, { x: 24 * dir.current, opacity: 0, duration: 0.16, ease: 'power2.in', overwrite: true, onComplete: swap });
+    gsap.to(card, { ...edge(from), opacity: 0, duration: 0.16, ease: 'power2.in', overwrite: true, onComplete: swap });
     return () => gsap.killTweensOf(card);
   }, [sel, flat, reduceMotion]);
 
@@ -199,7 +206,7 @@ export default function Career({ reduceMotion, flat }) {
     const from = prev.current;
     prev.current = shown;
     if (flat || reduceMotion || !card || from === shown) return;
-    gsap.fromTo(card, { x: -36 * dir.current, rotate: -1.4 * dir.current, opacity: 0 }, { x: 0, rotate: 0, opacity: 1, duration: 0.26, ease: 'power3.out', overwrite: true, clearProps: 'transform,opacity' });
+    gsap.fromTo(card, { ...edge(shown), opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.28, ease: 'power3.out', overwrite: true, clearProps: 'transform,opacity' });
   }, [shown, flat, reduceMotion]);
 
   // the red line under the rail follows the selected chapter; measured again whenever the rail changes size (fonts, window)
@@ -256,12 +263,14 @@ export default function Career({ reduceMotion, flat }) {
             {plan}
           </>
         ) : (
-          <div className="chapter-dock">
+          <>
+            <div className="chapter-dock" data-side={cardSide(shown) > 0 ? 'left' : 'right'}>
             <div className="chapter-slot">
               <div className="chapter" ref={stage}>
                 <Chapter key={shown} m={milestones[shown]} i={shown} open={more === shown} onToggle={() => setMore(more === shown ? -1 : shown)} />
               </div>
               {plan}
+            </div>
             </div>
             <nav className="chapter-rail" aria-label="Career chapters" ref={rail}>
               {milestones.map((m, i) => (
@@ -274,7 +283,7 @@ export default function Career({ reduceMotion, flat }) {
               </span>
               <i className="chapter-mark" ref={mark} aria-hidden="true" />
             </nav>
-          </div>
+          </>
         )}
       </div>
     </div>
