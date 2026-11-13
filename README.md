@@ -16,6 +16,7 @@ npm run dev
 | Path | What |
 |---|---|
 | `src/content/` | All copy: profile, toolkit, milestones, projects. Edit here. |
+| `docs/PROJECT_NOTES.md` | Latest changes, checks run, deploy details and open items |
 | `src/three/timeline.js` | Every beat of the opening, in seconds |
 | `src/three/drive.js` | The drift pass: line, slide angle, speed |
 | `src/three/Car.jsx` | Car model, paint, headlights, counter-steer and wheel spin |
