@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import Car from './Car';
 import { TyreSmoke, SkidMarks } from './DriftFx';
 import { FIXED, T, clock, carState, revealAt } from './timeline';
+import { groundTexture } from './textures';
 
 const BEATS = ['driftStart', 'reveal', 'title', 'ui', 'end'];
 
@@ -72,25 +73,30 @@ function CameraRig() {
 }
 
 function Floor({ tier }) {
+  const map = useMemo(() => groundTexture(), []);
   return (
     <mesh rotation-x={-Math.PI / 2} receiveShadow>
       <planeGeometry args={[90, 90]} />
       {tier === 'high' ? (
         <MeshReflectorMaterial
-          blur={[400, 120]}
+          blur={[160, 50]}
           resolution={768}
-          mixBlur={1}
-          mixStrength={22}
+          mixBlur={0.8}
+          mixStrength={16}
           roughness={0.85}
           depthScale={1.1}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.4}
-          color="#0c0e12"
-          metalness={0.55}
+          map={map}
+          emissive="#8fa8b8" /* the street's ambient glow: lifts the asphalt grain out of the dark without lighting a patch */
+          emissiveMap={map}
+          emissiveIntensity={0.06}
+          color="#555e68"
+          metalness={0.45}
           mirror={0.6}
         />
       ) : (
-        <meshStandardMaterial color="#0c0e12" roughness={0.6} metalness={0.2} />
+        <meshStandardMaterial map={map} color="#555e68" roughness={0.55} metalness={0.2} />
       )}
     </mesh>
   );
@@ -110,9 +116,9 @@ function Lights() {
       <spotLight
         position={[5, 8, 7]}
         target={keyTarget}
-        intensity={190}
-        angle={0.42}
-        penumbra={0.75}
+        intensity={125}
+        angle={0.55}
+        penumbra={1}
         decay={1.7}
         color="#fff3e2"
         castShadow
@@ -123,6 +129,8 @@ function Lights() {
       <pointLight position={[0, 1.6, -4.5]} intensity={10} distance={6} color="#ff2410" />
       {/* cool fill from the left */}
       <pointLight position={[-6, 3, 5]} intensity={14} distance={16} color="#7fb8ff" />
+      {/* the street's cyan neon, high and far on the right, so it rims the car's flank and does not make a hot patch on the road */}
+      <pointLight position={[8, 2.4, -4]} intensity={30} distance={22} decay={1.4} color="#2fd8e8" />
     </>
   );
 }
@@ -140,7 +148,7 @@ export default function Stage({ active, onBeat, onReady }) {
       camera={{ fov: 31, position: [0.3, 1.6, 10.2], near: 0.1, far: 80 }}
     >
       <color attach="background" args={['#07090d']} />
-      <fog attach="fog" args={['#07090d', 15, 38]} />
+      <fog attach="fog" args={["#07090d", 9, 27]} />
       <CameraRig />
       <Lights />
       <Environment resolution={256} frames={1}>
@@ -148,6 +156,7 @@ export default function Stage({ active, onBeat, onReady }) {
         <Lightformer form="rect" intensity={1.6} position={[-9, 2.5, 2]} rotation-y={Math.PI / 2} scale={[10, 2, 1]} />
         <Lightformer form="rect" intensity={1.6} position={[9, 2.5, 2]} rotation-y={-Math.PI / 2} scale={[10, 2, 1]} />
         <Lightformer form="rect" intensity={2.2} color="#e10600" position={[0, 1.5, -9]} scale={[16, 1.2, 1]} />
+        <Lightformer form="rect" intensity={1.8} color="#2fd8e8" position={[8, 1.2, -4]} rotation-y={-Math.PI / 2.4} scale={[10, 0.9, 1]} />
       </Environment>
       <Suspense fallback={null}>
         <ClockDriver onBeat={onBeat} onReady={onReady} />

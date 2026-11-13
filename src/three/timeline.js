@@ -4,8 +4,8 @@ import * as THREE from 'three';
 export const T = {
   driftStart: 0.5, // the car enters from beyond the left edge
   driftLen: 2.8, // ...one sideways pass across the frame, and out through the right
-  reveal: 1.0, // the zip starts as the car enters: the wipe edge trails the car's tail across the frame (car centre ~0.8 screen-widths/s)
-  revealLen: 2.45, // the photo is uncovered over this long, measured on the opening clock (see revealAt)
+  reveal: 2.75, // the photo's own car must not appear beside the animated one: the wipe starts as the animated car is leaving the right edge (its pass ends at 3.3)
+  revealLen: 1.75, // the photo is uncovered over this long, measured on the opening clock (see revealAt)
   title: 3.0, // the name starts to arrive as the car clears the right edge (the pass ends at 3.3)
   titleLen: 1.3, // ...and has settled this long after
   ui: 4.0, // nav, P1, supporting copy and the actions: they follow the name (it has arrived by 4.0), in a short run

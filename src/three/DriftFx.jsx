@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { FIXED, T, clock, carState, carLocalToWorld, smooth } from './timeline';
+import { FIXED, clock, carState, carLocalToWorld, smooth } from './timeline';
 
 // rear tyre contact patches in car space (read off the model: track 0.805, rear axle z = -1.34)
 const REAR = [
   [-0.805, 0.12, -1.34],
   [0.805, 0.12, -1.34],
 ];
-const SMOKE_RATE = 55; // particles per second per rear tyre at full slide
+const SMOKE_RATE = 85; // particles per second per rear tyre at full slide
 const SLIP_MIN = 0.25;
 
 /* ---------------- Tyre smoke: one Points draw call, CPU-updated pool ---------------- */
-const MAX_SMOKE = 520;
+const MAX_SMOKE = 800;
 
 const smokeVert = /* glsl */ `
   attribute float aSize; attribute float aAlpha; attribute float aTint;
@@ -76,15 +76,17 @@ export function TyreSmoke() {
     p.x = x + (Math.random() - 0.5) * 0.2;
     p.y = y;
     p.z = z + (Math.random() - 0.5) * 0.2;
-    p.vx = (Math.random() - 0.5) * 0.8;
-    p.vy = 0.25 + Math.random() * 0.45;
-    p.vz = (Math.random() - 0.5) * 0.8;
+    // low and slow: born at the tyre contact point and left where the car was (so it lies along the drift path), with a light drift to the
+    // right, the way the car went, then it spreads and thins instead of rising as a column
+    p.vx = (Math.random() - 0.3) * 0.7;
+    p.vy = 0.15 + Math.random() * 0.55;
+    p.vz = (Math.random() - 0.5) * 0.7;
     p.life = 0;
-    p.max = big ? 1.8 + Math.random() * 1.4 : 3.2; // the plume hangs behind the car for a moment after it has gone
-    p.s0 = big ? 0.4 : 0.8;
+    p.max = big ? 2.4 + Math.random() * 1.6 : 3.2;
+    p.s0 = big ? 0.25 + Math.random() * 0.3 : 0.8;
     const r = Math.random();
-    p.red = r < 0.07 ? 0.85 : r < 0.17 ? -0.7 : 0; // a few red and cyan puffs: restrained, the smoke stays grey
-    p.a = big ? 0.1 : 0.04;
+    p.red = r < 0.04 ? 0.5 : r < 0.12 ? -0.4 : 0; // a few red and cyan puffs: restrained, the smoke stays grey
+    p.a = big ? 0.045 + Math.random() * 0.045 : 0.04;
   }
 
   useFrame((_, dt) => {
@@ -108,8 +110,6 @@ export function TyreSmoke() {
           spawn(w.x, w.y, w.z, true);
         }
       }
-    } else if (clock.t > T.driftStart + 1.4 && Math.random() < 0.3) {
-      spawn((Math.random() - 0.5) * 8, 0.1, (Math.random() - 0.5) * 3, false); // the haze the car leaves hanging over its line
     }
     const pos = geo.attributes.position.array;
     const sz = geo.attributes.aSize.array;
@@ -128,7 +128,7 @@ export function TyreSmoke() {
       pos[i * 3] = p.x;
       pos[i * 3 + 1] = p.y;
       pos[i * 3 + 2] = p.z;
-      sz[i] = p.s0 + 2.1 * Math.sqrt(k);
+      sz[i] = p.s0 + 2.6 * Math.sqrt(k);
       al[i] = k >= 1 ? 0 : p.a * (1 - k) * Math.min(1, p.life * 6);
       rd[i] = p.red;
     }

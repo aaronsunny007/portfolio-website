@@ -77,7 +77,7 @@ export default function Car() {
   );
 }
 
-const BEAM = 50;
+const BEAM = 36;
 
 /** A soft dark pool under each tyre, laid on the road and carried with the car's heading (not its pitch or roll), so the tyres sit on the wet surface. */
 function ContactShadows() {
@@ -109,9 +109,9 @@ function Headlights({ beam }) {
         target={target}
         color="#dcebff"
         intensity={BEAM}
-        angle={0.5}
-        penumbra={0.7}
-        distance={22}
+        angle={0.36}
+        penumbra={0.95}
+        distance={15}
         decay={1.6}
       />
     </>

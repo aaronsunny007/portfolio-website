@@ -25,12 +25,22 @@ export const profile = {
     ['Approach', 'Take ownership. Follow through.'],
     ['Off duty', 'Street cars and racing · Football · Biryani'],
   ],
+  // Behind the Wheel (sections/PitCrew). The brief's last sentence arrived cut off after "Open the builds and see the", so the
+  // references end after the three project lines; finish that sentence here when it is supplied.
+  statement: 'I take the build all the way.',
   bio: [
-    'I’m Sunny, an AI engineer based in Belfast. Give me a problem and I’ll get into the details: what needs to work, what could fail and what it takes to build it properly.',
-    'My projects cover financial document retrieval, security gateways, model evaluation and data pipelines. I’m interested in the whole system—the model, the service around it, the checks and the interface someone actually uses.',
-    'An unfamiliar tool is something to get to grips with. I pick it up, put it to work and test whether it earns its place in the build. I keep going when the first version exposes a harder problem.',
-    'You can see that approach in the garage. Ledger checks its calculations. Warden validates new defences before enforcing them. Financial-NRF asks whether a reassuring score still means anything when the source is wrong.',
-    'Off the clock: street cars, racing, football and biryani. There’s usually another project on the go, too.',
+    'I’m Sunny, an AI engineer in Belfast. I take ownership of the whole problem: the model, the software around it, and the failures that show up when you put it to work.',
+    'If the next step needs a tool I haven’t used, I get up to speed and put it to the test. When something breaks, I trace the cause and work through it. Getting the first version running is the start; following through is how I work.',
+  ],
+  references: [
+    { name: 'Ledger', line: 'checks the maths.' },
+    { name: 'Warden', line: 'checks new defences.' },
+    { name: 'Financial-NRF', line: 'questions the scores.' },
+  ],
+  offDuty: 'Off duty: street cars and racing, football, biryani.',
+  background: [
+    ['AI studies', 'MSc Artificial Intelligence, Ulster University'], // education context only: not stated as awarded
+    ['Foundation', 'BTech, Computer Science and Cybersecurity'],
   ],
 };
 

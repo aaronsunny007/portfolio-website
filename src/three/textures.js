@@ -169,3 +169,37 @@ export function roadTexture(low) {
   t.anisotropy = 4;
   return t;
 }
+
+/** Tileable night asphalt for the opening's floor: fine aggregate, darker patched repairs and a few pale wet patches. No marks or lines, so it can repeat without showing it. */
+export function groundTexture() {
+  const S = 512;
+  const rand = rng(11);
+  const [c, g] = canvas(S, S);
+  g.fillStyle = '#14181e';
+  g.fillRect(0, 0, S, S);
+  const blob = (x, y, rx, ry, col) => {
+    for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { // drawn at every wrap offset, so the edges tile
+      g.save();
+      g.translate(x + ox, y + oy);
+      g.scale(1, ry / rx);
+      const r = g.createRadialGradient(0, 0, 0, 0, 0, rx);
+      r.addColorStop(0, col);
+      r.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = r;
+      g.fillRect(-rx, -rx, rx * 2, rx * 2);
+      g.restore();
+    }
+  };
+  for (let i = 0; i < 14; i++) blob(rand() * S, rand() * S, 50 + rand() * 90, 30 + rand() * 60, 'rgba(3,5,8,0.75)'); // patched, darker tarmac
+  for (let i = 0; i < 10; i++) blob(rand() * S, rand() * S, 40 + rand() * 70, 14 + rand() * 24, 'rgba(80,135,155,0.18)'); // wet sheen
+  for (let i = 0; i < 9000; i++) {
+    const l = rand() < 0.5;
+    g.fillStyle = l ? `rgba(255,255,255,${0.03 + rand() * 0.07})` : `rgba(0,0,0,${0.15 + rand() * 0.25})`;
+    g.fillRect(rand() * S, rand() * S, 1 + rand() * 1.6, 1 + rand() * 1.6);
+  }
+  const t = toTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(5, 5);
+  t.anisotropy = 8;
+  return t;
+}
